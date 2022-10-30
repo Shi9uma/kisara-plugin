@@ -1,6 +1,7 @@
 import { segment } from 'oicq'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
+import { AuthType, createClient } from "webdav"
 
 import lodash from 'lodash'
 import moment from 'moment'
@@ -156,27 +157,25 @@ export class tarot extends plugin {
     }
 
     async tarot() {
-        const card = lodash.sample(tarot_cards)
-        const name = card.name_cn
-        const isUp = lodash.random(0, 1)
-        const valid = await this.checkUser()
-        // if (!valid) {
-        //     this.reply('今日已经为你占卜过了，明天再来吧')
-        //     return
-        // }
+
+        let card = lodash.sample(tarot_cards)
+        let name = card.name_cn
+        let isUp = lodash.random(0, 1)
+        let valid = await this.checkUser()
+        if (!valid) {
+            this.reply('今日已经为你占卜过了，明天再来吧')
+            return
+        }
         await this.reply(
             `\n「${isUp ? '正位' : '逆位'}」${name}\n回应是：${isUp ? card.meaning.up : card.meaning.down
             }`,
             false,
             { at: true }
         )
+
         // 参考 https://github.com/MinatoAquaCrews/nonebot_plugin_tarot
-        const path =
-            '/home/www/oicq/Yunzai-Bot/plugins/example/data/tarot_resource/' +
-            card.type +
-            '/' +
-            card.pic
-        const pic = segment.image(encodeURI(path))
+        let path = './plugins/diy/data/tarot_resource'
+        let pic = segment.image(`file://${path}/${card.type}/${card.pic}`)
         await this.reply(pic)
     }
 }
