@@ -1,4 +1,3 @@
-import { createRequire } from 'module'
 import shell from 'shelljs'
 import plugin from '../../lib/plugins/plugin.js'
 
