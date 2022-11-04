@@ -1,7 +1,6 @@
 import { segment } from 'oicq'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
-import { AuthType, createClient } from "webdav"
 
 import lodash from 'lodash'
 import moment from 'moment'
@@ -29,8 +28,7 @@ var content = [
     '观音灵签：这是你的第三次求签机会\n',
     '二次元的我：生成一个二次元形象\n',
     '今天吃什么：选择困难就试试这个\n',
-    '骰子：「r/roll + 数字」\n',
-    'latex：「latex + tex语句」\n',
+    '骰子：「r + 数字」\n',
     '识图：「识图 + 图片」\n',
     '点歌：「点歌 + 歌曲名，--singer 指定歌手」'
 ]
@@ -166,6 +164,9 @@ export class tarot extends plugin {
             this.reply('今日已经为你占卜过了，明天再来吧')
             return
         }
+
+        await this.reply('“许多傻瓜对千奇百怪的迷信说法深信不疑：象牙、护身符、黑猫、打翻的盐罐、驱邪、占卜、符咒、毒眼、塔罗牌、星象、水晶球、咖啡渣、手相、预兆、预言还有星座。”\n——《人类愚蠢辞典》')
+
         await this.reply(
             `\n「${isUp ? '正位' : '逆位'}」${name}\n回应是：${isUp ? card.meaning.up : card.meaning.down
             }`,
@@ -427,50 +428,12 @@ export class dice extends plugin {
         })
     }
 
-    async roll() {
-        const choices = this.e.msg.split(' ').slice(1)
-        const result = lodash.sample(choices)
-        await this.reply(`为你选择：${result}`, false, { at: true })
-    }
-
     async r() {
         const range = this.e.msg.split(' ').map(Number).filter(Number.isInteger)
         const end = range.pop() ?? 100
         const start = range.pop() ?? 1
         const result = lodash.random(start, end)
         await this.reply(`在 ${start} 和 ${end} 间roll到了：${result}`)
-    }
-}
-
-// latex
-export class tex extends plugin {
-    constructor() {
-        super({
-            name: 'tex 公式转换',
-            dsc: '利用 katex 渲染 tex 公式',
-            event: 'message',
-            priority: 5000,
-            rule: [
-                {
-                    reg: '^#?tex\\s',
-                    fnc: 'render'
-                }
-            ]
-        })
-    }
-
-    async render() {
-        const formula = this.e.msg.split(/(?<=^\S+)\s/).pop()
-        const texHtml = katex.renderToString(formula, {
-            throwOnError: false,
-            strict: false
-        })
-        let data = {
-            texHtml,
-            tplFile: `${__dirname}/tex.html`
-        }
-        let img = await screenshot(puppeteer, 'tex', data)
-        await this.reply(img)
     }
 }
 
