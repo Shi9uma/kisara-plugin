@@ -49,7 +49,7 @@ export class example extends plugin {
 
       if (arg == 'stop') {
         if (isActive) {
-          // cmd = 'ps aux | grep "/home/minecraft/fantasy/start.sh" | grep -v grep | awk \'{print $2}\'| xargs  kill -9'
+          // cmd = 'ps aux | grep "/home/minecraft/dragonAdventure/start.sh" | grep -v grep | awk \'{print $2}\'| xargs  kill -9'
           cmd = 'echo root | sudo -S systemctl stop insurgency.service'
           if (shell.exec(cmd).code == 0) {
             msg = [
@@ -135,10 +135,10 @@ export class example extends plugin {
     let msg
     let arg = e.msg.replace(/(!mc )|(!mc)/g, "")
     let cmdList = ['help', 'list', 'start', 'stop']
-    let serverName = 'Minecraft Fantasy Server'
+    let serverName = 'Minecraft Dragon Adventure Server'
 
     if (cmdList.includes(arg)) {
-      let cmd = 'systemctl args fantasy.service'
+      let cmd = 'systemctl args dragonAdventure.service'
       let isActive = (shell.exec(cmd.replace('args', 'is-active')).stdout == 'active\n')
 
       if (arg == 'help') {
@@ -157,8 +157,8 @@ export class example extends plugin {
 
       if (arg == 'stop') {
         if (isActive) {
-          // cmd = 'ps aux | grep "/home/minecraft/fantasy/start.sh" | grep -v grep | awk \'{print $2}\'| xargs  kill -9'
-          cmd = 'echo root | sudo -S systemctl stop fantasy.service'
+          // cmd = 'ps aux | grep "/home/minecraft/dragonAdventure/start.sh" | grep -v grep | awk \'{print $2}\'| xargs  kill -9'
+          cmd = 'echo root | sudo -S systemctl stop dragonAdventure.service'
           if (shell.exec(cmd).code == 0) {
             msg = [
               `【${serverName}】\n`,
@@ -184,7 +184,7 @@ export class example extends plugin {
           ]
         }
         else {
-          cmd = 'echo root | sudo -S systemctl start fantasy.service'
+          cmd = 'echo root | sudo -S systemctl start dragonAdventure.service'
           if (shell.exec(cmd).code == 0) {
             msg = [
               `【${serverName}】\n`,
