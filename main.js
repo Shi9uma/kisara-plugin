@@ -150,12 +150,13 @@ export class tarot extends plugin {
     }
 
     async checkUser() {
-        const expireTime = await redis.get(this.key)
+        const tarot_key = this.e.logFnc + this.e.user_id
+        const expireTime = await redis.get(tarot_key)
         if (expireTime && this.time <= expireTime) {
             return false
         }
         const newExpireTime = moment().endOf('day').format('X')
-        await redis.setEx(this.key, 3600 * 24, newExpireTime)
+        await redis.setEx(tarot_key, 3600 * 24, newExpireTime)
         return true
     }
 
@@ -170,13 +171,13 @@ export class tarot extends plugin {
             return
         }
 
-        await this.reply('“许多傻瓜对千奇百怪的迷信说法深信不疑：象牙、护身符、黑猫、打翻的盐罐、驱邪、占卜、符咒、毒眼、塔罗牌、星象、水晶球、咖啡渣、手相、预兆、预言还有星座。”\n——《人类愚蠢辞典》')
+        let banner = lodash.random(0, 10)
+        if (banner == 5) {
+            await this.reply('“许多傻瓜对千奇百怪的迷信说法深信不疑：象牙、护身符、黑猫、打翻的盐罐、驱邪、占卜、符咒、毒眼、塔罗牌、星象、水晶球、咖啡渣、手相、预兆、预言还有星座。”\n——《人类愚蠢辞典》')
+        }
 
         await this.reply(
-            `\n「${isUp ? '正位' : '逆位'}」${name}\n回应是：${isUp ? card.meaning.up : card.meaning.down
-            }`,
-            false,
-            { at: true }
+            `\n「${isUp ? '正位' : '逆位'}」${name}\n回应是：${isUp ? card.meaning.up : card.meaning.down}`, false, { at: true }
         )
 
         // 参考 https://github.com/MinatoAquaCrews/nonebot_plugin_tarot
