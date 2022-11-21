@@ -16,6 +16,10 @@ export class example extends plugin {
         {
           reg: '^!mc(.*)$',
           fnc: 'minecraft'
+        },
+        {
+          reg: '^!frp(.*)$',
+          fnc: 'frp'
         }
       ]
     })
@@ -262,5 +266,119 @@ export class example extends plugin {
       this.reply(msg)
       return
     }
+  }
+
+  // 以下为自定义功能
+  async frp(e) {
+
+    logger.info('[用户命令]', e.msg)
+
+    if (!this.e.isMaster) {
+      this.reply('无效指令\n');
+      return
+    }
+
+    let msg
+    let arg = e.msg.replace(/(!frp )|(!frp)/g, "")
+    let cmdList = ['help', 'status', 'start', 'stop']
+    let serverName = 'frp server'
+
+    if (cmdList.includes(arg)) {
+      let cmd = 'systemctl args frp.service'
+      let isActive = (shell.exec(cmd.replace('args', 'is-active')).stdout == 'active\n')
+
+      if (arg == 'help') {
+        msg = [
+          `【${serverName}】\n`,
+          '[+] 指令格式：!frp args\n',
+          '[-] ====== args ======\n',
+          '[-] help：打印帮助列表\n',
+          '[-] status：查看frp服务状态\n',
+          '[-] start：frp服务启动\n',
+          '[-] stop：frp服务关闭'
+        ]
+        this.reply(msg)
+        return
+      }
+
+      if (arg == 'stop') {
+        if (isActive) {
+          cmd = 'echo root | sudo -S systemctl stop frp.service'
+          if (shell.exec(cmd).code == 0) {
+            msg = [
+              `【${serverName}】\n`,
+              `[+] 已接受 stop 指令, 正在备份并关闭 ${serverName}...`
+            ]
+          }
+        }
+        else {
+          msg = [
+            `【${serverName}】\n`,
+            '[+] frp 并未开启'
+          ]
+        }
+        this.reply(msg)
+        return
+      }
+
+      if (arg == 'start') {
+        if (isActive) {
+          msg = [
+            `【${serverName}】\n`,
+            '[+] frp 已经接受过 start 指令, 正在 【启动/正常运行】 中, 无需重复操作'
+          ]
+        }
+        else {
+          cmd = 'echo root | sudo -S systemctl start frp.service'
+          if (shell.exec(cmd).code == 0) {
+            msg = [
+              `【${serverName}】\n`,
+              '[+] 已接受 start 指令\n',
+              '[-] frp正在启动中\n',
+            ]
+          }
+          else {
+            msg = [
+              `【${serverName}】\n`,
+              '[+] start 指令接收, 但未能启动frp服务, 请联系维护管理员'
+            ]
+          }
+        }
+        this.reply(msg)
+        return
+      }
+
+      if (arg == 'status') {
+        if (!isActive) {
+          msg = [
+            `【${serverName}】\n`,
+            '[+] frp 并未开启'
+          ]
+        }
+        else {
+          msg = [
+            `【${serverName}】\n`,
+            '[+] frp 服务正常运行中'
+          ]
+        }
+        this.reply(msg)
+        return
+      }
+    }
+
+    else {
+      msg = [
+        `【${serverName}】\n`,
+        '[+] 指令格式：!frp args\n',
+        '[-] ====== args ======\n',
+        '[-] help：打印帮助列表\n',
+        '[-] status：查看服务器状态\n',
+        '[-] start：frp 服务启动\n',
+        '[-] stop：frp 服务关闭'
+      ]
+      this.reply(msg)
+      return
+    }
+
   }
 }
