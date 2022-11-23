@@ -54,7 +54,7 @@ export class example extends plugin {
       if (arg == 'stop') {
         if (isActive) {
           // cmd = 'ps aux | grep "/home/minecraft/dragonAdventure/start.sh" | grep -v grep | awk \'{print $2}\'| xargs  kill -9'
-          cmd = 'echo root | sudo -S systemctl stop insurgency.service'
+          cmd = 'sudo systemctl stop insurgency.service'
           if (shell.exec(cmd).code == 0) {
             msg = [
               `【${serverName}】\n`,
@@ -80,7 +80,7 @@ export class example extends plugin {
           ]
         }
         else {
-          cmd = 'echo root | sudo -S systemctl start insurgency.service'
+          cmd = 'sudo systemctl start insurgency.service'
           if (shell.exec(cmd).code == 0) {
             msg = [
               `【${serverName}】\n`,
@@ -162,7 +162,7 @@ export class example extends plugin {
       if (arg == 'stop') {
         if (isActive) {
           // cmd = 'ps aux | grep "/home/minecraft/dragonAdventure/start.sh" | grep -v grep | awk \'{print $2}\'| xargs  kill -9'
-          cmd = 'echo root | sudo -S systemctl stop dragonAdventure.service'
+          cmd = 'sudo systemctl stop dragonAdventure.service'
           if (shell.exec(cmd).code == 0) {
             msg = [
               `【${serverName}】\n`,
@@ -188,7 +188,7 @@ export class example extends plugin {
           ]
         }
         else {
-          cmd = 'echo root | sudo -S systemctl start dragonAdventure.service'
+          cmd = 'sudo systemctl start dragonAdventure.service'
           if (shell.exec(cmd).code == 0) {
             msg = [
               `【${serverName}】\n`,
@@ -303,7 +303,7 @@ export class example extends plugin {
 
       if (arg == 'stop') {
         if (isActive) {
-          cmd = 'echo root | sudo -S systemctl stop frp.service'
+          cmd = 'sudo systemctl stop frp.service'
           if (shell.exec(cmd).code == 0) {
             msg = [
               `【${serverName}】\n`,
@@ -329,7 +329,7 @@ export class example extends plugin {
           ]
         }
         else {
-          cmd = 'echo root | sudo -S systemctl start frp.service'
+          cmd = 'sudo systemctl start frp.service'
           if (shell.exec(cmd).code == 0) {
             msg = [
               `【${serverName}】\n`,
