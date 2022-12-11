@@ -1,10 +1,10 @@
 import { segment } from 'oicq'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
+import { ChatGPTAPI } from 'chatgpt'
 
 import lodash from 'lodash'
 import moment from 'moment'
-import katex from 'katex'
 import fetch from "node-fetch"
 import axios from 'axios'
 
@@ -15,6 +15,7 @@ import kauChim_cards from './data/kauChim.js'
 import tarot_cards from './data/tarot.js'
 import Foods from './data/foods.js'
 import feiyangyangMSG from './data/feiyangyang.js'
+import chatgptSessionToken from './data/chatgptSessionToken.js'
 
 import screenshot from './utils/screenshot.js'
 
@@ -831,5 +832,44 @@ export class feiyangyang extends plugin {
         const Feiyangyang = feiyangyangMSG
         const result = lodash.sample(Feiyangyang)
         await this.reply(` 每日舔狗日志：\n${result}`, false, { at: true })
+    }
+}
+
+// ChatGpt
+export class chatgpt extends plugin {
+    constructor() {
+        super({
+            name: 'chatGpt',
+            dsc: 'chatgpt',
+            event: 'message',
+            priority: 5000,
+            rule: [
+                {
+                    reg: '^chatgpt(.*)$',
+                    fnc: 'chatgpt'
+                }
+            ]
+        })
+    }
+
+    async chatgpt(e) {
+        logger.info('[用户命令]', e.msg)
+        let msg
+        let sendMsg = e.msg.replace(/(chatgpt )|(chatgpt)/g, "")
+
+        const api = new ChatGPTAPI({
+            sessionToken: chatgptSessionToken
+        })
+
+        await api.ensureAuth()
+        let response = await api.sendMessage(sendMsg)
+
+        logger.info(response)
+        msg = [
+            '[+] Chatgpt：\n',
+            `${response}`
+        ]
+        this.reply(msg)
+        return
     }
 }
