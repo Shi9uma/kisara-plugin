@@ -1,6 +1,6 @@
 import lodash from 'lodash'
 import cfg from '../../../lib/config/config.js'
-import { Config } from '../data/chatgptToken.js'
+import { Config } from '../data/mychatgptToken.js'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 let puppeteer = {}
 

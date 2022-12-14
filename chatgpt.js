@@ -1,7 +1,7 @@
 import plugin from '../../lib/plugins/plugin.js'
 import { ChatGPTAPI, getOpenAIAuth } from 'chatgpt'
 import lodash from 'lodash'
-import { Config } from './data/chatgptToken.js'
+import { Config } from './data/mychatgptToken.js'
 import showdown from 'showdown'
 import mjAPI from 'mathjax-node'
 import puppeteer from './utils/browser.js'
