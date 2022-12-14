@@ -15,7 +15,6 @@ import kauChim_cards from './data/kauChim.js'
 import tarot_cards from './data/tarot.js'
 import Foods from './data/foods.js'
 import feiyangyangMSG from './data/feiyangyang.js'
-import chatgptSessionToken from './data/chatgptSessionToken.js'
 
 import screenshot from './utils/screenshot.js'
 
