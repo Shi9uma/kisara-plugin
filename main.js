@@ -1,5 +1,4 @@
 import { segment } from 'oicq'
-import { fileURLToPath } from 'url'
 
 import lodash from 'lodash'
 import moment from 'moment'
@@ -12,12 +11,12 @@ import kauChim_cards from './data/kauChim.js'
 import tarot_cards from './data/tarot.js'
 import Foods from './data/foods.js'
 
-const cd = 20    //所有命令的 cd
-
 var content = [
     '求签：鸣神大社抽签\n',
     '占卜：塔罗牌占卜\n',
     '今天吃什么：选择困难就试试这个\n',
+    '舔狗日志：来点舔狗日志\n',
+    '诗词：古诗词句子，「--theme 指定主题1 - 4」\n',
     '骰子：「r + 数字」\n',
     '识图：「识图 + 图片」\n',
     '点歌：「点歌 + 歌曲名，--singer 指定歌手」\n'
@@ -512,7 +511,7 @@ export class pixivsoutu extends plugin {
                 ]
             }
 
-            e.reply(msg);
+            this.reply(msg, true, {at: false});
         } catch (err) {
             console.log(err);
             let msg = [
