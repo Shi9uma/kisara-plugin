@@ -1,7 +1,5 @@
 import { segment } from 'oicq'
 import { fileURLToPath } from 'url'
-import { dirname } from 'path'
-import { ChatGPTAPI } from 'chatgpt'
 
 import lodash from 'lodash'
 import moment from 'moment'
@@ -9,27 +7,17 @@ import fetch from "node-fetch"
 import axios from 'axios'
 
 import plugin from '../../lib/plugins/plugin.js'
-import puppeteer from '../../lib/puppeteer/puppeteer.js'
 
 import kauChim_cards from './data/kauChim.js'
 import tarot_cards from './data/tarot.js'
 import Foods from './data/foods.js'
-import feiyangyangMSG from './data/feiyangyang.js'
-
-import screenshot from './utils/screenshot.js'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
 
 const cd = 20    //所有命令的 cd
 
 var content = [
     '求签：鸣神大社抽签\n',
     '占卜：塔罗牌占卜\n',
-    '观音灵签：这是你的第三次求签机会\n',
-    '二次元的我：生成一个二次元形象\n',
     '今天吃什么：选择困难就试试这个\n',
-    '舔狗日志：来点舔狗日志\n',
     '骰子：「r + 数字」\n',
     '识图：「识图 + 图片」\n',
     '点歌：「点歌 + 歌曲名，--singer 指定歌手」\n'
@@ -184,162 +172,6 @@ export class tarot extends plugin {
         let path = './plugins/diy/data/tarot_resource'
         let pic = segment.image(`file://${path}/${card.type}/${card.pic}`)
         await this.reply(pic)
-    }
-}
-
-// 观音灵签
-export class GoddessofMercy extends plugin {
-    constructor() {
-        super({
-            name: '观音灵签',
-            dsc: '求一签',
-            event: 'message',
-            priority: 5000,
-            rule: [
-                {
-                    reg: '^观音灵签$',
-                    fnc: 'GoddessofMercy'
-                }
-            ]
-        })
-    }
-
-    async GoddessofMercy(e) {
-
-        let data = await redis.get(`Yunzai:setlinshimsg:${e.user_id}_qiuqian`);
-        if (data) {
-            console.log(data)
-            data = JSON.parse(data)
-            if (cd) {
-                if (data.num != 0) {
-                    e.reply([segment.at(e.user_id), " 观音灵签有" + cd + "分钟CD"]);
-                    return true;
-                }
-            }
-        }
-
-        // let url = `http://ovooa.com/API/Ser/api?name=${e.sender.card}『${lodash.random(0, 100)}』&type=json`;
-        let url = `http://ovooa.com/API/chouq/api.php`;
-        let response = await fetch(url);
-        let res = await response.json();
-        console.log(res);
-
-        if (res.code != 1) {
-            e.reply("出错了哦~");
-            return true
-        }
-
-        let msg = [
-            //@用户
-            segment.at(e.user_id),
-            "\n第", segment.text(res.data.format), "签：", segment.text(res.data.draw), "\n",
-            segment.image(res.data.image),
-            "【解日】：", segment.text(res.data.explain), "\n",
-            "【仙机】：", segment.text(res.data.details), "\n",
-            "【签语】：", segment.text(res.data.annotate), "\n",
-            "【起源】：", segment.text(res.data.source),
-        ];
-
-        e.reply(msg);
-
-        redis.set(`Yunzai:setlinshimsg:${e.user_id}_qiuqian`, `{"num":1,"booltime":${cd}}`, { //写入缓存值
-            EX: parseInt(60 * cd)
-        });
-        return true; //返回true 阻挡消息不再往下
-    }
-}
-
-// 二次元的我
-export class nijigan extends plugin {
-    constructor() {
-        super({
-            name: '二次元的我',
-            dsc: '生成二次元形象',
-            event: 'message',
-            priority: 5000,
-            rule: [
-                {
-                    reg: '^二次元的我$',
-                    fnc: 'nijigan'
-                }
-            ]
-        })
-    }
-
-    async nijigan(e) {
-
-        let data = await redis.get(`Yunzai:setlinshimsg:${e.user_id}_nijigan`);
-
-        if (data) {
-            // console.log(data)
-            data = JSON.parse(data)
-            if (cd) {
-                if (data.num != 0) {
-                    e.reply([segment.at(e.user_id), " 下一次查看二次元的你还有" + cd + "分钟CD"]);
-                    return true;
-                }
-            }
-        }
-
-        // 先尝试从数据库获取记录======================================
-        // 当前日期，格式化为 DD
-        let date = moment(new Date()).format('DD')
-        // 获取数据库中的记录
-        let nijigandata = await JSON.parse(await redis.get(`Yunzai:setlinshimsg:nijigandata_${e.user_id}`));
-        // console.log("redis获取到的data:",nijigandata)
-        // 如果获取到记录，且记录中的日期等于当前日期，则直接发送记录中的数据
-        if (nijigandata && nijigandata.date == date) {
-            e.reply(nijigandata.dsc)
-        }
-        // 如果没有记录或者记录中的日期不是今天的日期，则调用接口获取并存入记录
-        else {
-            let url = `http://ovooa.com/API/Ser/api?name=${e.sender.card}『${lodash.random(0, 100)}』&type=json`;
-            let response = await fetch(url);
-            let res = await response.json();
-
-            if (res.code == -1) {
-                e.reply("参数错误！");
-                return true
-            }
-
-            res.text = res.text.replace(/『(.+?)』/g, "");
-
-            let url2 = `http://ovooa.com/API/name/api.php?msg=${e.sender.card}『${lodash.random(0, 100)}』&type=json`;
-            let response2 = await fetch(url2);
-            let res2 = await response2.json();
-
-            res2.text = res2.text.replace(/『(.+?)』/g, "")
-            res2.text = res2.text.replace("泡在福尔马林里面的内脏", "沾着晨露的小黄花").trim();
-            res2.text = res2.text.replace(/“|”/g, "").trim();
-
-            if (res2.code == -1) {
-                e.reply("参数错误！");
-                return true
-            }
-
-            let msg = [
-                segment.at(e.user_id), '\n',    // @用户
-                segment.image(`https://q1.qlogo.cn/g?b=qq&s=0&nk=${e.user_id}`),    //头像
-                segment.text(res.text), '\n',  //用户的二次元属性
-                segment.text(res2.text) // 成分
-            ];
-
-            e.reply(msg);
-            // 将接口处获取到的记录存入redis数据库 
-            let nijigandata = {
-                date: moment(new Date()).format('DD'),
-                dsc: msg
-            }
-
-            redis.set(`Yunzai:setlinshimsg:nijigandata_${e.user_id}`, JSON.stringify(nijigandata), { //写入缓存值
-                EX: parseInt(2 * 24 * 60 * 60)
-            });
-
-        }
-        redis.set(`Yunzai:setlinshimsg:${e.user_id}_nijigan`, `{"num":1,"booltime":${cd}}`, { //写入缓存值
-            EX: parseInt(60 * cd)
-        });
-        return true; //返回true 阻挡消息不再往下
     }
 }
 
@@ -684,8 +516,8 @@ export class pixivsoutu extends plugin {
         } catch (err) {
             console.log(err);
             let msg = [
-                "插件加载出错，\n",
-                "请反馈给插件维护者哦"
+                "插件加载出错，",
+                "请向维护人员反馈"
             ]
             e.reply(msg);
         }
@@ -781,94 +613,3 @@ export class shareMusic extends plugin {
     }
 }
 
-// 舔狗日记
-export class feiyangyang extends plugin {
-    constructor() {
-        super({
-            name: '舔狗',
-            dsc: '舔狗日志',
-            event: 'message',
-            priority: 5000,
-            rule: [
-                {
-                    reg: "^舔狗日志$",
-                    fnc: 'feiyangyang'
-                }
-            ]
-        })
-    }
-
-    get key() {
-        /** 群，私聊分开 */
-        if (this.e.isGroup) {
-            return `${this.prefix}${this.e.group_id}:${this.e.user_id}`
-        } else {
-            return `${this.prefix}private:${this.e.user_id}`
-        }
-    }
-
-    get time() {
-        return moment().format('X')
-    }
-
-    async checkUser() {
-        const feiyangyang_key = this.e.logFnc + this.e.user_id
-        const expireTime = await redis.get(feiyangyang_key)
-        if (expireTime && this.time <= expireTime) {
-            return false
-        }
-        const newExpireTime = moment().endOf('day').format('X')
-        await redis.setEx(feiyangyang_key, 3600 * 24, newExpireTime)
-        return true
-    }
-
-    async feiyangyang() {
-        let valid = await this.checkUser()
-        if (!valid) {
-            this.reply('今日已经为你发过舔狗日志了噢')
-            return
-        }
-        const Feiyangyang = feiyangyangMSG
-        const result = lodash.sample(Feiyangyang)
-        await this.reply(` 每日舔狗日志：\n${result}`, false, { at: true })
-    }
-}
-
-// ChatGpt
-export class chatgpt extends plugin {
-    constructor() {
-        super({
-            name: 'chatGpt',
-            dsc: 'chatgpt',
-            event: 'message',
-            priority: 5000,
-            rule: [
-                {
-                    reg: '^chatgpt(.*)$',
-                    fnc: 'chatgpt'
-                }
-            ]
-        })
-    }
-
-    async chatgpt(e) {
-        logger.info('[用户命令]', e.msg)
-        let msg
-        let sendMsg = e.msg.replace(/(chatgpt )|(chatgpt)/g, "")
-
-        const api = new ChatGPTAPI({
-            sessionToken: chatgptSessionToken
-        })
-
-        await api.ensureAuth()
-        let response = await api.sendMessage(sendMsg)
-
-        logger.info(response)
-        msg = [
-            '[+] Chatgpt：\n',
-            `${response}`
-        ]
-        this.reply(msg)
-        return
-    }
-}
