@@ -65,7 +65,7 @@ export class tiangou extends plugin {
     async tiangou() {
         let valid = await this.checkUser()
         if (!valid) {
-            this.reply(`你的诗词美句 cd 在冷却中(${cd}小时)`)
+            this.reply(`你的舔狗日记 cd 在冷却中(${cd}小时)`)
             return
         }
         let apiUrl = 'https://apis.tianapi.com/tiangou/index?key=' + apis.tiangou
@@ -80,6 +80,7 @@ export class tiangou extends plugin {
     }
 }
 
+// 诗词美句
 export class moodpoetry extends plugin {
     constructor() {
         super({
