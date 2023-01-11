@@ -276,7 +276,6 @@ export class dice extends plugin {
 
 // 识图
 export class pixivsoutu extends plugin {
-    soutuUser = {}
     constructor() {
         super({
             name: '识图',  // 功能名称
@@ -291,48 +290,13 @@ export class pixivsoutu extends plugin {
             ]
 
         })
-        this.soutuUser = {}
     }
 
     //searchPic为分离发送图片和计时的代码块
     async searchPic(e) {
-
-        if (e.hasReply) {
-            let reply = (await e.group.getChatHistory(e.source.seq, 1)).pop()?.message;
-            if (reply) {
-                for (let val of reply) {
-                    if (val.type == "image") {
-                        e.img = [val.url];
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (!e.img) {
-            // if (this.soutuUser[e.user_id]) {
-            //   clearTimeout(this.soutuUser[e.user_id]);
-            // }
-            // this.soutuUser[e.user_id] = setTimeout(() => {
-            //   if (this.soutuUser[e.user_id]) {
-            //     delete this.soutuUser[e.user_id];
-            //     e.reply([segment.at(e.user_id), " 搜图已取消"]);
-            //   }
-            // }, 50000);
-            e.reply([segment.at(e.user_id), " 用法：识图 + 图片"]);
-            return false;
-        }
-
-        this.soutuUser[e.user_id] = true;
-        return this.soutu(e);
-    }
-
-    async soutu(e) {
         try {
-            if (!this.soutuUser[e.user_id]) return;
-
-            if (!e.img) {
-                this.cancel(e);
+            if (e.img == null) {
+                e.reply('用法：识图 + 图片', true);
                 return true;
             }
             let api_key = '03e3b0ab00ce023e627a02f7e8654866eda87574';//api_key只要填进这里
@@ -350,23 +314,12 @@ export class pixivsoutu extends plugin {
                 e.reply(msg);
                 return false;
             }*/
+
             //api_key验证
             if (api_key == '') {
-                let msg = [
-                    "请自行去saucenao.com注册账号并获取api_key！"
-                ]
-                e.reply(msg);
+                e.reply('请自行去 saucenao.com 注册账号并获取 api_key！');
                 return false;
             }
-
-            /*
-            if (e.img == null) {
-                let msg = [
-                    segment.at(e.user_id), '\n',
-                    "请在同一条消息内发送搜图和图片。"]
-                e.reply(msg);
-                return false;
-            }*/
 
             let imgURL = e.img[0];
             let url;
@@ -384,9 +337,11 @@ export class pixivsoutu extends plugin {
                 }
             })
 
+            if(response.status != '200'){
+                e.reply(`识图 api 无反应, 请重试, 状态码：${response.status}`, true)
+                return
+            }
             const res = response.data;
-            const short_remaining = res.header.short_remaining;//30s内剩余搜图次数
-            const long_remaining = res.header.long_remaining;//一天内剩余搜图次数
 
             let penable = false;
             let jp = false;
@@ -424,7 +379,6 @@ export class pixivsoutu extends plugin {
             if (res.results[k].header.similarity <= 70) { k = 0; }
 
             let msg;
-
             if (penable) {
                 //p中danbooru源
                 let pdanb = false;
@@ -435,7 +389,32 @@ export class pixivsoutu extends plugin {
                     }
                 }
                 if (pdanb) {
-                    msg = [segment.at(e.user_id), '\n',
+                    msg = [
+                        "相似度：" + res.results[k].header.similarity + "%\n",
+                        "danbooru_id：" + (res.results[k].data.danbooru_id ? res.results[k].data.danbooru_id : ''), '\n',
+                        "gelbooru_id：" + (res.results[k].data.gelbooru_id ? res.results[k].data.gelbooru_id : ''), '\n',
+                        "creator：" + (res.results[k].data.creator ? res.results[k].data.creator : ''), '\n',
+                        "material：" + (res.results[k].data.material ? res.results[k].data.material : ''), '\n',
+                        "characters：" + (res.results[k].data.characters ? res.results[k].data.characters : ''), '\n',
+                        "来源：" + (res.results[k].data.source ? res.results[k].data.source : ''), '\n',
+                        "链接：" + res.results[k].data.ext_urls[0], '\n',
+                        segment.image(res.results[k].header.thumbnail), '\n',
+                    ]
+                }
+                //p站源
+                else {
+                    msg = [
+                        "相似度：" + res.results[k].header.similarity + "%\n",
+                        "标题：" + (res.results[k].data.title ? res.results[k].data.title : ''), '\n',
+                        "P站ID：" + (res.results[k].data.pixiv_id ? res.results[k].data.pixiv_id : ''), '\n',
+                        "画师：" + (res.results[k].data.member_name ? res.results[k].data.member_name : ''), '\n',
+                        "来源：" + res.results[k].data.ext_urls[0], '\n',
+                        segment.image(res.results[k].header.thumbnail), '\n',
+                    ];
+                }
+            }
+            else if (danb) {
+                msg = [
                     "相似度：" + res.results[k].header.similarity + "%\n",
                     "danbooru_id：" + (res.results[k].data.danbooru_id ? res.results[k].data.danbooru_id : ''), '\n',
                     "gelbooru_id：" + (res.results[k].data.gelbooru_id ? res.results[k].data.gelbooru_id : ''), '\n',
@@ -445,59 +424,25 @@ export class pixivsoutu extends plugin {
                     "来源：" + (res.results[k].data.source ? res.results[k].data.source : ''), '\n',
                     "链接：" + res.results[k].data.ext_urls[0], '\n',
                     segment.image(res.results[k].header.thumbnail), '\n',
-                        // "一天内还可搜索" + long_remaining + "次"
-                    ]
-                }
-                //p站源
-                else {
-                    msg = [segment.at(e.user_id), '\n',
-                    "相似度：" + res.results[k].header.similarity + "%\n",
-                    "标题：" + (res.results[k].data.title ? res.results[k].data.title : ''), '\n',
-                    "P站ID：" + (res.results[k].data.pixiv_id ? res.results[k].data.pixiv_id : ''), '\n',
-                    "画师：" + (res.results[k].data.member_name ? res.results[k].data.member_name : ''), '\n',
-                    "来源：" + res.results[k].data.ext_urls[0], '\n',
-                    segment.image(res.results[k].header.thumbnail), '\n',
-                        // "一天内还可搜索" + long_remaining + "次"
-                    ];
-                }
-            }
-            else if (danb) {
-                msg = [segment.at(e.user_id), '\n',
-                "相似度：" + res.results[k].header.similarity + "%\n",
-                "danbooru_id：" + (res.results[k].data.danbooru_id ? res.results[k].data.danbooru_id : ''), '\n',
-                "gelbooru_id：" + (res.results[k].data.gelbooru_id ? res.results[k].data.gelbooru_id : ''), '\n',
-                "creator：" + (res.results[k].data.creator ? res.results[k].data.creator : ''), '\n',
-                "material：" + (res.results[k].data.material ? res.results[k].data.material : ''), '\n',
-                "characters：" + (res.results[k].data.characters ? res.results[k].data.characters : ''), '\n',
-                "来源：" + (res.results[k].data.source ? res.results[k].data.source : ''), '\n',
-                "链接：" + res.results[k].data.ext_urls[0], '\n',
-                segment.image(res.results[k].header.thumbnail), '\n',
-                    // "一天内还可搜索" + long_remaining + "次"
                 ]
             }
-
             else if (pother) {
                 msg = msg = [
-                    segment.at(e.user_id), '\n',
                     "相似度：" + res.results[k].header.similarity + "%\n",
                     "标题：" + (res.results[k].data.title ? res.results[k].data.title : ''), '\n',
                     "service：" + (res.results[k].data.service ? res.results[k].data.service : ''), '\n',
                     "画师ID：" + (res.results[k].data.user_id ? res.results[k].data.user_id : ''), '\n',
                     "来源：" + res.results[k].data.ext_urls[0], '\n',
                     segment.image(res.results[k].header.thumbnail), '\n',
-                    // "一天内还可搜索" + long_remaining + "次"
                 ];
             }
-
             else if (jp) {
                 msg = [
-                    segment.at(e.user_id), '\n',
                     "相似度：" + res.results[k].header.similarity + "%\n",
                     "画师：" + (res.results[k].data.creator ? res.results[k].data.creator : ''), '\n',
                     "来源：" + (res.results[k].data.source ? res.results[k].data.source : ''), '\n',
                     "日文名：" + (res.results[k].data.jp_name ? res.results[k].data.jp_name : ''), '\n',
                     segment.image(res.results[k].header.thumbnail), '\n',
-                    // "一天内还可搜索" + long_remaining + "次"
                 ]
             }
             else {
@@ -511,25 +456,13 @@ export class pixivsoutu extends plugin {
                 ]
             }
 
-            this.reply(msg, true, {at: false});
-        } catch (err) {
+            e.reply(msg, true);
+        }
+        catch (err) {
             console.log(err);
-            let msg = [
-                "插件加载出错，",
-                "请向维护人员反馈"
-            ]
-            e.reply(msg);
+            e.reply('插件加载出错 请向维护人员反馈', true);
         }
-        this.cancel(e)
-        return true;//返回true 阻挡消息不再往下
-    }
-
-    //取消搜图
-    cancel(e) {
-        if (this.soutuUser[e.user_id]) {
-            clearTimeout(this.soutuUser[e.user_id]);
-            delete this.soutuUser[e.user_id];
-        }
+        return true;
     }
 }
 

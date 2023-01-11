@@ -77,6 +77,7 @@ export class tiangou extends plugin {
             return
         }
         await this.reply(`[+] 舔狗日志：\n${result.content}`, true)
+        return
     }
 }
 
@@ -97,36 +98,7 @@ export class moodpoetry extends plugin {
         })
     }
 
-    get key() {
-        /** 群，私聊分开 */
-        if (this.e.isGroup) {
-            return `${this.prefix}${this.e.group_id}:${this.e.user_id}`
-        } else {
-            return `${this.prefix}private:${this.e.user_id}`
-        }
-    }
-
-    get time() {
-        return moment().format('X')
-    }
-
-    async checkUser() {
-        const tiangou_key = this.e.logFnc + this.e.user_id
-        const expireTime = await redis.get(tiangou_key)
-        if (expireTime && this.time <= expireTime) {
-            return false
-        }
-        const newExpireTime = moment().endOf('day').format('X')
-        await redis.setEx(tiangou_key, 3600 * cd, newExpireTime)
-        return true
-    }
-
     async moodpoetry(e) {
-        let valid = await this.checkUser()
-        if (!valid) {
-            this.reply(`你的诗词美句 cd 在冷却中(${cd}小时)`)
-            return
-        }
         let theme = {
             1: '离别',
             2: '人生',
@@ -164,5 +136,6 @@ export class moodpoetry extends plugin {
             `「${result.content}」\n`,
         ]
         await this.reply(msgReply, true)
+        return
     }
 }
