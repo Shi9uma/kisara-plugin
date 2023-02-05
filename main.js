@@ -335,12 +335,15 @@ export class pixivsoutu extends plugin {
                     output_type: 2,
                     numres: 3
                 }
+            }).catch((error) => {
+                if (error.response) {
+                    e.reply(`识图 api 无反应, 请重试, 状态码：${error.response}`, true);
+                    logger.info(response);
+                    return;
+                }
             })
+            // logger.info(response);
 
-            if(response.status != '200'){
-                e.reply(`识图 api 无反应, 请重试, 状态码：${response.status}`, true)
-                return
-            }
             const res = response.data;
 
             let penable = false;
@@ -459,8 +462,8 @@ export class pixivsoutu extends plugin {
             e.reply(msg, true);
         }
         catch (err) {
-            console.log(err);
-            e.reply('插件加载出错 请向维护人员反馈', true);
+            logger.info(response);
+            // e.reply('插件加载出错 请向维护人员反馈', true);
         }
         return true;
     }
