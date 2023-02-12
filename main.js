@@ -548,3 +548,29 @@ export class shareMusic extends plugin {
     }
 }
 
+// 抽卡期望计算
+export class gachaSupport extends plugin {
+    constructor() {
+        super(
+            {
+                name: 'gachaSupport',
+                dsc: '根据输入数据计算抽卡期望',
+                event: 'message',
+                priority: 5000,
+                rule: [
+                    {
+                        reg: '^#?计算抽卡期望(.*)$',
+                        fnc: 'gachaSupport'
+                    }
+                ]
+            }
+        );
+    }
+
+    async gachaSupport(e) {
+        
+        logger.info('[用户命令]', e.msg)
+        let msg
+        let arg
+    }
+}
