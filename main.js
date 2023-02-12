@@ -342,7 +342,8 @@ export class pixivsoutu extends plugin {
                     return;
                 }
             })
-            // logger.info(response);
+
+            logger.info(response)
 
             const res = response.data;
 
@@ -462,7 +463,7 @@ export class pixivsoutu extends plugin {
             e.reply(msg, true);
         }
         catch (err) {
-            logger.info(response);
+            logger.info(err);
             // e.reply('插件加载出错 请向维护人员反馈', true);
         }
         return true;
