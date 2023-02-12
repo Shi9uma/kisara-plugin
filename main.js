@@ -336,8 +336,8 @@ export class pixivsoutu extends plugin {
                     numres: 3
                 }
             }).catch((error) => {
-                if (error.response) {
-                    e.reply(`识图 api 无反应, 请重试, 状态码：${error.response}`, true);
+                if (error) {
+                    e.reply(`识图 api 无反应, 请重试, 状态：${error}`, true);
                     logger.info(response);
                     return;
                 }
