@@ -273,8 +273,6 @@ export class dice extends plugin {
     }
 }
 
-
-
 // 点歌
 export class shareMusic extends plugin {
     constructor() {
