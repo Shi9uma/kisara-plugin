@@ -9,3 +9,4 @@
 3. 机器人一键开关
 4. 图片人物 api 识别, [链接](https://gitee.com/shuciqianye/yunzai-AnimeTrace)
 5. 番剧识别
+6. 计算抽卡期望, [链接](https://github.com/MSIsunny/GenshinWishCalculator-py/blob/main/WishSupport.py)
