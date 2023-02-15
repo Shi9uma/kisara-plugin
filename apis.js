@@ -318,7 +318,7 @@ export class ghser extends plugin {
                 priority: 5000,
                 rule: [
                     {
-                        reg: '^来张壁纸$',
+                        reg: '^(来张壁纸|随机壁纸|壁纸)$',
                         fnc: 'ghser'
                     }
                 ]
