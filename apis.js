@@ -27,8 +27,8 @@ const tags = {
     pixiv_id: 'pixiv id',
     member_name: 'pixiv 作者名',
     member_id: 'pixiv 作者 id',
-    danbooru_id: 'danbooru id',
-    gelbooru_id: 'gelbooru id',
+    danbooru_id: 'danbooru 索引id',
+    gelbooru_id: 'gelbooru 索引id',
     creator: '作者',
     material: '主题',
     characters: '角色',
@@ -225,8 +225,6 @@ export class saucenao extends plugin {
             })
         }
 
-        logger.info(forwardMsg)
-
         /** 制作转发内容 */
         if (this.e.isGroup) {
             forwardMsg = await this.e.group.makeForwardMsg(forwardMsg)
@@ -307,4 +305,72 @@ export class saucenao extends plugin {
             return
         }
     }
+}
+
+// ghser 随机图片
+export class ghser extends plugin {
+    constructor() {
+        super(
+            {
+                name: '随机壁纸',
+                dsc: '利用 ghser.com 的接口返回随机壁纸',
+                event: 'message',
+                priority: 5000,
+                rule: [
+                    {
+                        reg: '^来张壁纸$',
+                        fnc: 'ghser'
+                    }
+                ]
+            }
+        )
+    }
+
+    get key() {
+        /** 群，私聊分开 */
+        if (this.e.isGroup) {
+            return `${this.prefix}${this.e.group_id}:${this.e.user_id}`
+        } else {
+            return `${this.prefix}private:${this.e.user_id}`
+        }
+    }
+
+    get time() {
+        return moment().format('X')
+    }
+
+    async checkUser() {
+        const ghser_key = this.e.logFnc + this.e.user_id
+        const expireTime = await redis.get(ghser_key)
+        if (expireTime && this.time <= expireTime) {
+            return false
+        }
+        const newExpireTime = moment().endOf('day').format('X')
+        await redis.setEx(ghser_key, 3600 * cd, newExpireTime)
+        return true
+    }
+
+    async ghser() {
+        if (!this.e.isMaster) {
+            let isValid = await this.checkUser()
+            if (!isValid) {
+                this.e.reply('cd 冷却中', false, { at: true })
+                return
+            }
+        }
+        let apiUrl
+        if (lodash.random(0, 10) % 2 == 0) {
+            apiUrl = 'https://api.ghser.com/random/pe.php'
+        } else {
+            apiUrl = 'https://api.ghser.com/random/pc.php'
+        }
+        let response = await fetch(apiUrl).catch((err) => logger.error(err))
+        let msg = [
+            ` cd 剩余 ${cd} 小时` + '\n',
+            segment.image(response.url)
+        ]
+        await this.e.reply(msg, false, { at: true })
+        return
+    }
+
 }
