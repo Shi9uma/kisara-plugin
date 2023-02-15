@@ -45,6 +45,63 @@ export class Help extends plugin {
     }
 }
 
+export class recall extends plugin {
+    constructor() {
+        super(
+            {
+                name: 'recall',
+                dsc: '撤回 bot 的消息',
+                event: 'message',
+                priority: '100',
+                rule: [
+                    {
+                        reg: '^(recall|撤回|撤)$',
+                        fnc: 'recall'
+                    }
+                ]
+            }
+        )
+    }
+
+    async recall() {
+
+        if (!((this.e.message[0].qq == Bot.uin) || (this.e.to_id == Bot.uin)))
+            return
+
+        if (!this.e.source) {
+            await this.e.reply('请引用要撤回的消息', true, { recallMsg: 10 })
+            return
+        }
+
+        if (this.e.isGroup) {
+            if (!(this.e.group.is_admin || this.e.group.is_owner || this.e.isMaster)) {
+                await this.e.reply('只接受管理员的撤回指令', true, { recallMsg: 10 })
+                return
+            }
+        }
+
+        if (this.e.source.user_id != Bot.uin) {
+            await this.e.reply('无法撤回非本数字生命发的消息', true, { recallMsg: 10 })
+            return
+        }
+
+        let isRecall
+        let targetMsg
+        if (this.e.isGroup) {
+            targetMsg = (await this.e.group.getChatHistory(this.e.source.seq, 1)).pop()?.message_id
+            isRecall = await this.e.group.recallMsg(targetMsg)
+        } else {
+            targetMsg = (await this.e.friend.getChatHistory(this.e.source.time, 1)).pop()?.message_id
+            isRecall = await this.e.friend.recallMsg(targetMsg)
+            logger.info(isRecall)
+        }
+
+        if (!isRecall)
+            await this.e.reply('已超过消息撤回时限, 撤回失败', false, { recallMsg: 10} )
+        return
+    }
+}
+
 // 求签
 export class kauChim extends plugin {
     constructor() {
@@ -371,7 +428,7 @@ export class gachaSupport extends plugin {
     }
 
     async gachaSupport(e) {
-        
+
         logger.info('[用户命令]', e.msg)
         let msg
         let arg

@@ -156,14 +156,13 @@ export class saucenao extends plugin {
                 '您也可以通过这个链接来自行查找.\n',
                 `${saucenaoUrl + '?url=' + imgUrl}`
             ]
-            this.e.reply(msg, true, { recallMsg: 90 })
+            await this.e.reply(msg, true)
             return
         }
 
         let forwardMsg = []
         let forwardMsgArr = []
         for (let obj2 of isSelectArr) {
-            logger.info(obj2[0])
             forwardMsg = [
                 `[+] 识图结果 ${isSelectArr.indexOf(obj2) + 1}` + '\n'
             ]
@@ -185,8 +184,8 @@ export class saucenao extends plugin {
             forwardMsgArr.push(forwardMsg)
         }
 
-        await this.e.reply(await this.makeForwardMsg(`识图结果\n源链接: ${saucenaoUrl + '?url=' + imgUrl}`, forwardMsgArr, `已列出所有相似度高于 ${similarityRate}% 的 ${numres} 条有效结果`), true, { recallMsg : 120})
-        await this.e.reply('识图结果已发送完毕, 如果没有消息记录, 则表示识图内容被风控', true)
+        await this.e.reply(await this.makeForwardMsg(`识图结果\n源链接: ${saucenaoUrl + '?url=' + imgUrl}`, forwardMsgArr, `已列出所有相似度高于 ${similarityRate}% 的 ${numres} 条有效结果`), true)
+        await this.e.reply('识图结果已发送完毕, 如果没有消息记录, 则表示识图内容被风控', true, { recallMsg: 60 })
         return
     }
 
