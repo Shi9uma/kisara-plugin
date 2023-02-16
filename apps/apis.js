@@ -5,8 +5,8 @@ import moment from 'moment'
 import fetch from "node-fetch"
 import axios from 'axios'
 
-import plugin from '../../lib/plugins/plugin.js'
-import Apis from './data/apitoken.js'
+import plugin from '../../../lib/plugins/plugin.js'
+import Apis from '../data/apitoken.js'
 
 
 const cd = 2    //所有命令的 cd，单位 小时

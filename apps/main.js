@@ -4,16 +4,14 @@ import lodash from 'lodash'
 import moment from 'moment'
 import fetch from "node-fetch"
 
-import plugin from '../../lib/plugins/plugin.js'
+import plugin from '../../../lib/plugins/plugin.js'
 
-import kauChim_cards from './data/kauChim.js'
-import tarot_cards from './data/tarot.js'
-import Foods from './data/foods.js'
+import tarot_cards from '../data/tarot.js'
+import Foods from '../data/foods.js'
 
-var content = [
-    '求签: 鸣神大社抽签\n',
+const content = [
     '占卜: 塔罗牌占卜\n',
-    '今天吃什么: 选择困难就试试这个\n',
+    '今天吃什么: 选择困难\n',
     '舔狗日志: 来点舔狗日志\n',
     '随机壁纸: 随机获得壁纸\n',
     '骰子: 「r + 数字」\n',
@@ -100,65 +98,6 @@ export class recall extends plugin {
         if (!isRecall)
             await this.e.reply('已超过消息撤回时限, 撤回失败', false, { recallMsg: 10} )
         return
-    }
-}
-
-// 求签
-export class kauChim extends plugin {
-    constructor() {
-        super({
-            name: 'kauChim',
-            dsc: '求签',
-            event: 'message',
-            priority: 5000,
-            rule: [
-                {
-                    reg: '^#?(抽签|求签|御神签)(\\s|$)',
-                    fnc: 'kauChim'
-                }
-            ]
-        })
-        this.prefix = 'L:other:kauChim:'
-    }
-
-    get key() {
-        /** 群，私聊分开 */
-        if (this.e.isGroup) {
-            return `${this.prefix}${this.e.group_id}:${this.e.user_id}`
-        } else {
-            return `${this.prefix}private:${this.e.user_id}`
-        }
-    }
-
-    get time() {
-        return moment().format('X')
-    }
-
-    async checkUser() {
-        const expireTime = await redis.get(this.key)
-        if (expireTime && this.time <= expireTime) {
-            return false
-        }
-        const newExpireTime = moment().endOf('day').format('X')
-        await redis.setEx(this.key, 3600 * 24, newExpireTime)
-        return true
-    }
-
-    async kauChim() {
-        const card = lodash.sample(kauChim_cards)
-        const valid = await this.checkUser()
-        if (!valid) {
-            this.reply('（今天已经抽过了，明天再来看看吧…）')
-            return
-        }
-        let msg = `${card?.name}\n${card?.dsc}`
-        if (this.e.isGroup) {
-            msg = '\n' + msg
-        }
-        await this.reply(msg, false, { at: true })
-        if (card?.item) {
-            this.reply(card?.item)
-        }
     }
 }
 

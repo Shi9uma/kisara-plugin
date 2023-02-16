@@ -1,7 +1,7 @@
 import { segment } from 'oicq'
 
 import fetch from "node-fetch"
-import tools from './utils/tools.js'
+import tools from '../utils/tools.js'
 import plugin from '../../lib/plugins/plugin.js'
 
 export class todayNews extends plugin {
