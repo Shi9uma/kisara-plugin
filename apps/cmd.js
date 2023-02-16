@@ -1,7 +1,7 @@
 import shell from 'shelljs'
 import plugin from '../../../lib/plugins/plugin.js'
 
-export class example extends plugin {
+export class cmd extends plugin {
   constructor() {
     super({
       name: 'cmd',

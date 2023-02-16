@@ -3,14 +3,10 @@ import fs from 'node:fs'
 const files = fs.readdirSync('./plugins/diy/apps').filter(file => file.endsWith('.js'))
 
 let ret = []
-
 files.forEach((file) => {
   ret.push(import(`./apps/${file}`))
 })
-logger.info(ret)
-
 ret = await Promise.allSettled(ret)
-logger.info(ret)
 
 let apps = {}
 for (let i in files) {
@@ -21,8 +17,9 @@ for (let i in files) {
     logger.error(ret[i].reason)
     continue
   }
-  // apps[name] = ret[i].value[Object.keys(ret[i].value)[0]]
-  apps[name] = ret[i].value[Object.keys(ret[i].value)]
+
+  for (let j in ret[i].value) {
+    apps[j] = ret[i].value[j]
+  }
 }
-logger.info(apps)
 export { apps }
