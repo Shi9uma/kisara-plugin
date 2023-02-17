@@ -12,4 +12,4 @@
 6. 计算抽卡期望, [链接](https://github.com/MSIsunny/GenshinWishCalculator-py/blob/main/WishSupport.py)
 7. ~~随机图片~~, [链接](https://gitee.com/ying_Sailor_uniform/wallpaperjs/blob/master/wallpaper.js)
 8. b 站 up 开播, 动态推送, [链接](https://github.com/HeadmasterTan/zhi-plugin.git)
-9. 原神角色参考面板，[插件](https://github.com/howe0116/howe-plugin)，[nga 资源](https://bbs.nga.cn/read.php?tid=25843014&rand=967)
+9. 原神角色参考面板，[插件](https://github.com/howe0116/howe-plugin)，[nga 资源](https://bbs.nga.cn/read.php?tid=25843014&rand=967)q
