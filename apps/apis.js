@@ -25,7 +25,7 @@ const tags = {
     title: '标题',
     pixiv_id: 'pixiv id',
     member_name: 'pixiv 作者名',
-    member_id: 'pixiv 作者 id',
+    member_id: 'pixiv 作者id',
     danbooru_id: 'danbooru 索引id',
     gelbooru_id: 'gelbooru 索引id',
     creator: '作者',
@@ -44,7 +44,7 @@ export class tiangou extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: "^舔狗日志$",
+                    reg: "^(舔狗日志|舔狗|天狗|沸羊羊)$",
                     fnc: 'tiangou'
                 }
             ]

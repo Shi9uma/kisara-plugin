@@ -44,6 +44,7 @@ export class Help extends plugin {
     }
 }
 
+// 撤回 bot 的消息
 export class recall extends plugin {
     constructor() {
         super(
