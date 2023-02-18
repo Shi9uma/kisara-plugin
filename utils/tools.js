@@ -25,10 +25,7 @@ class tools {
         /** 默认设置 */
         this.defaultPath = './default'
         this.defaultConfig = {}
-
     }
-
-    // diy
 
     /**
      * 监听配置文件的修改
@@ -50,7 +47,6 @@ class tools {
                 this[`change_${app}${name}`]()
             }
         })
-
         this.watcher[type][flag] = watcher
     }
 
@@ -159,7 +155,6 @@ class tools {
 
     /**
      * 获取配置文件列表
-     * @returns 
      */
     getDefaultConfigFileList() {
         if (!this.isFileValid(`${defaultDir}/index.config.yaml`)) {

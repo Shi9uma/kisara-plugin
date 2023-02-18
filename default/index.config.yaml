@@ -3,12 +3,25 @@ pluginName: diy
 
 # 每个功能对应开关, -true 启用, -false 关闭
 apps:
-  schedule:
-    - todayNews: true
-    - func: true
+  apis:
+    - tiangou: true
+    - saucenao: true
+    - ghser: true
+    - shareMusic: true
+
+  cmd:
+    - cmd: true
 
   main:
-    - func: false
+    - help: true
+    - recall: true
+    - tarot: true
+    - what2eat: true
+    - dice: true
+    - gachaSupport: true
+
+  schedule:
+    - todayNews: true
 
 # 部分功能的配置关系, 作用于 default, config 文件夹内命名方式
 configs:

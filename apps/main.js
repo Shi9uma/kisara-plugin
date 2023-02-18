@@ -2,7 +2,6 @@ import { segment } from 'oicq'
 
 import lodash from 'lodash'
 import moment from 'moment'
-import fetch from "node-fetch"
 
 import plugin from '../../../lib/plugins/plugin.js'
 
@@ -23,7 +22,7 @@ const content = [
 // var properties = Object.keys(this.e)
 
 // 帮助
-export class Help extends plugin {
+export class help extends plugin {
     constructor() {
         super({
             name: 'main_help',
@@ -267,85 +266,6 @@ export class dice extends plugin {
         const start = range.pop() ?? 1
         const result = lodash.random(start, end)
         await this.reply(`在 ${start} 和 ${end} 间roll到了：${result}`)
-    }
-}
-
-// 点歌
-export class shareMusic extends plugin {
-    constructor() {
-        super({
-            name: '点歌',
-            dsc: '点歌系统',
-            event: 'message',
-            priority: 5000,
-            rule: [
-                {
-                    reg: "^点歌(.*)$",
-                    fnc: 'shareMusic'
-                }
-            ]
-        })
-    }
-
-    async shareMusic(e) {
-        let searchURL = "http://127.0.0.1:7894/search?keywords=paramsSearch"  // 网易云
-        let msg = e.msg.replace(/(点歌 )|(点歌)/g, "");
-        let flag = e.msg.indexOf("--singer");
-        let singer;
-        if (flag != -1) {
-            singer = e.msg.slice(flag + "--singer".length + 1)
-            msg = msg.slice(0, flag - 4)
-            flag = 1
-        }
-        else {
-            singer = null
-            flag = 0
-        }
-
-        try {
-            msg = encodeURI(msg);
-            const params = { search: msg };
-            let url = searchURL.replace("paramsSearch", msg);
-            logger.info(url)
-            let response = await fetch(url);
-            const { data, result } = await response.json();
-            let songList = result?.songs?.length ? result.songs : [];
-            if (!songList[0]) {
-                await e.reply(`没有找到该歌曲哦(仅支持网易云)`);
-                return true;
-            }
-
-            let songIndex = 0;
-            let tempReg = '(' + singer + ')';
-            if (flag == 1) {
-                for (; songIndex < result.songs.length; songIndex++) {
-                    if (songList[songIndex].artists[0].name.match(tempReg) != null) {
-                        break;
-                    }
-                }
-                if (songIndex >= result.songs.length) {
-                    await e.reply(`没有找到该指定歌手对应的歌曲哦(尝试正确拼写歌手名)`);
-                    return true;
-                }
-            }
-
-            if (e.isPrivate) {
-                await e.friend.shareMusic("163", songList[songIndex].id);
-            }
-            else if (e.isGroup) {
-                await e.group.shareMusic("163", songList[songIndex].id);
-                /** 使用 ffmpeg 转换成语音
-                let response = await fetch(`https://autumnfish.cn/song/url?id=${songList[0].id}`);
-                const { data } = await response.json();
-                if (!data[0].url) return true;
-                await e.reply(segment.record(data[0].url));
-                */
-            }
-        }
-        catch (error) {
-            console.log(error);
-        }
-        return true; //返回true 阻挡消息不再往下
     }
 }
 
