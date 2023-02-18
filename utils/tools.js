@@ -1,11 +1,24 @@
 
 import fs from 'fs'
-import YAML from 'yaml'
+import yaml from 'yaml'
 import chokidar from 'chokidar'
 
-const pluginName = 'diy'
+import { basename, dirname } from "node:path"
+import { fileURLToPath } from "node:url"
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(__dirname)}/default/index.config.yaml`, 'utf8')).pluginName
+
 const defaultDir = `./plugins/${pluginName}/default`
 const userConfigDir = `./plugins/${pluginName}/config`
+
+// const __dirname = dirname(fileURLToPath(import.meta.url))
+// const pluginName = 'diy'
+
+// const defaultDir = `../default`
+// const userConfigDir = `../config`
+
+// let logger = console
 
 class tools {
     constructor() {
@@ -13,123 +26,6 @@ class tools {
         this.defaultPath = './default'
         this.defaultConfig = {}
 
-        /** 用户设置 */
-        this.configPath = './config'
-        this.config = {}
-
-        /** 监听文件 */
-        this.watcher = { config: {}, defaultConfig: {} }
-        this.ignore = ['schedule.config.Group1', 'schedule.config.Group2']
-    }
-
-    /** 监听配置文件 */
-    watch(file, app, name, type = 'defaultConfig') {
-        let key = `${app}.${name}`
-
-        if (this.watcher[type][key]) return
-
-        let watcher = chokidar.watch(file)
-        watcher.on('change', path => {
-            delete this[type][key]
-            logger.mark(`[修改配置文件][${type}][${app}][${name}]`)
-            if (this[`change_${app}${name}`]) {
-                this[`change_${app}${name}`]()
-            }
-        })
-
-        this.watcher[type][key] = watcher
-    }
-
-    getFilePath(app, name, type) {
-        if (type == 'defaultConfig') return `${this.defaultPath}${app}/${name}.yaml`
-        else return `${this.configPath}${app}.${name}.yaml`
-    }
-
-    /**
-     * 获取配置yaml
-     * @param app 功能
-     * @param name 名称
-     * @param type 默认跑配置-defSet，用户配置-config
-     */
-    getYaml(app, name, type) {
-        let file = this.getFilePath(app, name, type)
-        let key = `${app}.${name}`
-
-        if (this[type][key]) return this[type][key]
-
-        try {
-            this[type][key] = YAML.parse(
-                fs.readFileSync(file, 'utf8')
-            )
-        } catch (error) {
-            logger.error(`[${app}][${name}] 格式错误 ${error}`)
-            return false
-        }
-
-        this.watch(file, app, name, type)
-
-        return this[type][key]
-    }
-
-    /**
-     * @param app  功能
-     * @param name 配置文件名称
-     */
-    getDefaultConfig(app, name) {
-        return this.getYaml(app, name, 'defaultConfig')
-    }
-
-    /** 用户配置 */
-    getConfig(app, name) {
-        if (this.ignore.includes(`${app}.${name}`)) {
-            return this.getYaml(app, name, 'config')
-        }
-
-        return { ...this.getDefaultConfig(app, name), ...this.getYaml(app, name, 'config') }
-    }
-
-    get element() {
-        return { ...this.getDefaultConfig('element', 'role'), ...this.getDefaultConfig('element', 'weapon') }
-    }
-
-    saveBingCk(userId, data) {
-        let file = `./data/MysCookie/${userId}.yaml`
-        if (lodash.isEmpty(data)) {
-            fs.existsSync(file) && fs.unlinkSync(file)
-        } else {
-            let yaml = YAML.stringify(data)
-            fs.writeFileSync(file, yaml, 'utf8')
-        }
-    }
-
-    /** 返回所有别名，包括用户自定义的 */
-    getAllAbbr() {
-        let nameArr = this.getDefaultConfig('role', 'name')
-        let nameArrUser = this.getConfig('role', 'name')
-
-        for (let i in nameArrUser) {
-            let id = this.roleNameToID(i)
-            nameArr[id] = nameArr[id].concat(nameArrUser[i])
-        }
-
-        return nameArr
-    }
-
-    getMsgUid(msg) {
-        let ret = /[1|2|5-9][0-9]{8}/g.exec(msg)
-        if (!ret) return false
-        return ret[0]
-    }
-
-    cpCfg(app, name) {
-        if (!fs.existsSync('./plugins/genshin/config')) {
-            fs.mkdirSync('./plugins/genshin/config')
-        }
-
-        let set = `./plugins/genshin/config/${app}.${name}.yaml`
-        if (!fs.existsSync(set)) {
-            fs.copyFileSync(`./plugins/genshin/defaultConfig/${app}/${name}.yaml`, set)
-        }
     }
 
     // diy
@@ -188,33 +84,6 @@ class tools {
     }
 
     /**
-     * 返回读取的文件内容
-     * @param {*} app 功能名称
-     * @param {*} name 功能文件名称
-     * @param {*} type 默认配置: defaultConfig, 用户自定义配置: config
-     * @returns 
-     */
-    readYaml(app, name, type) {
-        let filePath = this.getFilePath(app, name, type)
-        let flag = `${app}.${name}`
-
-        if (this[type][flag])
-            return this[type][flag]
-
-        try {
-            this[type][flag] = YAML.parse(
-                fs.readFileSync(filePath, 'utf8')
-            )
-        } catch (err) {
-            logger.error(`[${app}][${name}] 配置文件加载错误 ${err}`)
-            return false
-        }
-
-        this.watch(filePath, app, name, type)
-        return this[type][flag]
-    }
-
-    /**
      * 判断文件夹是否有效
      * @param {string} dirPath 文件夹路径
      */
@@ -235,7 +104,7 @@ class tools {
      * @param {*} dirPath 文件夹路径
      */
     makeDir(dirPath) {
-        fs.mkdir(dirPath, (err) => { if (err) { return console.info(err) } })
+        fs.mkdir(dirPath, (err) => { if (err) { return logger.info(err) } })
     }
 
     /**
@@ -244,26 +113,7 @@ class tools {
      * @param {*} to 路径, 到文件
      */
     copyFile(from, to) {
-        fs.copyFile(from, to, (err) => { return console.info(err) })
-    }
-
-    /**
-     * 只从 default 文件夹将所需的配置文件复制出来
-     * @param {*} app 
-     * @param {*} name 
-     */
-    copyConfigFile(app, name) {
-        if (!this.isDirValid(defaultDir)) {
-            return console.info(`默认文件夹 ${defaultDir} 不存在`)
-        }
-        if (!this.isDirValid(userConfigDir)) {
-            return console.info(`目标文件夹 ${userConfigDir} 不存在`)
-        }
-        let fromFile = `${defaultDir}/${app}.${name}.yaml`
-        let toFile = `${userConfigDir}/${app}.${name}.yaml`
-        this.copyFile(fromFile, toFile, (err) => {
-            return console.err(err)
-        })
+        fs.copyFile(from, to, (err) => { return logger.info(err) })
     }
 
     /**
@@ -274,16 +124,78 @@ class tools {
      * @returns 
      */
     readYaml(app, name, type = 'config') {
-        if (type != 'config' || type != 'default') {
-            return console.error('读取配置文件出错')
+        if (!(type == 'config' || type == 'default')) {
+            return logger.error('读取配置文件出错')
         }
         let filePath = `./plugins/${pluginName}/${type}/${app}.${name}.yaml`
+        // let filePath = `../${type}/${app}.${name}.yaml`
+
         if (this.isFileValid(filePath)) {
-            return YAML.parse(fs.readFileSync(filePath, 'utf8'))
+            return yaml.parse(fs.readFileSync(filePath, 'utf8'))
         } else {
-            return console.error(`找不到 ${filePath} 文件`)
+            return logger.error(`找不到 ${filePath} 文件`)
         }
     }
+
+    /**
+     * 用于判断功能是否开启
+     * @param {*} app app 名称
+     * @param {*} name function 名称
+     * @returns 
+     */
+    isFuncEnable(app, name) {
+        if (!this.isFileValid(`${userConfigDir}/index.config.yaml`)) {
+            return logger.info(`配置文件 ${userConfigDir}/index.config.yaml 不存在`)
+        }
+        let configs = this.readYaml('index', 'config', 'config')
+        for (let _app in configs.apps) {
+            for (let func of configs.apps[_app]) {
+                for (let _func in func) {
+                    if ((_app == app && _func == name))
+                        return func[_func]
+                }
+            }
+        }
+        return logger.error(`功能 [${app}][${name}] 不存在`)
+    }
+
+    /**
+     * 获取配置文件列表
+     * @returns 
+     */
+    getDefaultConfigFileList() {
+        if (!this.isFileValid(`${defaultDir}/index.config.yaml`)) {
+            return logger.info(`配置文件 ${defaultDir}/index.config.yaml 不存在`)
+        }
+        let configs = this.readYaml('index', 'config', 'default')
+        let defaultConfigFileList = []
+        for (let app in configs.configs) {
+            for (let func of configs.configs[app]) {
+                defaultConfigFileList.push([app, func])
+            }
+        }
+        return defaultConfigFileList
+    }
+
+    /**
+     * 只从 default 文件夹将所需的配置文件复制出来
+     * @param {*} app 
+     * @param {*} name 
+     */
+    copyConfigFile(app, name) {
+        if (!this.isDirValid(defaultDir)) {
+            return logger.info(`默认文件夹 ${defaultDir} 不存在`)
+        }
+        if (!this.isDirValid(userConfigDir)) {
+            return logger.info(`目标文件夹 ${userConfigDir} 不存在`)
+        }
+        let fromFile = `${defaultDir}/${app}.${name}.yaml`
+        let toFile = `${userConfigDir}/${app}.${name}.yaml`
+        this.copyFile(fromFile, toFile, (err) => {
+            return logger.err(err)
+        })
+    }
+
 }
 
 export default new tools()

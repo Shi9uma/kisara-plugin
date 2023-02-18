@@ -1,2 +1,20 @@
-# 插件名称
+# 插件名称, 修改此处将导致本插件对应的文件夹名被修改, 需要重启 bot
 pluginName: diy
+
+# 每个功能对应开关, -true 启用, -false 关闭
+apps:
+  schedule:
+    - todayNews: true
+    - func: true
+
+  main:
+    - func: false
+
+# 部分功能的配置关系, 作用于 default, config 文件夹内命名方式
+configs:
+  index:
+    - config
+
+  schedule:
+    - todayNews
+    - func
