@@ -6,9 +6,7 @@ import { fileURLToPath } from "node:url"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-let pluginName = basename(__dirname)
-pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(__dirname)}/default/index.config.yaml`, 'utf8')).pluginName
-
+const pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(__dirname)}/default/index.config.yaml`, 'utf8')).pluginName
 const files = fs.readdirSync(`./plugins/${pluginName}/apps`).filter(file => file.endsWith('.js'))
 
 let jsList = []
@@ -17,7 +15,7 @@ files.forEach((file) => {
 })
 jsList = await Promise.allSettled(jsList)
 
-let appList = {}
+let apps = {}
 for (let i in files) {
   let name = files[i].replace('.js', '')
 
@@ -28,7 +26,8 @@ for (let i in files) {
   }
 
   for (let j in jsList[i].value) {
-    appList[j] = jsList[i].value[j]
+    apps[j] = jsList[i].value[j]
   }
 }
-export { appList }
+
+export { apps }
