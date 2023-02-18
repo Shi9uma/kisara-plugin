@@ -11,13 +11,13 @@ const pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(__dirname)}/
 let defaultDir = `./plugins/${pluginName}/default`
 let userConfigDir = `./plugins/${pluginName}/config`
 if (!tools.isDirValid(defaultDir)) {
-	return logger.info(`默认配置文件夹 ${defaultDir} 不存在, 为保证插件正常运行, 请通过 github 获取默认配置文件。`)
+	logger.info(`默认配置文件夹 ${defaultDir} 不存在, 为保证插件正常运行, 请通过 github 获取默认配置文件。`)
 }
 if (!tools.isDirValid(userConfigDir)) {
-	await tools.makeDir(userConfigDir)
-	let defaultConfigFileList = await tools.getDefaultConfigFileList()
+	tools.makeDir(userConfigDir)
+	let defaultConfigFileList = tools.getDefaultConfigFileList()
 	for (let fileName of defaultConfigFileList) {
-		await tools.copyConfigFile(fileName[0], fileName[1])
+		tools.copyConfigFile(fileName[0], fileName[1])
 	}
 }
 

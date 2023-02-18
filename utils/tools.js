@@ -7,7 +7,7 @@ import { basename, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(__dirname)}/default/index.config.yaml`, 'utf8')).pluginName
+const pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(dirname(__dirname))}/default/index.config.yaml`, 'utf8')).pluginName
 
 const defaultDir = `./plugins/${pluginName}/default`
 const userConfigDir = `./plugins/${pluginName}/config`
@@ -128,8 +128,6 @@ class tools {
             return logger.error('读取配置文件出错')
         }
         let filePath = `./plugins/${pluginName}/${type}/${app}.${name}.yaml`
-        // let filePath = `../${type}/${app}.${name}.yaml`
-
         if (this.isFileValid(filePath)) {
             return yaml.parse(fs.readFileSync(filePath, 'utf8'))
         } else {
