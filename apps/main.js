@@ -19,8 +19,6 @@ const content = [
     '点歌: 「点歌 + 歌曲名，--singer 指定歌手」'
 ]
 
-this.pluginName = 'diy'
-
 // 查看属性
 // var properties = Object.keys(this.e)
 
