@@ -32,7 +32,7 @@ export class Help extends plugin {
             priority: 10,
             rule: [
                 {
-                    reg: '^help$',
+                    reg: '^ahelp$',
                     fnc: 'help'
                 }
             ]
@@ -164,7 +164,7 @@ export class tarot extends plugin {
         )
 
         // 参考 https://github.com/MinatoAquaCrews/nonebot_plugin_tarot
-        let path = `./plugins/${this.pluginName}/data/tarotCards`
+        let path = `./plugins/diy/data/tarotCards`
         let pic = segment.image(`file://${path}/${card.type}/${card.pic}`)
         await this.reply(pic)
     }
