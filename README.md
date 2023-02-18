@@ -13,3 +13,13 @@
 7. ~~随机图片~~, [链接](https://gitee.com/ying_Sailor_uniform/wallpaperjs/blob/master/wallpaper.js)
 8. b 站 up 开播, 动态推送, [链接](https://github.com/HeadmasterTan/zhi-plugin.git)
 9. 原神角色参考面板，[插件](https://github.com/howe0116/howe-plugin)，[nga 资源](https://bbs.nga.cn/read.php?tid=25843014&rand=967)q
+
+## 文件配置逻辑
+
+1. 检查是否存在 config 文件夹
+	1. 若有，直接下一步
+	2. 若没有，创建 config 文件夹
+2. 检查是否存在 app.name.yaml 配置文件
+	1. 若有，直接下一步
+	2. 若没有，从 default 文件夹复制一份 app.name.yaml 到 config 文件夹
+3. 从配置文件 ./config/app.name.yaml 获取信息
