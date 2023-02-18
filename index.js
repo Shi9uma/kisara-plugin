@@ -1,6 +1,7 @@
-import fs from 'node:fs'
+import fs from 'fs'
 
-const files = fs.readdirSync('./plugins/diy/apps').filter(file => file.endsWith('.js'))
+const pluginName = 'diy'
+const files = fs.readdirSync(`./plugins/${pluginName}/apps`).filter(file => file.endsWith('.js'))
 
 let ret = []
 files.forEach((file) => {

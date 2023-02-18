@@ -4,6 +4,9 @@ import fetch from "node-fetch"
 import tools from '../utils/tools.js'
 import plugin from '../../../lib/plugins/plugin.js'
 
+const pluginName = 'diy'
+
+
 export class todayNews extends plugin {
 
     constructor() {
@@ -30,8 +33,18 @@ export class todayNews extends plugin {
     //     log: true
     // }
 
+    async checkResource(resName) {
+        let newsImgDir = `./plugins/${this.pluginName}/data/todayNews`
+        if (!tools.isDirValid(newsImgDir)) {    // 一般只有第一次使用会创建
+            tools.makeDir(newsImgDir)
+            return false
+        }
+        return tools.isResValid(newsImgDir, resName)
+    }
+
     async getTodayNews() {
-        let url = 'http://bjb.yunwj.top/php/tp/lj.php'
+        // let url = 'http://bjb.yunwj.top/php/tp/lj.php'
+        let url = 'http://dwz.2xb.cn/zaob'
         let response = await fetch(url).catch((err) => logger.info(err))
 
         if (response.status != 200) {
@@ -41,10 +54,12 @@ export class todayNews extends plugin {
         let newsImgTime = new Date()
 
         let res = await response.json()
-        let newsImgUrl = res.tp
+        let newsImgUrl = res.imageUrl
         let msg = [
             segment.image(newsImgUrl)
         ]
+
+        this.checkResource()
         this.e.reply(msg)
         return
     }
@@ -56,5 +71,9 @@ export class todayNews extends plugin {
             this.getTodayNews()
         }
         return
+    }
+
+    async main() {
+        let userConfigDirPath = path.join(`./plugins/$`,)
     }
 }

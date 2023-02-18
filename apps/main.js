@@ -19,6 +19,8 @@ const content = [
     '点歌: 「点歌 + 歌曲名，--singer 指定歌手」'
 ]
 
+this.pluginName = 'diy'
+
 // 查看属性
 // var properties = Object.keys(this.e)
 
@@ -164,7 +166,7 @@ export class tarot extends plugin {
         )
 
         // 参考 https://github.com/MinatoAquaCrews/nonebot_plugin_tarot
-        let path = './plugins/diy/data/tarot_resource'
+        let path = `./plugins/${this.pluginName}/data/tarotCards`
         let pic = segment.image(`file://${path}/${card.type}/${card.pic}`)
         await this.reply(pic)
     }
