@@ -27,8 +27,8 @@ for (let i in files) {
     continue
   }
 
-  for (let j in ret[i].value) {
-    appList[j] = ret[i].value[j]
+  for (let j in jsList[i].value) {
+    appList[j] = jsList[i].value[j]
   }
 }
 export { appList }
