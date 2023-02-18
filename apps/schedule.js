@@ -4,9 +4,6 @@ import fetch from "node-fetch"
 import tools from '../utils/tools.js'
 import plugin from '../../../lib/plugins/plugin.js'
 
-const pluginName = 'diy'
-
-
 export class todayNews extends plugin {
 
     constructor() {
@@ -18,7 +15,7 @@ export class todayNews extends plugin {
                 priority: 5000,
                 rule: [
                     {
-                        reg: '^(简报|新闻)$',
+                        reg: '^(简报|新闻|日报)$',
                         fnc: 'getTodayNews'
                     }
                 ]
