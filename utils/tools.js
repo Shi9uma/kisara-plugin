@@ -2,7 +2,6 @@
 import fs from 'fs'
 import YAML from 'yaml'
 import chokidar from 'chokidar'
-import path from 'path'
 
 const pluginName = 'diy'
 const defaultDir = `./plugins/${pluginName}/default`
@@ -215,21 +214,28 @@ class tools {
         return this[type][flag]
     }
 
+    /**
+     * 判断文件夹是否有效
+     * @param {string} dirPath 文件夹路径
+     */
     isDirValid(dirPath) {
         return fs.existsSync(dirPath)
     }
 
-    isFileValid(resPath, resName) {
-        if (!fs.existsSync(path.join(resPath, resName))) return false
-        else return true
+    /**
+     * 判断文件是否有效
+     * @param {*} fileName 文件路径
+     */
+    isFileValid(fileName) {
+        return fs.existsSync(fileName)
     }
 
+    /**
+     * 创建文件夹
+     * @param {*} dirPath 文件夹路径
+     */
     makeDir(dirPath) {
-        fs.mkdir(dirPath, (err) => {
-            if (err) {
-                return console.info(err)
-            }
-        })
+        fs.mkdir(dirPath, (err) => { if (err) { return console.info(err) } })
     }
 
     /**
@@ -238,9 +244,7 @@ class tools {
      * @param {*} to 路径, 到文件
      */
     copyFile(from, to) {
-        fs.copyFile(from, to, (err) => {
-            return logger.info(err)
-        })
+        fs.copyFile(from, to, (err) => { return console.info(err) })
     }
 
     /**
@@ -250,19 +254,36 @@ class tools {
      */
     copyConfigFile(app, name) {
         if (!this.isDirValid(defaultDir)) {
-            return logger.info(`默认文件夹 ${defaultDir} 不存在`)
+            return console.info(`默认文件夹 ${defaultDir} 不存在`)
         }
         if (!this.isDirValid(userConfigDir)) {
-            return logger.info(`目标文件夹 ${userConfigDir} 不存在`)
+            return console.info(`目标文件夹 ${userConfigDir} 不存在`)
         }
         let fromFile = `${defaultDir}/${app}.${name}.yaml`
         let toFile = `${userConfigDir}/${app}.${name}.yaml`
         this.copyFile(fromFile, toFile, (err) => {
-            return logger.err(err)
+            return console.err(err)
         })
     }
 
-
+    /**
+     * 读取 yaml 配置文件
+     * @param {*} app app 功能
+     * @param {*} name app 配置文件名
+     * @param {*} type 读取类型, -config, -default
+     * @returns 
+     */
+    readYaml(app, name, type = 'config') {
+        if (type != 'config' || type != 'default') {
+            return console.error('读取配置文件出错')
+        }
+        let filePath = `./plugins/${pluginName}/${type}/${app}.${name}.yaml`
+        if (this.isFileValid(filePath)) {
+            return YAML.parse(fs.readFileSync(filePath, 'utf8'))
+        } else {
+            return console.error(`找不到 ${filePath} 文件`)
+        }
+    }
 }
 
 export default new tools()

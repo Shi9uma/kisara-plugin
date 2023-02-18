@@ -9,27 +9,26 @@ const __dirname = dirname(__filename)
 let pluginName = basename(__dirname)
 pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(__dirname)}/default/index.config.yaml`, 'utf8')).pluginName
 
-logger.info(pluginName)
-let files = fs.readdirSync(`./plugins/${pluginName}/apps`).filter(file => file.endsWith('.js'))
+const files = fs.readdirSync(`./plugins/${pluginName}/apps`).filter(file => file.endsWith('.js'))
 
-let ret = []
+let jsList = []
 files.forEach((file) => {
-  ret.push(import(`./apps/${file}`))
+  jsList.push(import(`./apps/${file}`))
 })
-ret = await Promise.allSettled(ret)
+jsList = await Promise.allSettled(jsList)
 
-let apps = {}
+let appList = {}
 for (let i in files) {
   let name = files[i].replace('.js', '')
 
-  if (ret[i].status != 'fulfilled') {
+  if (jsList[i].status != 'fulfilled') {
     logger.error(`载入插件错误：${logger.red(name)}`)
-    logger.error(ret[i].reason)
+    logger.error(jsList[i].reason)
     continue
   }
 
   for (let j in ret[i].value) {
-    apps[j] = ret[i].value[j]
+    appList[j] = ret[i].value[j]
   }
 }
-export { apps }
+export { appList }
