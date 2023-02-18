@@ -1,7 +1,16 @@
 import fs from 'fs'
+import yaml from 'yaml'
 
-const pluginName = 'diy'
-const files = fs.readdirSync(`./plugins/${pluginName}/apps`).filter(file => file.endsWith('.js'))
+import { basename, dirname } from "node:path"
+import { fileURLToPath } from "node:url"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+let pluginName = basename(__dirname)
+pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(__dirname)}/default/index.config.yaml`, 'utf8')).pluginName
+
+logger.info(pluginName)
+let files = fs.readdirSync(`./plugins/${pluginName}/apps`).filter(file => file.endsWith('.js'))
 
 let ret = []
 files.forEach((file) => {
