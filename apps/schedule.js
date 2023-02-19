@@ -18,7 +18,7 @@ export class todayNews extends plugin {
                 rule: [
                     {
                         reg: '^(简报|新闻|日报)$',
-                        fnc: 'getTodayNews'
+                        fnc: 'sendTodayNews'
                     }
                 ]
             }
@@ -36,17 +36,18 @@ export class todayNews extends plugin {
     // }
 
     async checkTodayNewsImg(datatime) {
-        if (!tools.isDirValid(newsImgDir))    // 一般只有第一次使用会创建
-            tools.makeDir(newsImgDir)
-        return tools.isFileValid(`${newsImgDir}/${datatime}.${this.imgType}`)
+        if (!tools.isDirValid(this.newsImgDir))    // 一般只有第一次使用会创建
+            tools.makeDir(this.newsImgDir)
+        return tools.isFileValid(`${this.newsImgDir}/${datatime}.${this.imgType}`)
     }
 
     async getTodayNews(datatime) {
-        logger.info('flag')
         // let url = 'http://bjb.yunwj.top/php/tp/lj.php'
+        logger.info('flag')
         let url = 'http://dwz.2xb.cn/zaob'
         let response = await fetch(url).catch((err) => logger.info(err))
 
+        logger.info(response)
         if (response.status != 200) {
             await this.e.reply(`[+] 60s 读懂世界\n获取简报失败, 状态码 ${response.status}`)
             return
@@ -55,18 +56,21 @@ export class todayNews extends plugin {
         let res = await response.json()
         let newsImgUrl = res.imageUrl
         let newsImgName = res.datatime
-        if (newsImgName == datatime)
+        logger.info(`简报 api 日期: ${res.datatime}, 本地日期: ${datatime}`)
+        if (res.datatime == datatime)
             tools.saveUrlImg(newsImgUrl, newsImgName, this.newsImgDir, this.imgType)
         else
             logger.info(`api 返回图片时间与日期不相符!`)
-
         return
     }
 
     async sendTodayNews() {
-        let datatime = new moment().format('yyyy-MM-DD')
+        let datatime = await new moment().format('yyyy-MM-DD')
+        logger.info('1', datatime)
+        logger.info('2', this.checkTodayNewsImg(datatime))
+        logger.info('3', !this.checkTodayNewsImg(datatime))
         if (!this.checkTodayNewsImg(datatime))
-            tools.getTodayNews(datatime)
+            await this.getTodayNews(datatime)
         let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
         let msg = [
             `[+] ${datatime} 简报\n`,
