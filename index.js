@@ -8,6 +8,11 @@ import { fileURLToPath } from "node:url"
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(__dirname)}/default/index.config.yaml`, 'utf8')).pluginName
 
+if (!(pluginName != basename(__dirname))) {
+	logger.info(`插件文件夹名称与 ${defaultDir} 中的 pluginName 项不同, 请检查并重启 bot`)
+	fs.rename(__dirname, path.join(dirname(__dirname), pluginName), (err) => { logger.error(err) })
+}
+
 let defaultDir = `./plugins/${pluginName}/default`
 let userConfigDir = `./plugins/${pluginName}/config`
 if (!tools.isDirValid(defaultDir)) {
@@ -16,10 +21,13 @@ if (!tools.isDirValid(defaultDir)) {
 if (!tools.isDirValid(userConfigDir)) {
 	logger.info(`用户配置文件夹 ${userConfigDir} 不存在, 将根据默认配置创建`)
 	tools.makeDir(userConfigDir)
-	let defaultConfigFileList = tools.getDefaultConfigFileList()
-	for (let fileName of defaultConfigFileList) {
+}
+
+let defaultConfigFileList = tools.getDefaultConfigFileList()
+for (let fileName of defaultConfigFileList) {
+	if (!tools.isFileValid(`${userConfigDir}/${fileName[0].fileName[1].yaml}`))
 		tools.copyConfigFile(fileName[0], fileName[1])
-	}
+	else continue
 }
 
 const files = fs.readdirSync(`./plugins/${pluginName}/apps`).filter(file => file.endsWith('.js'))

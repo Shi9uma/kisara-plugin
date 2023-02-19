@@ -23,7 +23,7 @@ apps:
   schedule:
     - todayNews: true
 
-# 部分功能的配置关系, 作用于 default, config 文件夹内命名方式
+# 部分功能的配置关系, 作用于 default, config 文件夹内命名方式, 一般不需要改动
 configs:
   index:
     - config

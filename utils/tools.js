@@ -7,20 +7,20 @@ import { basename, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
 /** linux dev env */
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(dirname(__dirname))}/default/index.config.yaml`, 'utf8')).pluginName
+// const __dirname = dirname(fileURLToPath(import.meta.url))
+// const pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(dirname(__dirname))}/default/index.config.yaml`, 'utf8')).pluginName
 
-const defaultDir = `./plugins/${pluginName}/default`
-const userConfigDir = `./plugins/${pluginName}/config`
+// const defaultDir = `./plugins/${pluginName}/default`
+// const userConfigDir = `./plugins/${pluginName}/config`
 
 /** win dev env */
-// const __dirname = dirname(fileURLToPath(import.meta.url))
-// const pluginName = 'diy'
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const pluginName = 'diy'
 
-// const defaultDir = `../default`
-// const userConfigDir = `../config`
+const defaultDir = `../default`
+const userConfigDir = `../config`
 
-// let logger = console
+let logger = console
 
 class tools {
     constructor() {
@@ -52,19 +52,8 @@ class tools {
         this.watcher[type][flag] = watcher
     }
 
-    /**
-     * 用于初始化功能的配置文件
-     * @param app 
-     * @param func 
-     */
-    copyDefaultConfig(app, func) {
-        if (!fs.existsSync(`./plugins/${this.pluginName}/config`)) {
-            fs.mkdirSync(`./plugins/${this.pluginName}/config`)
-        }
-        let userConfig = `./plugins/${this.pluginName}/config/${app}.${func}.yaml`
-        if (!fs.existsSync(userConfig)) {
-            fs.copyFileSync(`./plugins/${this.pluginName}/default/${app}/${func}.yaml`, userConfig)
-        }
+    getPluginName () {
+        return dirname(fileURLToPath(import.meta.url))
     }
 
     /**
@@ -125,8 +114,8 @@ class tools {
         if (!(type == 'config' || type == 'default')) {
             return logger.error('读取配置文件出错')
         }
-        let filePath = `./plugins/${pluginName}/${type}/${app}.${func}.yaml`
-        // let filePath = `../${type}/${app}.${func}.yaml`
+        // let filePath = `./plugins/${pluginName}/${type}/${app}.${func}.yaml`
+        let filePath = `../${type}/${app}.${func}.yaml`
         if (this.isFileValid(filePath)) {
             return yaml.parse(fs.readFileSync(filePath, 'utf8'))
         } else {
@@ -176,17 +165,17 @@ class tools {
     /**
      * 只从 default 文件夹将所需的配置文件复制出来
      * @param {*} app 
-     * @param {*} name 
+     * @param {*} func 
      */
-    copyConfigFile(app, name) {
+    copyConfigFile(app, func) {
         if (!this.isDirValid(defaultDir)) {
             return logger.info(`默认文件夹 ${defaultDir} 不存在`)
         }
         if (!this.isDirValid(userConfigDir)) {
             return logger.info(`目标文件夹 ${userConfigDir} 不存在`)
         }
-        let fromFile = `${defaultDir}/${app}.${name}.yaml`
-        let toFile = `${userConfigDir}/${app}.${name}.yaml`
+        let fromFile = `${defaultDir}/${app}.${func}.yaml`
+        let toFile = `${userConfigDir}/${app}.${func}.yaml`
         this.copyFile(fromFile, toFile, (err) => {
             return logger.err(err)
         })

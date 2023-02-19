@@ -31,7 +31,7 @@ export class todayNews extends plugin {
     // }
 
     async checkResource(resName) {
-        let newsImgDir = `./plugins/${this.pluginName}/data/todayNews`
+        let pluginName = tools.readYaml()
         if (!tools.isDirValid(newsImgDir)) {    // 一般只有第一次使用会创建
             tools.makeDir(newsImgDir)
             return false
