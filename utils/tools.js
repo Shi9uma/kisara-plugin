@@ -7,20 +7,20 @@ import { basename, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
 /** linux dev env */
-// const __dirname = dirname(fileURLToPath(import.meta.url))
-// const pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(dirname(__dirname))}/default/index.config.yaml`, 'utf8')).pluginName
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(dirname(__dirname))}/default/index.config.yaml`, 'utf8')).pluginName
 
-// const defaultDir = `./plugins/${pluginName}/default`
-// const userConfigDir = `./plugins/${pluginName}/config`
+const defaultDir = `./plugins/${pluginName}/default`
+const userConfigDir = `./plugins/${pluginName}/config`
 
 /** win dev env */
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const pluginName = 'diy'
+// const __dirname = dirname(fileURLToPath(import.meta.url))
+// const pluginName = 'diy'
 
-const defaultDir = `../default`
-const userConfigDir = `../config`
+// const defaultDir = `../default`
+// const userConfigDir = `../config`
 
-let logger = console
+// let logger = console
 
 class tools {
     constructor() {
@@ -125,8 +125,8 @@ class tools {
         if (!(type == 'config' || type == 'default')) {
             return logger.error('读取配置文件出错')
         }
-        // let filePath = `./plugins/${pluginName}/${type}/${app}.${func}.yaml`
-        let filePath = `../${type}/${app}.${func}.yaml`
+        let filePath = `./plugins/${pluginName}/${type}/${app}.${func}.yaml`
+        // let filePath = `../${type}/${app}.${func}.yaml`
         if (this.isFileValid(filePath)) {
             return yaml.parse(fs.readFileSync(filePath, 'utf8'))
         } else {
