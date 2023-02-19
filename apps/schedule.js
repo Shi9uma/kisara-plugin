@@ -3,9 +3,11 @@ import { segment } from 'oicq'
 import fetch from "node-fetch"
 import tools from '../utils/tools.js'
 import plugin from '../../../lib/plugins/plugin.js'
+import moment from 'moment'
+
+const pluginName = tools.getPluginName()
 
 export class todayNews extends plugin {
-
     constructor() {
         super(
             {
@@ -21,6 +23,9 @@ export class todayNews extends plugin {
                 ]
             }
         )
+
+        this.imgType = 'png'
+        this.newsImgDir = `./plugins/${pluginName}/data/todayNews`
     }
 
     // this.task = {
@@ -30,16 +35,14 @@ export class todayNews extends plugin {
     //     log: true
     // }
 
-    async checkResource(resName) {
-        let pluginName = tools.readYaml()
-        if (!tools.isDirValid(newsImgDir)) {    // 一般只有第一次使用会创建
+    async checkTodayNewsImg(datatime) {
+        if (!tools.isDirValid(newsImgDir))    // 一般只有第一次使用会创建
             tools.makeDir(newsImgDir)
-            return false
-        }
-        return tools.isResValid(newsImgDir, resName)
+        return tools.isFileValid(`${newsImgDir}/${datatime}.${this.imgType}`)
     }
 
-    async getTodayNews() {
+    async getTodayNews(datatime) {
+        logger.info('flag')
         // let url = 'http://bjb.yunwj.top/php/tp/lj.php'
         let url = 'http://dwz.2xb.cn/zaob'
         let response = await fetch(url).catch((err) => logger.info(err))
@@ -48,29 +51,28 @@ export class todayNews extends plugin {
             await this.e.reply(`[+] 60s 读懂世界\n获取简报失败, 状态码 ${response.status}`)
             return
         }
-        let newsImgTime = new Date()
 
         let res = await response.json()
         let newsImgUrl = res.imageUrl
-        let msg = [
-            segment.image(newsImgUrl)
-        ]
+        let newsImgName = res.datatime
+        if (newsImgName == datatime)
+            tools.saveUrlImg(newsImgUrl, newsImgName, this.newsImgDir, this.imgType)
+        else
+            logger.info(`api 返回图片时间与日期不相符!`)
 
-        this.checkResource()
-        this.e.reply(msg)
         return
     }
 
     async sendTodayNews() {
-        let newsImgName
-        let newsImgPath = `./data/todayNews/${newsImgName}.png`
-        if (!tools.exists(newsImgName)) {
-            this.getTodayNews()
-        }
+        let datatime = new moment().format('yyyy-MM-DD')
+        if (!this.checkTodayNewsImg(datatime))
+            tools.getTodayNews(datatime)
+        let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
+        let msg = [
+            `[+] ${datatime} 简报\n`,
+            segment.image(`file://${newsImgPath}`)
+        ]
+        this.e.reply(msg)
         return
-    }
-
-    async main() {
-        let userConfigDirPath = path.join(`./plugins/$`,)
     }
 }

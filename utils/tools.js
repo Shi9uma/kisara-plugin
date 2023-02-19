@@ -2,6 +2,7 @@
 import fs from 'fs'
 import yaml from 'yaml'
 import chokidar from 'chokidar'
+import https from 'https'
 
 import { basename, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -52,8 +53,11 @@ class tools {
         this.watcher[type][flag] = watcher
     }
 
-    getPluginName () {
-        return dirname(fileURLToPath(import.meta.url))
+    /**
+     * 返回本插件的名称
+     */
+    getPluginName() {
+        return basename(dirname(dirname(fileURLToPath(import.meta.url))))
     }
 
     /**
@@ -181,6 +185,31 @@ class tools {
         })
     }
 
+    /**
+     * 通过 url 获取图像并保存
+     * @param {*} imgUrl 图像 url
+     * @param {*} imgName 要保存成的图像名字, 无后缀
+     * @param {*} saveDirPath 图像保存文件夹路径
+     * @param {*} imgType 图像保存的类型(后缀名)
+     */
+    saveUrlImg(imgUrl, imgName, saveDirPath, imgType = 'png') {
+        https.get(imgUrl, (res) => {
+            let imgData = ''
+            res.setEncoding('binary')
+            res.on('data', (chunk) => {
+                imgData += chunk
+            })
+            let saveImgPath = `${saveDirPath}/${imgName}.${imgType}`
+            res.on('end', () => {
+                fs.writeFile(saveImgPath, imgData, 'binary', (err) => {
+                    if (err)
+                        return logger.info(`图片 ${imgUrl} 获取失败`)
+                    else
+                        return logger.info(`图片 ${imgUrl} 成功保存到 ${saveImgPath}`)
+                })
+            })
+        })
+    }
 }
 
 export default new tools()
