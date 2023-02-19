@@ -14,6 +14,7 @@ if (!tools.isDirValid(defaultDir)) {
 	logger.info(`默认配置文件夹 ${defaultDir} 不存在, 为保证插件正常运行, 请通过 github 获取默认配置文件。`)
 }
 if (!tools.isDirValid(userConfigDir)) {
+	logger.info(`用户配置文件夹 ${userConfigDir} 不存在, 将根据默认配置创建`)
 	tools.makeDir(userConfigDir)
 	let defaultConfigFileList = tools.getDefaultConfigFileList()
 	for (let fileName of defaultConfigFileList) {
