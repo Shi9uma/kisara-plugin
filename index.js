@@ -31,17 +31,20 @@ jsList = await Promise.allSettled(jsList)
 
 let apps = {}
 for (let i in files) {
-	let name = files[i].replace('.js', '')
+	let app = files[i].replace('.js', '')
 
 	if (jsList[i].status != 'fulfilled') {
-		logger.error(`载入插件错误：${logger.red(name)}`)
+		logger.error(`载入插件错误：${logger.red(app)}`)
 		logger.error(jsList[i].reason)
 		continue
 	}
 
-	for (let j in jsList[i].value) {
-		apps[j] = jsList[i].value[j]
+	for (let func in jsList[i].value) {
+		if (tools.isFuncEnable(app, func))
+			apps[func] = jsList[i].value[func]
+		else continue
 	}
 }
 
+// 这里必须得是 apps
 export { apps }

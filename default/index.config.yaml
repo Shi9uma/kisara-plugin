@@ -14,7 +14,7 @@ apps:
 
   main:
     - help: true
-    - recall: true
+    - recall: false
     - tarot: true
     - what2eat: true
     - dice: true

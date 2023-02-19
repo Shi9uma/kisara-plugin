@@ -23,9 +23,15 @@
 ## 文件配置逻辑
 
 1. 检查是否存在 config 文件夹
-	1. 若有，直接下一步
-	2. 若没有，创建 config 文件夹
+  1. 若有，直接下一步
+  2. 若没有，创建 config 文件夹
 2. 检查是否存在 app.name.yaml 配置文件
-	1. 若有，直接下一步
-	2. 若没有，从 default 文件夹复制一份 app.name.yaml 到 config 文件夹
+  1. 若有，直接下一步
+  2. 若没有，从 default 文件夹复制一份 app.name.yaml 到 config 文件夹
 3. 从配置文件 ./config/app.name.yaml 获取信息
+
+
+
+
+
+在 index 直接开关功能控制
