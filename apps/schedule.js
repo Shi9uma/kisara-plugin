@@ -35,7 +35,7 @@ export class todayNews extends plugin {
     //     log: true
     // }
 
-    async checkTodayNewsImg(datatime) {
+    checkTodayNewsImg(datatime) {
         if (!tools.isDirValid(this.newsImgDir))    // 一般只有第一次使用会创建
             tools.makeDir(this.newsImgDir)
         return tools.isFileValid(`${this.newsImgDir}/${datatime}.${this.imgType}`)
@@ -66,9 +66,6 @@ export class todayNews extends plugin {
 
     async sendTodayNews() {
         let datatime = await new moment().format('yyyy-MM-DD')
-        logger.info('1', datatime)
-        logger.info('2', this.checkTodayNewsImg(datatime))
-        logger.info('3', !this.checkTodayNewsImg(datatime))
         if (!this.checkTodayNewsImg(datatime))
             await this.getTodayNews(datatime)
         let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
