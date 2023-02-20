@@ -66,7 +66,7 @@ export class todayNews extends plugin {
         let datatime = await new moment().format('yyyy-MM-DD')
         if (!this.checkTodayNewsImg(datatime)) {
             await this.getTodayNews(datatime)
-            this.sendTodayNews()
+            await this.e.reply(`[+] ${datatime} 简报\n正在初始化今日简报信息, 请稍后重新获取`)
             return
         } else {
             let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
