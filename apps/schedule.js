@@ -66,14 +66,18 @@ export class todayNews extends plugin {
 
     async sendTodayNews() {
         let datatime = await new moment().format('yyyy-MM-DD')
-        if (!this.checkTodayNewsImg(datatime))
+        if (!this.checkTodayNewsImg(datatime)) {
             await this.getTodayNews(datatime)
-        let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
-        let msg = [
-            `[+] ${datatime} 简报\n`,
-            segment.image(`file://${newsImgPath}`)
-        ]
-        this.e.reply(msg)
-        return
+            this.sendTodayNews()
+            return
+        } else {
+            let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
+            let msg = [
+                `[+] ${datatime} 简报\n`,
+                segment.image(`file://${newsImgPath}`)
+            ]
+            await this.e.reply(msg)
+            return
+        }
     }
 }
