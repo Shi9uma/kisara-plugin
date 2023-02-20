@@ -43,11 +43,9 @@ export class todayNews extends plugin {
 
     async getTodayNews(datatime) {
         // let url = 'http://bjb.yunwj.top/php/tp/lj.php'
-        logger.info('flag')
         let url = 'http://dwz.2xb.cn/zaob'
         let response = await fetch(url).catch((err) => logger.info(err))
 
-        logger.info(response)
         if (response.status != 200) {
             await this.e.reply(`[+] 60s 读懂世界\n获取简报失败, 状态码 ${response.status}`)
             return
