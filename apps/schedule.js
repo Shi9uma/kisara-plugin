@@ -1,5 +1,6 @@
 import { segment } from 'oicq'
 
+import fs from 'fs'
 import fetch from "node-fetch"
 import tools from '../utils/tools.js'
 import plugin from '../../../lib/plugins/plugin.js'
@@ -53,7 +54,7 @@ export class todayNews extends plugin {
     }
 
     async checkKeepTime() {
-        if (!(tools.isFileValid(tools.getConfigFilePath('schedule', 'todayNews', 'd')))) {
+        if (!(tools.isFileValid(tools.getConfigFilePath('schedule', 'todayNews', 'c')))) {
             let configDirPath = `./plugins/${tools.getPluginName()}/config`
             if (!(tools.isDirValid(configDirPath))) {
                 tools.makeDir(configDirPath)
@@ -117,9 +118,17 @@ export class todayNews extends plugin {
     }
 
     async deleteTodayNews() {
-        if (!(this.e.group.is_admin || this.e.group.is_owner || this.e.isMaster)) {
-            await this.e.reply('只接受管理员的简报删除指令', true, { recallMsg: 30 })
+        let checkPrivate = (this.e.isGroup || this.e.isMaster) ? true : false
+        if (!checkPrivate) {
+            if (!this.e.isMaster)
+                await this.e.reply('为了防止滥用, 仅支持群聊使用', true, { recallMsg: 30 })
             return
+        }
+        if (this.e.isGroup) {
+            if (!(this.e.group.is_admin || this.e.group.is_owner || this.e.isMaster)) {
+                await this.e.reply('只接受管理员的简报删除指令', true, { recallMsg: 30 })
+                return
+            }
         }
         let datatime = await new moment().format('yyyy-MM-DD')
         if (!this.checkTodayNewsImg(datatime)) {
