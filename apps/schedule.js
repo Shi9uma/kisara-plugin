@@ -43,7 +43,7 @@ export class todayNews extends plugin {
     isValidTime() {
         let datatime = new moment(new Date()).format('yyyy-MM-DD HH')
         let flagTime = moment(new Date()).format('yyyy-MM-DD')
-        if (moment(datatime).isBetween(`${flagTime} 00`, `${flagTime} 08`)) return true
+        if (!moment(datatime).isBetween(`${flagTime} 00`, `${flagTime} 08`)) return true
         else return false
     }
 
