@@ -20,6 +20,7 @@ const userConfigDir = `./plugins/${pluginName}/config`
 
 // const defaultDir = `../default`
 // const userConfigDir = `../config`
+// const logger = console
 
 // let logger = console
 
@@ -64,14 +65,14 @@ class tools {
      * 用于获取文件的路径
      * @param  app 功能名称
      * @param  func 功能所需文件名
-     * @param  type 默认配置: defaultConfig, 用户自定义配置: config
+     * @param  type 默认配置: d for defaultConfig, 用户自定义配置: c for config
      * @returns 
      */
-    getFilePath(app, func, type) {
-        if (type == 'defaultConfig')
-            return `${this.defaultPath}/${app}/${func}.yaml`
+    getConfigFilePath(app, func, type = 'c') {
+        if (type == 'd')
+            return `${defaultDir}/${app}.${func}.yaml`
         else
-            return `${this.configPath}/${app}.${func}.yaml`
+            return `${userConfigDir}/${app}.${func}.yaml`
     }
 
     /**
@@ -105,6 +106,14 @@ class tools {
      */
     copyFile(from, to) {
         fs.copyFile(from, to, (err) => { return logger.info(err) })
+    }
+
+    /**
+     * 删除指定文件
+     * @param {*} filePath 要删除文件的路径
+     */
+    deleteFile(filePath) {
+        fs.unlink(filePath, (err) => { return logger.info(err) })
     }
 
     /**
