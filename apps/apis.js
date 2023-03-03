@@ -44,7 +44,7 @@ export class tiangou extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: "^(舔狗日志|舔狗|天狗|沸羊羊)$",
+                    reg: "^#?(舔狗日志|舔狗日记|日记|日志|舔狗|天狗|沸羊羊)$",
                     fnc: 'tiangou'
                 }
             ]
@@ -104,7 +104,7 @@ export class saucenao extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#?识图$',
+                    reg: '^#?(识图|搜图)$',
                     fnc: 'saucenaoCheckType'
                 }
             ]
@@ -317,7 +317,7 @@ export class ghser extends plugin {
                 priority: 5000,
                 rule: [
                     {
-                        reg: '^(来张壁纸|随机壁纸|壁纸)$',
+                        reg: '^#?(来张壁纸|随机壁纸|壁纸)$',
                         fnc: 'ghser'
                     }
                 ]
@@ -384,7 +384,7 @@ export class shareMusic extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: "^点歌(.*)$",
+                    reg: "^#?(点歌|来首|听歌)(.*)$",
                     fnc: 'shareMusic'
                 }
             ]
@@ -393,46 +393,19 @@ export class shareMusic extends plugin {
 
     async shareMusic(e) {
         let searchURL = "http://127.0.0.1:7894/search?keywords=paramsSearch"  // 网易云
-        let msg = e.msg.replace(/(点歌 )|(点歌)/g, "");
-        let flag = e.msg.indexOf("--singer");
-        let singer;
-        if (flag != -1) {
-            singer = e.msg.slice(flag + "--singer".length + 1)
-            msg = msg.slice(0, flag - 4)
-            flag = 1
-        }
-        else {
-            singer = null
-            flag = 0
-        }
-
+        let msg = e.msg.replace(/(点歌|来首|听歌)/g, "");
         try {
             msg = encodeURI(msg);
-            const params = { search: msg };
             let url = searchURL.replace("paramsSearch", msg);
             logger.info(url)
             let response = await fetch(url);
-            const { data, result } = await response.json();
+            let result = await response.json().result;
             let songList = result?.songs?.length ? result.songs : [];
             if (!songList[0]) {
-                await e.reply(`没有找到该歌曲哦(仅支持网易云)`);
+                await e.reply(`没有在网易云曲库中找到相应歌曲`);
                 return true;
             }
-
             let songIndex = 0;
-            let tempReg = '(' + singer + ')';
-            if (flag == 1) {
-                for (; songIndex < result.songs.length; songIndex++) {
-                    if (songList[songIndex].artists[0].name.match(tempReg) != null) {
-                        break;
-                    }
-                }
-                if (songIndex >= result.songs.length) {
-                    await e.reply(`没有找到该指定歌手对应的歌曲哦(尝试正确拼写歌手名)`);
-                    return true;
-                }
-            }
-
             if (e.isPrivate) {
                 await e.friend.shareMusic("163", songList[songIndex].id);
             }
@@ -447,7 +420,7 @@ export class shareMusic extends plugin {
             }
         }
         catch (error) {
-            console.log(error);
+            logger.err(error);
         }
         return true; //返回true 阻挡消息不再往下
     }
