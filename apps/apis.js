@@ -400,6 +400,7 @@ export class shareMusic extends plugin {
             logger.info(url)
             let response = await fetch(url);
             let result = await response.json().result;
+            logger.info(result)
             let songList = result?.songs?.length ? result.songs : [];
             if (!songList[0]) {
                 await e.reply(`没有在网易云曲库中找到相应歌曲`);
