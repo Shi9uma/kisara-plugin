@@ -384,7 +384,7 @@ export class shareMusic extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: "^#?(点歌|来首|听歌)(.*)$",
+                    reg: "^#?(点歌|来首|听歌|点首)(.*)$",
                     fnc: 'shareMusic'
                 }
             ]
@@ -393,14 +393,13 @@ export class shareMusic extends plugin {
 
     async shareMusic(e) {
         let searchURL = "http://127.0.0.1:7894/search?keywords=paramsSearch"  // 网易云
-        let msg = e.msg.replace(/(点歌|来首|听歌)/g, "");
+        let msg = e.msg.replace(/(点歌|来首|听歌|点首)/g, "");
         try {
             msg = encodeURI(msg);
             let url = searchURL.replace("paramsSearch", msg);
             logger.info(url)
             let response = await fetch(url);
-            let result = await response.json().result;
-            logger.info(result)
+            let result = (await response.json()).result;
             let songList = result?.songs?.length ? result.songs : [];
             if (!songList[0]) {
                 await e.reply(`没有在网易云曲库中找到相应歌曲`);
