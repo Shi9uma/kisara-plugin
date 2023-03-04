@@ -420,7 +420,7 @@ export class shareMusic extends plugin {
             }
         }
         catch (error) {
-            logger.err(error);
+            logger.warn(error);
         }
         return true; //返回true 阻挡消息不再往下
     }

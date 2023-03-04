@@ -1,0 +1,5 @@
+dontgit
+node_modules
+package.json
+config
+data/todayNews
