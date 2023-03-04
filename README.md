@@ -8,19 +8,18 @@
 
 ## 安装方法
 
-- 将插件整个放在 `./Yunzai-bot/plugins/` 下，默认插件名称为 `diy`，您可以在 `./default/config.index.yaml` 文件中修改插件的默认名，也请修改后对应修改 `./Yunzai-bot/plugins/{要修改成的插件名称}`
-- 获取本插件的指令：`git clone https://gitee.com/wkyuu/oicqdiy.git ./Yunzai-bot/plugins/{您期望的插件名}`，请您自行修改后面的路径以保证插件能被正常加载
-- 本插件还引入了 `shelljs，axios` 等依赖，您在启动插件后，会接收到相应缺少插件的依赖报错。此时您可以回到 `./Yunzai-bot` 的根目录下，使用 `npm install {缺失的依赖名称}`，这里我推荐您使用 [cnpm](https://zhuanlan.zhihu.com/p/120159632)(即直接将 npm 修改成 cnpm 即可，其他不变)，访问速度更快。
+- 将插件整个放在 `./Yunzai-bot/plugins/` 下，默认插件名称为 `diy`，您可以在 `{插件名称}/default/config.index.yaml` 文件中修改插件的默认名，也请修改后对应修改文件名 `./Yunzai-bot/plugins/{插件名称}`
+- 获取本插件的指令：`git clone https://github.com/Shi9uma/oicqdiy.git ./Yunzai-bot/plugins/{期望的插件名}`，请您自行修改后面的路径以保证插件能被正常加载
+- 本插件还引入了 `shelljs，axios` 等依赖，您在启动插件后，会接收到相应缺少插件的依赖报错。此时您可以回到 `./Yunzai-bot` 的根目录下，使用 `npm install {缺失的依赖名称}`，这里我推荐您使用 [cnpm](https://zhuanlan.zhihu.com/p/120159632)(安装后可以直接将 npm 修改成 cnpm 即可，其他不变)，访问速度更快。
 
 ## todo
 
 1. utils.tools，添加权限检测函数，几种权限组合
-2. utils.tools，添加 redis 缓存工具
+2. utils.tools，添加 redis 缓存工具，按照 `群号.qq号.时间`，`isPrivate.qq号.时间` 来安排
 3. 插件热重载方法，避免重连导致封号风险，[参考锅巴插件](https://github.com/guoba-yunzai/guoba-plugin.git)
 4. 每日简报, [链接](https://github.com/MuXia-0326/YunzaiBotJsPluginMuXia/commit/99fc41ede4b353fd5634c22760427926ef0f1274#diff-86ffc4882c17c1c4700966b8e470a9d5c98f8cc6ae9d19227cb1502bb4406f77)，每日 8 点获取，将图片存储，全局发送
-5. ~~撤回机器人消息,~~ [链接](https://github.com/MuXia-0326/YunzaiBotJsPluginMuXia/blob/master/muxia_recall_bot_msg.js)
 6. 机器人一键开关，参考千羽插件（暂定）
-7. 机器人全局消息
+7. 机器人全局消息，私人发送时，回复指定消息以全局发送
 8. 番剧识别, 搜图延时模式, [链接](https://github.com/yeyang52/yenai-plugin/blob/master/apps/picSearch.js)
 9. 计算抽卡期望, [链接](https://github.com/MSIsunny/GenshinWishCalculator-py/blob/main/WishSupport.py)
 10. ~~随机图片~~, [链接](https://gitee.com/ying_Sailor_uniform/wallpaperjs/blob/master/wallpaper.js)

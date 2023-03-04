@@ -16,7 +16,7 @@ const content = [
     '简报：发送每日简报\n',
     '骰子: 「r + 数字」\n',
     '识图: 「识图 + 图片」, 「引用含有图片的消息并识图」\n',
-    '点歌: 「点歌 + 歌曲名，--singer 指定歌手」\n'
+    '点歌: 「点歌 + 歌曲名, 直接加歌手名以指定」\n'
 ]
 
 // 查看属性
@@ -112,7 +112,7 @@ export class tarot extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#?占卜',
+                    reg: '^#?占卜$',
                     fnc: 'tarot'
                 }
             ]
