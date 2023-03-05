@@ -1,6 +1,6 @@
 # 自用 Yunzai_bot 插件
 
-> 根据各种插件魔改而来, 基本都会贴上源引用
+> 根据各种插件魔改而来
 
 ## 目前功能
 
@@ -14,17 +14,26 @@
 
 ## todo
 
-1. utils.tools，添加权限检测函数，几种权限组合
-2. utils.tools，添加 redis 缓存工具，按照 `群号.qq号.时间`，`isPrivate.qq号.时间` 来安排
-3. 插件热重载方法，避免重连导致封号风险，[参考锅巴插件](https://github.com/guoba-yunzai/guoba-plugin.git)
-4. 每日简报, [链接](https://github.com/MuXia-0326/YunzaiBotJsPluginMuXia/commit/99fc41ede4b353fd5634c22760427926ef0f1274#diff-86ffc4882c17c1c4700966b8e470a9d5c98f8cc6ae9d19227cb1502bb4406f77)，每日 8 点获取，将图片存储，全局发送
-6. 机器人一键开关，参考千羽插件（暂定）
-7. 机器人全局消息，私人发送时，回复指定消息以全局发送
-8. 番剧识别, 搜图延时模式, [链接](https://github.com/yeyang52/yenai-plugin/blob/master/apps/picSearch.js)
-9. 计算抽卡期望, [链接](https://github.com/MSIsunny/GenshinWishCalculator-py/blob/main/WishSupport.py)
-10. ~~随机图片~~, [链接](https://gitee.com/ying_Sailor_uniform/wallpaperjs/blob/master/wallpaper.js)
-11. b 站 up 开播, 动态推送, [链接](https://github.com/HeadmasterTan/zhi-plugin.git)
-12. 原神角色参考面板，[插件](https://github.com/howe0116/howe-plugin)，[nga 资源](https://bbs.nga.cn/read.php?tid=25843014&rand=967)
+- utils
+	- [ ] 添加权限检测函数，几种权限类型组合
+	- [ ] 添加 redis 操纵 api 化，按照 `群号.qq.时间`，`friend.qq.time` 的键值来设计
+- 插件热重载
+- 简报
+	- [ ] 简报定时推送
+- Bot 系统优化
+	- [ ] 一键开关，参考千羽插件
+	- [ ] 主人全局带话，回复某一信息以多群转发
+	- [ ] 延时回复功能 doreply
+	- [ ] 主人邀请后，会自动添加到群可用列表
+- 识图、搜番、本子等
+	- [ ] 手动指定相似性阈值
+	- [ ] [番剧识别功能](https://github.com/yeyang52/yenai-plugin/blob/master/apps/picSearch.js)
+	- [ ] 延时接收图片功能
+	- [ ] 搜本子
+- [计算抽卡期望](https://github.com/MSIsunny/GenshinWishCalculator-py/blob/main/WishSupport.py)
+- [B 站订阅功能，开播、动态推送，按群区分](https://github.com/HeadmasterTan/zhi-plugin.git)
+- [原神角色参考面板插件](https://github.com/howe0116/howe-plugin)，[nga 资源](https://bbs.nga.cn/read.php?tid=25843014&rand=967)
+- 机器人记事本功能
 
 ## PROBLEM
 
