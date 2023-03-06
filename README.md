@@ -2,6 +2,9 @@
 
 > 根据各种插件魔改而来
 
+- [本家](https://github.com/Le-niao/Yunzai-Bot)，目前 Github 上的被禁用掉了；Gitee 上还有，但是目前应该是受到 Github 影响，停止更新状态
+- [其他 fork 版本](https://github.com/Yummy-cookie/Yunzai-Bot.git)
+
 ## 目前功能
 
 可以在 `apps` 文件夹中打开 `.js` 后缀文件查看批注。功能开关在 `config/index.config.yaml` 文件中，在初次加载插件后请**务必重启 bot**，会自行创建一个 `./config` 文件夹，并将 `index.config.yaml` 自动复制过去
@@ -12,7 +15,7 @@
 - 获取本插件的指令：`git clone https://github.com/Shi9uma/oicqdiy.git ./Yunzai-bot/plugins/{期望的插件名}`，请您自行修改后面的路径以保证插件能被正常加载
 - 本插件还引入了 `shelljs，axios` 等依赖，您在启动插件后，会接收到相应缺少插件的依赖报错。此时您可以回到 `./Yunzai-bot` 的根目录下，使用 `npm install {缺失的依赖名称}`，这里我推荐您使用 [cnpm](https://zhuanlan.zhihu.com/p/120159632)(安装后可以直接将 npm 修改成 cnpm 即可，其他不变)，访问速度更快。
 
-## todo
+## todos
 
 - utils
 	- [ ] 添加权限检测函数，几种权限类型组合
@@ -39,7 +42,7 @@
 
 **可能遇到的问题**
 
-1. `默认配置文件夹 ${dirName} 不存在, 为保证插件正常运行, 请通过 github 获取默认配置文件`。遇到这个问题只需要从本 github 仓库获取默认配置文件夹 `default` 即可(需要包含所有 yaml 文件)，也可以通过修改本插件的 `index.js` 逻辑来启用插件，但不能保证之后所有插件能正常使用。
+> `默认配置文件夹 ${dirName} 不存在, 为保证插件正常运行, 请通过 github 获取默认配置文件`。遇到这个问题只需要从本 github 仓库获取默认配置文件夹 `default` 即可(需要包含所有 yaml 文件)，也可以通过修改本插件的 `index.js` 逻辑来启用插件，但不能保证之后所有插件能正常使用。
 
 ## 文件配置逻辑
 
