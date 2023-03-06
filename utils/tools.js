@@ -32,29 +32,6 @@ class tools {
     }
 
     /**
-     * 监听配置文件的修改
-     * @param {*} filePath 
-     * @param {*} app 
-     * @param {*} func 
-     * @param {*} type 
-     * @returns 
-     */
-    watch(filePath, app, func, type = 'defaultConfig') {
-        let flag = `${app}.${func}`
-        if (this.watcher[type][flag]) return
-
-        let watcher = chokidar.watch(filePath)
-        watcher.on('change', path => {
-            delete this[type][flag]
-            logger.mark(`[修改配置文件][${type}][${app}][${func}]`)
-            if (this[`change_${app}${func}`]) {
-                this[`change_${app}${func}`]()
-            }
-        })
-        this.watcher[type][flag] = watcher
-    }
-
-    /**
      * 返回本插件的名称
      */
     getPluginName() {
@@ -218,6 +195,26 @@ class tools {
                 })
             })
         })
+    }
+
+    /**
+     * 实现插件热更新
+     * @param {*} app   功能主题名 
+     * @param {*} func  功能名
+     */
+    watch(app) {
+        function watchDir(app) {
+            if (this.watcher[app]) return
+
+            let appDirPath = `./plugins/${pluginName}/apps`
+            const watcher = chokidar.watch(appDirPath)
+
+            setTimeout(() => {
+                watcher.on('add', async newApp => {
+                    let appList = path
+                })
+            })
+        }
     }
 }
 

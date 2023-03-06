@@ -100,9 +100,9 @@ export class todayNews extends plugin {
             await this.getTodayNews(datatime)
             let msg
             if (!this.isValidTime()) {
-                msg = `[+] ${datatime} 简报\n请注意, 当前时间点 ${new moment().format('yyyy-MM-DD HH:mm:ss')} 获取的简报信息可能有延误\n若出现延误内容, 请通过 删除简报 指令来刷新简报信息`
+                msg = `[+] ${datatime} 简报\n正在初始化今日简报信息, 请再次输入获取简报指令\n请注意, 当前时间点 ${new moment().format('yyyy-MM-DD HH:mm:ss')} 获取的简报信息可能有延误\n若出现延误内容, 请通过 删除简报 指令来刷新简报信息`
             } else {
-                msg = `[+] ${datatime} 简报\n正在初始化今日简报信息, 请稍后重新获取`
+                msg = `[+] ${datatime} 简报\n正在初始化今日简报信息, 请再次输入获取简报指令`
             }
             await this.e.reply(msg)
             return
