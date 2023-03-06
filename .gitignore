@@ -4,3 +4,4 @@ package.json
 config
 *apitoken.js
 data/todayNews
+test.js

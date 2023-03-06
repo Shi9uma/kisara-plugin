@@ -104,7 +104,7 @@ export class saucenao extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#?(识图|搜图)$',
+                    reg: '^#?(识图|搜图|出处|来源)$',
                     fnc: 'saucenaoCheckType'
                 }
             ]
@@ -384,7 +384,7 @@ export class shareMusic extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: "^#?(点歌|来首|听歌|点首)(.*)$",
+                    reg: "^#?(点歌|来首|听歌|点首|bgm)(.*)$",
                     fnc: 'shareMusic'
                 }
             ]
@@ -393,7 +393,7 @@ export class shareMusic extends plugin {
 
     async shareMusic(e) {
         let searchURL = "http://127.0.0.1:7894/search?keywords=paramsSearch"  // 网易云
-        let msg = e.msg.replace(/(点歌|来首|听歌|点首)/g, "");
+        let msg = e.msg.replace(/#?(点歌|来首|听歌|点首|bgm)/g, "");
         try {
             msg = encodeURI(msg);
             let url = searchURL.replace("paramsSearch", msg);
