@@ -10,6 +10,10 @@ const pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(__dirname)}/
 let defaultDir = `./plugins/${pluginName}/default`
 let userConfigDir = `./plugins/${pluginName}/config`
 
+
+/**
+ * 检查与创建插件配置文件夹
+ */
 if (pluginName != basename(__dirname)) {
 	logger.info(`插件文件夹名称与 ${defaultDir} 中的 pluginName 项不同, 请检查并重启 bot`)
 	logger.info(`插件文件夹名称: ${__dirname}, pluginName: ${join(dirname(__dirname), pluginName)}`)
@@ -29,6 +33,9 @@ for (let fileName of defaultConfigFileList) {
 	else continue
 }
 
+/**
+ * 加载插件
+ */
 const files = fs.readdirSync(`./plugins/${pluginName}/apps`).filter(file => file.endsWith('.js'))
 
 let jsList = []

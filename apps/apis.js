@@ -425,3 +425,50 @@ export class shareMusic extends plugin {
         return true; //返回true 阻挡消息不再往下
     }
 }
+
+// 查看 QQ 账号风险值
+export class weight extends plugin {
+    constructor() {
+        super({
+            name: '权重查询',
+            dsc: '用于查询 QQ 账号的风险值',
+            event: 'message',
+            priority: 5000,
+            rule: [
+                { 
+                    reg: "^#?(查询风险值|查风险|风险|封号概率|查询封号|封号|查封号)$",
+                    fnc: 'weight'
+                }
+            ]
+        })
+    }
+
+    async weight() {
+        let searchURL = "http://tfapi.top/API/qqqz.php?type=json&qq=paramsSearch"  // 网易云
+        try {
+            let url = searchURL.replace("paramsSearch", this.e.sender.user_id);
+            logger.info(url)
+            let msg
+            let response = await fetch(url);
+            let result = (await response.json());
+            if (result.code != 200) {
+                msg = [
+                    `Api 出错, 请重试\n`,
+                    `状态码 ${result.code}`
+                ]
+                await this.e.reply(msg)
+                return
+            }
+            let weight = result?.qz ? result?.qz : 0
+            msg = [
+                `\n查询权重值为 ${weight}\n`,
+                `tips: 查询你的 QQ 账号风险值有多高，麻花给你多少面子，各种因素会影响你的账号权重，相对较低时建议谨慎使用 QQ`
+            ]
+            await this.e.reply(msg, true)
+        }
+        catch (error) {
+            logger.warn(error);
+        }
+        return true; //返回true 阻挡消息不再往下
+    }    
+}

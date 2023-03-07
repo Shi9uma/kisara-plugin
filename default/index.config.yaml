@@ -8,6 +8,7 @@ apps:
     - saucenao: true
     - ghser: true
     - shareMusic: true
+    - weight: true
 
   cmd:
     - cmd: true
@@ -22,6 +23,9 @@ apps:
 
   schedule:
     - todayNews: true
+
+  test:
+    - test: true
 
 # 部分功能的配置关系, 作用于 default, config 文件夹内命名方式, 一般不需要改动
 configs:

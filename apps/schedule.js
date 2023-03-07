@@ -4,6 +4,7 @@ import fs from 'fs'
 import fetch from "node-fetch"
 import tools from '../utils/tools.js'
 import plugin from '../../../lib/plugins/plugin.js'
+import common from '../../../lib/common/common.js'
 import moment from 'moment'
 
 const pluginName = tools.getPluginName()
@@ -31,14 +32,17 @@ export class todayNews extends plugin {
 
         this.imgType = 'png'
         this.newsImgDir = `./plugins/${pluginName}/data/todayNews`
-    }
+        this.configYaml = tools.readYaml('schedule', 'todayNews')
+        this.datatime = new moment().format('yyyy-MM-DD')
 
-    // this.task = {
-    //     cron: tools.getConfig('schedule', 'config').scheduleTime,
-    //     name: '每日简报定时推送任务',
-    //     fnc: () => this.sendTodayNews(),
-    //     log: true
-    // }
+        // this.task = {
+        //     cron: this.configYaml.scheduleTime,
+        //     name: '每日简报定时推送任务',
+        //     fnc: () => this.scheduleSendTodayNews(),
+        //     log: true
+        // }
+
+    }
 
     isValidTime() {
         let datatime = new moment(new Date()).format('yyyy-MM-DD HH')
@@ -65,7 +69,7 @@ export class todayNews extends plugin {
             tools.makeDir(this.newsImgDir)
         }
         let deleteFilePath
-        let keepTime = tools.readYaml('schedule', 'todayNews', 'config').KeepTime
+        let keepTime = this.configYaml.KeepTime
         let files = fs.readdirSync(this.newsImgDir).filter(file => file.endsWith('.png'))
         if (files.length > keepTime) {
             for (let count = 0; count < (files.length - keepTime); count++) {
@@ -76,7 +80,7 @@ export class todayNews extends plugin {
         }
     }
 
-    async getTodayNews(datatime) {
+    async getTodayNews() {
         // let url = 'http://bjb.yunwj.top/php/tp/lj.php'
         let url = 'http://dwz.2xb.cn/zaob'
         let response = await fetch(url).catch((err) => logger.info(err))
@@ -94,7 +98,7 @@ export class todayNews extends plugin {
     }
 
     async sendTodayNews() {
-        let datatime = await new moment().format('yyyy-MM-DD')
+        let datatime = this.datatime
         this.checkKeepTime()
         if (!this.checkTodayNewsImg(datatime)) {
             await this.getTodayNews(datatime)
@@ -140,5 +144,19 @@ export class todayNews extends plugin {
             await this.e.reply(`[+] 已删除 ${datatime} 简报`)
             return
         }
+    }
+
+    async scheduleSendTodayNews() {
+        if(!this.checkTodayNewsImg(this.datatime)) {
+            await this.getTodayNews(this.datatime)
+            await common.sleep(1000)
+        }
+        logger.info('flag')
+        // let scheduleGroups = this.configYaml.scheduleGroups
+        // for(let group_id of scheduleGroups) {
+        //     this.e.group.group_id = group_id
+        //     await this.sendTodayNews()
+        // }
+        // return 
     }
 }

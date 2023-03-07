@@ -3,6 +3,7 @@ import fs from 'fs'
 import yaml from 'yaml'
 import chokidar from 'chokidar'
 import https from 'https'
+import lodash from 'lodash'
 
 import { basename, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -208,13 +209,17 @@ class tools {
 
             let appDirPath = `./plugins/${pluginName}/apps`
             const watcher = chokidar.watch(appDirPath)
-
-            setTimeout(() => {
-                watcher.on('add', async newApp => {
-                    let appList = path
-                })
-            })
+            if(watcher.on('all', lodash.debounce(update, 300)))
+                logger.info('flag')
+            
+            // const watcher = chokidar.watch(appDirPath)
+            // setTimeout(() => {
+            //     watcher.on('add', async newApp => {
+            //         let appList = path
+            //     })
+            // })
         }
+        return watchDir(app)
     }
 }
 
