@@ -17,10 +17,10 @@
 
 ## todos
 
+- [插件热重载](https://juejin.cn/post/6844903478305914894)
 - utils
 	- [ ] 添加权限检测函数，几种权限类型组合
 	- [ ] 添加 redis 操纵 api 化，按照 `群号.qq.时间`，`friend.qq.time` 的键值来设计
-- 插件热重载
 - 简报
 	- [ ] 简报定时推送
 - Bot 系统优化
@@ -44,6 +44,7 @@
 
 > `默认配置文件夹 ${dirName} 不存在, 为保证插件正常运行, 请通过 github 获取默认配置文件`。遇到这个问题只需要从本 github 仓库获取默认配置文件夹 `default` 即可(需要包含所有 yaml 文件)，也可以通过修改本插件的 `index.js` 逻辑来启用插件，但不能保证之后所有插件能正常使用。
 
-## 文件配置逻辑
+## 札记
 
-`schedule.todayNews.yaml`：这是一个 todayNews 功能的配置文件，`schedule` 称为 app，`todayNews` 称为 func
+- 插件的命名逻辑：`schedule.todayNews.yaml`：这是一个 todayNews 功能的配置文件，`schedule` 称为 app，`todayNews` 称为 func
+- 阅读了 Yunzai 的源码，发现使用 `index.js` 作为插件入口的方式下，不会自动监听，故尝试修改成 xindex.js
