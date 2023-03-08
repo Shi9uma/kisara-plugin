@@ -1,4 +1,4 @@
-import { segment } from 'oicq'
+import { segment } from 'icqq'
 
 import lodash from 'lodash'
 import moment from 'moment'
@@ -427,10 +427,10 @@ export class shareMusic extends plugin {
 }
 
 // 查看 QQ 账号风险值
-export class weight extends plugin {
+export class riskValue extends plugin {
     constructor() {
         super({
-            name: '权重查询',
+            name: '账号风险值查询',
             dsc: '用于查询 QQ 账号的风险值',
             event: 'message',
             priority: 5000,
@@ -446,11 +446,9 @@ export class weight extends plugin {
     async weight() {
         let searchURL = "http://tfapi.top/API/qqqz.php?type=json&qq=paramsSearch"  // 网易云
         try {
-            let url = searchURL.replace("paramsSearch", this.e.sender.user_id);
+            let url = searchURL.replace("paramsSearch", this.e?.source?.user_id ? this.e.source.user_id : this.e.sender.user_id);
             logger.info(url)
-            let msg
-            let response = await fetch(url);
-            let result = (await response.json());
+            let response = (await fetch(url)), msg, result = (await response.json());
             if (result.code != 200) {
                 msg = [
                     `Api 出错, 请重试\n`,
@@ -461,8 +459,8 @@ export class weight extends plugin {
             }
             let weight = result?.qz ? result?.qz : 0
             msg = [
-                `\n查询权重值为 ${weight}\n`,
-                `tips: 查询你的 QQ 账号风险值有多高，麻花给你多少面子，各种因素会影响你的账号权重，相对较低时建议谨慎使用 QQ`
+                `你的账号权值为 ${weight}\n`,
+                `tips: 你的 QQ 账号权值越高，tx 越给面子，相对较低时建议谨慎使用 QQ`
             ]
             await this.e.reply(msg, true)
         }

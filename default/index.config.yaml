@@ -8,7 +8,7 @@ apps:
     - saucenao: true
     - ghser: true
     - shareMusic: true
-    - weight: true
+    - riskValue: true
 
   cmd:
     - cmd: true

@@ -1,4 +1,4 @@
-import { segment } from 'oicq'
+import { segment } from 'icqq'
 
 import fs from 'fs'
 import fetch from "node-fetch"
