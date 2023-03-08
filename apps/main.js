@@ -144,6 +144,7 @@ export class tarot extends plugin {
         return true
     }
 
+    // 参考 https://github.com/MinatoAquaCrews/nonebot_plugin_tarot
     async tarot() {
 
         let card = lodash.sample(tarot_cards)
@@ -157,14 +158,13 @@ export class tarot extends plugin {
 
         let banner = lodash.random(0, 10)
         if (banner == 5) {
-            await this.reply('“许多傻瓜对千奇百怪的迷信说法深信不疑：象牙、护身符、黑猫、打翻的盐罐、驱邪、占卜、符咒、毒眼、塔罗牌、星象、水晶球、咖啡渣、手相、预兆、预言还有星座。”\n——《人类愚蠢辞典》')
+            await this.e.reply('“许多傻瓜对千奇百怪的迷信说法深信不疑：象牙、护身符、黑猫、打翻的盐罐、驱邪、占卜、符咒、毒眼、塔罗牌、星象、水晶球、咖啡渣、手相、预兆、预言还有星座。”\n——《人类愚蠢辞典》')
         }
 
-        await this.reply(
+        await this.e.reply(
             `\n「${isUp ? '正位' : '逆位'}」${name}\n回应是：${isUp ? card.meaning.up : card.meaning.down}`, false, { at: true }
         )
 
-        // 参考 https://github.com/MinatoAquaCrews/nonebot_plugin_tarot
         let path = `./plugins/diy/data/tarotCards`
         let pic = segment.image(`file://${path}/${card.type}/${card.pic}`)
         await this.reply(pic)

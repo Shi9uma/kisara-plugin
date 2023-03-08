@@ -437,16 +437,17 @@ export class riskValue extends plugin {
             rule: [
                 { 
                     reg: "^#?(查询风险值|查风险|风险|封号概率|查询封号|封号|查封号)$",
-                    fnc: 'weight'
+                    fnc: 'riskValue'
                 }
             ]
         })
     }
 
-    async weight() {
+    async riskValue() {
         let searchURL = "http://tfapi.top/API/qqqz.php?type=json&qq=paramsSearch"  // 网易云
         try {
-            let url = searchURL.replace("paramsSearch", this.e?.source?.user_id ? this.e.source.user_id : this.e.sender.user_id);
+            let paramsSearch = this.e?.source?.user_id ? this.e.source.user_id : this.e.sender.user_id
+            let url = searchURL.replace("paramsSearch", paramsSearch);
             logger.info(url)
             let response = (await fetch(url)), msg, result = (await response.json());
             if (result.code != 200) {
@@ -457,10 +458,10 @@ export class riskValue extends plugin {
                 await this.e.reply(msg)
                 return
             }
-            let weight = result?.qz ? result?.qz : 0
             msg = [
-                `你的账号权值为 ${weight}\n`,
-                `tips: 你的 QQ 账号权值越高，tx 越给面子，相对较低时建议谨慎使用 QQ`
+                `[+] 查询账号权值\n`,
+                `QQ 号 ${paramsSearch} 的账号权值为 ${result?.qz}\n`,
+                `tips: QQ 账号权值越高，tx 越给面子，相对较低时建议谨慎使用 QQ`
             ]
             await this.e.reply(msg, true)
         }

@@ -1,42 +1,27 @@
 
 import fs from 'fs'
 import yaml from 'yaml'
-import chokidar from 'chokidar'
 import https from 'https'
-import lodash from 'lodash'
 
 import { basename, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
-/** linux dev env */
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(dirname(__dirname))}/default/index.config.yaml`, 'utf8')).pluginName
-
-const defaultDir = `./plugins/${pluginName}/default`
-const userConfigDir = `./plugins/${pluginName}/config`
-
-/** win dev env */
-// const __dirname = dirname(fileURLToPath(import.meta.url))
-// const pluginName = 'diy'
-
-// const defaultDir = `../default`
-// const userConfigDir = `../config`
-// const logger = console
-
-// let logger = console
-
 class tools {
     constructor() {
-        /** 默认设置 */
-        this.defaultPath = './default'
-        this.defaultConfig = {}
+        this.__dirname = dirname(fileURLToPath(import.meta.url))
+        this.pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(dirname(this.__dirname))}/default/index.config.yaml`, 'utf8')).pluginName
+
+        this.defaultDir = `./plugins/${this.pluginName}/default`
+        this.userConfigDir = `./plugins/${this.pluginName}/config`
+
+        this.prefix = `[${this.pluginName}.utils.tools]`
     }
 
     /**
      * 返回本插件的名称
      */
     getPluginName() {
-        return basename(dirname(dirname(fileURLToPath(import.meta.url))))
+        return this.pluginName
     }
 
     /**
@@ -48,9 +33,9 @@ class tools {
      */
     getConfigFilePath(app, func, type = 'c') {
         if (type == 'd')
-            return `${defaultDir}/${app}.${func}.yaml`
+            return `${this.defaultDir}/${app}.${func}.yaml`
         else
-            return `${userConfigDir}/${app}.${func}.yaml`
+            return `${this.userConfigDir}/${app}.${func}.yaml`
     }
 
     /**
@@ -74,7 +59,7 @@ class tools {
      * @param {*} dirPath 文件夹路径
      */
     makeDir(dirPath) {
-        fs.mkdir(dirPath, (err) => { if (err) { return logger.info(err) } })
+        fs.mkdir(dirPath, (err) => { if (err) { return logger.info(this.prefix, err) } })
     }
 
     /**
@@ -83,7 +68,7 @@ class tools {
      * @param {*} to 路径, 到文件
      */
     copyFile(from, to) {
-        fs.copyFile(from, to, (err) => { return logger.info(err) })
+        fs.copyFile(from, to, (err) => { return logger.info(this.prefix, err) })
     }
 
     /**
@@ -91,7 +76,7 @@ class tools {
      * @param {*} filePath 要删除文件的路径
      */
     deleteFile(filePath) {
-        fs.unlink(filePath, (err) => { return logger.info(err) })
+        fs.unlink(filePath, (err) => { return logger.info(this.prefix, err) })
     }
 
     /**
@@ -105,13 +90,24 @@ class tools {
         if (!(type == 'config' || type == 'default')) {
             return logger.error('读取配置文件出错')
         }
-        let filePath = `./plugins/${pluginName}/${type}/${app}.${func}.yaml`
+        let filePath = `./plugins/${this.pluginName}/${type}/${app}.${func}.yaml`
         // let filePath = `../${type}/${app}.${func}.yaml`
         if (this.isFileValid(filePath)) {
             return yaml.parse(fs.readFileSync(filePath, 'utf8'))
         } else {
-            return logger.error(`找不到 ${filePath} 文件`)
+            return logger.error(`${this.prefix} 找不到 ${filePath} 文件`)
         }
+    }
+
+    /**
+     * 读取文件内容
+     * @param {*} filePath 
+     * @returns 
+     */
+    readFile(filePath) {
+        if (!this.isFileValid(filePath))
+            return logger.warn(`${this.prefix} 目标文件 ${filePath} 不存在或不合法`)
+        return fs.readFileSync(filePath, 'utf8')
     }
 
     /**
@@ -121,8 +117,8 @@ class tools {
      * @returns 
      */
     isFuncEnable(app, func) {
-        if (!this.isFileValid(`${userConfigDir}/index.config.yaml`)) {
-            return logger.info(`配置文件 ${userConfigDir}/index.config.yaml 不存在`)
+        if (!this.isFileValid(`${this.userConfigDir}/index.config.yaml`)) {
+            return logger.info(`配置文件 ${this.userConfigDir}/index.config.yaml 不存在`)
         }
         let configs = this.readYaml('index', 'config', 'config')
         for (let _app in configs.apps) {
@@ -133,15 +129,15 @@ class tools {
                 }
             }
         }
-        return logger.error(`功能 [${app}][${func}] 不存在`)
+        return logger.error(`${this.prefix} 功能 [${app}][${func}] 不存在`)
     }
 
     /**
      * 获取配置文件列表
      */
     getDefaultConfigFileList() {
-        if (!this.isFileValid(`${defaultDir}/index.config.yaml`)) {
-            return logger.info(`配置文件 ${defaultDir}/index.config.yaml 不存在`)
+        if (!this.isFileValid(`${this.defaultDir}/index.config.yaml`)) {
+            return logger.info(`${this.prefix} 配置文件 ${this.defaultDir}/index.config.yaml 不存在`)
         }
         let configs = this.readYaml('index', 'config', 'default')
         let defaultConfigFileList = []
@@ -159,16 +155,16 @@ class tools {
      * @param {*} func 
      */
     copyConfigFile(app, func) {
-        if (!this.isDirValid(defaultDir)) {
-            return logger.info(`默认文件夹 ${defaultDir} 不存在`)
+        if (!this.isDirValid(this.defaultDir)) {
+            return logger.info(`${this.prefix} 默认文件夹 ${this.defaultDir} 不存在`)
         }
-        if (!this.isDirValid(userConfigDir)) {
-            return logger.info(`目标文件夹 ${userConfigDir} 不存在`)
+        if (!this.isDirValid(this.userConfigDir)) {
+            return logger.info(`${this.prefix} 目标文件夹 ${this.userConfigDir} 不存在`)
         }
-        let fromFile = `${defaultDir}/${app}.${func}.yaml`
-        let toFile = `${userConfigDir}/${app}.${func}.yaml`
+        let fromFile = `${this.defaultDir}/${app}.${func}.yaml`
+        let toFile = `${this.userConfigDir}/${app}.${func}.yaml`
         this.copyFile(fromFile, toFile, (err) => {
-            return logger.err(err)
+            return logger.err(this.prefix, err)
         })
     }
 
@@ -190,37 +186,14 @@ class tools {
             res.on('end', () => {
                 fs.writeFile(saveImgPath, imgData, 'binary', (err) => {
                     if (err)
-                        return logger.info(`图片 ${imgUrl} 获取失败`)
+                        return logger.info(`${this.prefix} 图片 ${imgUrl} 获取失败`)
                     else
-                        return logger.info(`图片 ${imgUrl} 成功保存到 ${saveImgPath}`)
+                        return logger.info(`${this.prefix} 图片 ${imgUrl} 成功保存到 ${saveImgPath}`)
                 })
             })
         })
     }
 
-    /**
-     * 实现插件热更新
-     * @param {*} app   功能主题名 
-     * @param {*} func  功能名
-     */
-    watch(app) {
-        function watchDir(app) {
-            if (this.watcher[app]) return
-
-            let appDirPath = `./plugins/${pluginName}/apps`
-            const watcher = chokidar.watch(appDirPath)
-            if(watcher.on('all', lodash.debounce(update, 300)))
-                logger.info('flag')
-            
-            // const watcher = chokidar.watch(appDirPath)
-            // setTimeout(() => {
-            //     watcher.on('add', async newApp => {
-            //         let appList = path
-            //     })
-            // })
-        }
-        return watchDir(app)
-    }
 }
 
 export default new tools()
