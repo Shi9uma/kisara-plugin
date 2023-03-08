@@ -194,6 +194,51 @@ class tools {
         })
     }
 
+    /**
+     * 制作转发内容
+     * @param {*} title 标题
+     * @param {*} forwardMsgArr 转发内容集合
+     * @param {*} end 结尾
+     * @param {*} e 传入 this.e
+     * @param {*} Bot 传入 global.Bot
+     * @returns 
+     */
+    makeForwarMsg(title, forwardMsgArr, end, e, Bot) {
+        let nickname = Bot.nickname
+
+        if (e.isGroup) {
+            let info = Bot.getGroupMemberInfo(e.group_id, Bot.uin)
+            nickname = info.card ?? info.nickname
+        }
+
+        let userInfo = {
+            user_id: Bot.uin,
+            nickname
+        }
+
+        let forwardMsg = [{
+            ...userInfo,
+            message: title
+        }]
+
+        for (let msg of forwardMsgArr) {
+            forwardMsg.push({
+                ...userInfo,
+                message: msg
+            })
+        }
+
+        if (end) {
+            forwardMsgArr.push({
+                ...userInfo,
+                message: end
+            })
+        }
+
+        forwardMsg = e.isGroup ? e.group.makeForwarMsg(forwardMsg) : e.friend.makeForwardMsg(forwardMsg)
+
+        return forwardMsg
+    }
 }
 
 export default new tools()
