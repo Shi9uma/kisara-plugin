@@ -182,7 +182,7 @@ export class tarot extends plugin {
                 },
 
                 // 抽取牌数据
-                cards_info_list = lodash.sampleSize(all_cards, formation.cards_num),
+                cards_info_list = lodash.sampleSize(all_cards, formation.cards_num)
 
             return formation, cards_info_list, card
         } else if (type == 'single') {
