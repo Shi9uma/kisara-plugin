@@ -6,11 +6,11 @@ import fetch from "node-fetch"
 import axios from 'axios'
 
 import plugin from '../../../lib/plugins/plugin.js'
-import Apis from '../data/apitoken.js'
-
+import tools from '../utils/tools.js'
 
 const cd = 2    //所有命令的 cd，单位 小时
-const apis = lodash.sample(Apis)
+const pluginName = tools.getPluginName()
+const apis = JSON.parse(tools.readFile(`./plugins/${pluginName}/data/apiToken.json`))
 
 const codes = {
     130: 'API 调用频率超限',

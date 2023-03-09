@@ -2,6 +2,6 @@ dontgit
 node_modules
 package.json
 config
-*apitoken.js
+*apitoken*
 data/todayNews
 test.js
