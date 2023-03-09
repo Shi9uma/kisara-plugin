@@ -245,7 +245,7 @@ export class tarot extends plugin {
             return
         }
 
-        if (lodash.random(0, 10) == 5 || this.e.isMaster) {
+        if (lodash.random(0, 5) == 3 || this.e.isMaster) {
             await this.e.reply('“许多傻瓜对千奇百怪的迷信说法深信不疑：象牙、护身符、黑猫、打翻的盐罐、驱邪、占卜、符咒、毒眼、塔罗牌、星象、水晶球、咖啡渣、手相、预兆、预言还有星座。”\n——《人类愚蠢辞典》')
             this.fullTarot()
             return
