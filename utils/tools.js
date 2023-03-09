@@ -228,7 +228,7 @@ class tools {
             })
         }
 
-        forwardMsgArr.push({
+        forwardMsg.push({
             ...userInfo,
             message: end
         })

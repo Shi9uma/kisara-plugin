@@ -113,7 +113,7 @@ export class tarot extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#?新?占卜$',
+                    reg: '^#?占卜$',
                     fnc: 'tarot'
                 }
             ]
@@ -184,7 +184,7 @@ export class tarot extends plugin {
                 // 抽取牌数据
                 cards_info_list = lodash.sampleSize(all_cards, formation.cards_num)
 
-            return formation, cards_info_list, card
+            return {formation, cards_info_list, card}
         } else if (type == 'single') {
             return lodash.sample(all_cards)
         } else {
@@ -195,7 +195,10 @@ export class tarot extends plugin {
 
     async fullTarot() {
         let msg, msgArr = []
-        let formation, cards_info_list, card = this.getTarotData('full')
+        let fullTarotData = this.getTarotData('full')
+        let formation = fullTarotData.formation,
+            cards_info_list = fullTarotData.cards_info_list,
+            card = fullTarotData.card
         await this.e.reply(`${this.funcName}\n启用「${formation.name}」, 抽取 「${formation.cards_num}」张牌, 洗牌中...`)
         for (let index = 0; index < formation.cards_num; index++) {
             if (formation.is_cut && (index == formation.cards_num - 1))
@@ -215,18 +218,20 @@ export class tarot extends plugin {
             msgArr.push(msg)
             msgArr.push(segment.image(card.pic))
         }
-        await this.e.reply(await (tools.makeForwardMsg(`[+] 塔罗牌占卜\n${this.e.sender.nickname ? this.e.sender.nickname : this.e.sender.card}`, msgArr, '塔罗牌占卜结束\n感谢开源代码来源：https://github.com/MinatoAquaCrews/nonebot_plugin_tarot', this.e, global.Bot)))
+        await this.e.reply(await (tools.makeForwardMsg(`对象：${this.e.sender.nickname ? this.e.sender.nickname : this.e.sender.card}`, msgArr, '塔罗牌占卜结束\n感谢开源代码来源：https://github.com/MinatoAquaCrews/nonebot_plugin_tarot', this.e, global.Bot)))
         return
     }
 
     async singleTarot() {
         let card = this.getTarotData('single'), msg, roll = lodash.random(0, 1)
         msg = [
-            `\n${this.funcName}` + 
+            `${this.funcName}` +
             `\n「${roll ? '正位' : '逆位'}」${card.name_cn}` +
             `\n回应是：${roll ? card.meaning.up : card.meaning.down}`
         ]
-        await this.e.reply(msg, false, { at: true })
+        if (this.e.isGroup)
+            await this.e.reply(`\n${msg}`, false, { at: true })
+        else await this.e.reply(msg)
         await this.e.reply(segment.image(`file://${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`))
         return
     }
@@ -240,7 +245,7 @@ export class tarot extends plugin {
             return
         }
 
-        if (lodash.random(0, 10) == 5) {
+        if (lodash.random(0, 10) == 5 || this.e.isMaster) {
             await this.e.reply('“许多傻瓜对千奇百怪的迷信说法深信不疑：象牙、护身符、黑猫、打翻的盐罐、驱邪、占卜、符咒、毒眼、塔罗牌、星象、水晶球、咖啡渣、手相、预兆、预言还有星座。”\n——《人类愚蠢辞典》')
             this.fullTarot()
             return
