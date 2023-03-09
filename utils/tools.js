@@ -14,7 +14,24 @@ class tools {
         this.defaultDir = `./plugins/${this.pluginName}/default`
         this.userConfigDir = `./plugins/${this.pluginName}/config`
 
-        this.prefix = `[${this.pluginName}.utils.tools]`
+        this.prefix = `# ${this.pluginName}.utils.tools`
+    }
+
+    init() {    // 还没写完
+        // 检查相关配置文件夹
+        let defaultDir = this.defaultDir,
+            userConfigDir = this.userConfigDir
+
+        if (!this.isDirValid(defaultDir)) {
+            logger.warn(`${this.prefix} 文件夹 ${defaultDir} 不存在, 请从本仓库获取完整的文件夹`)
+            return false
+        }
+
+        if (!this.isDirValid(userConfigDir)) {
+            logger.warn(`${this.prefix} 文件夹 ${userConfigDir} 不存在, 正在从默认文件夹中获取配置`)
+        }
+
+        // 检查相关
     }
 
     /**
