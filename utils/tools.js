@@ -235,6 +235,9 @@ class tools {
             })
         }
 
+        logger.info('flag')
+        logger.info(userInfo, forawrdMsg, end)
+
         forwardMsg = e.isGroup ? e.group.makeForwarMsg(forwardMsg) : e.friend.makeForwardMsg(forwardMsg)
 
         return forwardMsg
