@@ -9,6 +9,9 @@
 
 可以在 `apps` 文件夹中打开 `.js` 后缀文件查看批注。功能开关在 `config/index.config.yaml` 文件中，在初次加载插件后请**务必重启 bot**，会自行创建一个 `./config` 文件夹，并将 `index.config.yaml` 自动复制过去
 
+- 占卜：塔罗牌占卜功能，[来源](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot.git)
+- 
+
 ## 安装方法
 
 - 将插件整个放在 `./Yunzai-bot/plugins/` 下，默认插件名称为 `diy`，您可以在 `{插件名称}/default/config.index.yaml` 文件中修改插件的默认名，也请修改后对应修改文件名 `./Yunzai-bot/plugins/{插件名称}`
@@ -21,6 +24,7 @@
 - utils
 	- [ ] 添加权限检测函数，几种权限类型组合
 	- [ ] 添加 redis 操纵 api 化，按照 `群号.qq.时间`，`friend.qq.time` 的键值来设计
+- 塔罗牌更新，逻辑修改
 - 简报
 	- [ ] 简报定时推送
 - Bot 系统优化
