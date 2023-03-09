@@ -203,7 +203,7 @@ class tools {
      * @param {*} Bot 传入 global.Bot
      * @returns 
      */
-    makeForwarMsg(title, forwardMsgArr, end, e, Bot) {
+    makeForwardMsg(title, forwardMsgArr, end, e, Bot) {
         let nickname = Bot.nickname
 
         if (e.isGroup) {
@@ -228,17 +228,12 @@ class tools {
             })
         }
 
-        if (end) {
-            forwardMsgArr.push({
-                ...userInfo,
-                message: end
-            })
-        }
+        forwardMsgArr.push({
+            ...userInfo,
+            message: end
+        })
 
-        logger.info('flag')
-        logger.info(userInfo, forawrdMsg, end)
-
-        forwardMsg = e.isGroup ? e.group.makeForwarMsg(forwardMsg) : e.friend.makeForwardMsg(forwardMsg)
+        forwardMsg = e.isGroup ? e.group.makeForwardMsg(forwardMsg) : e.friend.makeForwardMsg(forwardMsg)
 
         return forwardMsg
     }

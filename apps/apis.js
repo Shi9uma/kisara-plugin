@@ -195,6 +195,7 @@ export class saucenao extends plugin {
             let info = await Bot.getGroupMemberInfo(this.e.group_id, Bot.uin)
             nickname = info.card ?? info.nickname
         }
+        logger.info(this.e.isGroup, info)
 
         let userInfo = {
             user_id: Bot.uin,

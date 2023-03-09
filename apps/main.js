@@ -6,7 +6,6 @@ import moment from 'moment'
 import plugin from '../../../lib/plugins/plugin.js'
 import tools from '../utils/tools.js'
 
-import tarot_cards from '../data/tarot.js'
 import Foods from '../data/foods.js'
 
 const content = [
@@ -121,6 +120,9 @@ export class tarot extends plugin {
         })
 
         this.pluginName = tools.getPluginName()
+        this.tarotCardsDirPath = `./plugins/${this.pluginName}/data/tarotCards`
+        this.imgType = 'png'
+        this.funcName = '[+] 塔罗牌占卜'
     }
 
     get key() {
@@ -136,7 +138,8 @@ export class tarot extends plugin {
         return moment().format('X')
     }
 
-    async checkUser() {
+    async isPasseren() {
+        if (this.e.isMaster) return true
         const tarot_key = this.e.logFnc + this.e.user_id
         const expireTime = await redis.get(tarot_key)
         if (expireTime && this.time <= expireTime) {
@@ -147,24 +150,16 @@ export class tarot extends plugin {
         return true
     }
 
-    async fullTarot() {
-        let filePath = `./plugins/${this.pluginName}/data/tarotCards/tarot.json`, msg,
-            // 总数据
-            tarotData = JSON.parse(tools.readFile(filePath)),   // 读取塔罗牌数据
+    /**
+     * 获取塔罗牌数据
+     * @param {*} type full or single
+     * @returns full for [formation, cards_info_list, card], single for [card]
+     */
+    getTarotData(type) {
+        let filePath = `${this.tarotCardsDirPath}/tarot.json`,
+            tarotData = JSON.parse(tools.readFile(filePath)),   // 读取总数据
             all_cards = tarotData.cards,    // 读取所有卡片信息
             all_formations = tarotData.formations,   // 读取牌阵
-
-            // 牌阵数据
-            formation_name = lodash.sample(lodash.keys(all_formations)),
-            formation = {
-                name: formation_name,
-                cards_num: all_formations[formation_name].cards_num,
-                is_cut: all_formations[formation_name].is_cut,
-                representations: lodash.sample(all_formations[formation_name].representations)
-            },
-
-            // 抽取牌数据
-            cards_info_list = lodash.sampleSize(all_cards, formation.cards_num),
             card = {
                 name_cn: '',
                 name_en: '',
@@ -176,62 +171,83 @@ export class tarot extends plugin {
                 pic: ''
             }
 
-            // 制作转发消息
-            msgArr = []
+        if (type == 'full') {
+            // 牌阵数据
+            let formation_name = lodash.sample(lodash.keys(all_formations)),
+                formation = {
+                    name: formation_name,
+                    cards_num: all_formations[formation_name].cards_num,
+                    is_cut: all_formations[formation_name].is_cut,
+                    representations: lodash.sample(all_formations[formation_name].representations)
+                },
 
-        msgArr.push(`启用「${formation.name}」, 抽取 「${formation.cards_num}」张牌, 洗牌中...`)
+                // 抽取牌数据
+                cards_info_list = lodash.sampleSize(all_cards, formation.cards_num),
+
+            return formation, cards_info_list, card
+        } else if (type == 'single') {
+            return lodash.sample(all_cards)
+        } else {
+            return logger.red('错误的塔罗牌占卜类型传入')
+        }
+
+    }
+
+    async fullTarot() {
+        let msg, msgArr = []
+        let formation, cards_info_list, card = this.getTarotData('full')
+        await this.e.reply(`${this.funcName}\n启用「${formation.name}」, 抽取 「${formation.cards_num}」张牌, 洗牌中...`)
         for (let index = 0; index < formation.cards_num; index++) {
             if (formation.is_cut && (index == formation.cards_num - 1))
-                msg = `  切牌「${formation.representations[index]}」,\n`
+                msg = `切牌「${formation.representations[index]}」,\n`
             else
-                msg = `  第「${index + 1}」张牌「${formation.representations[index]}」\n`
+                msg = `第「${index + 1}」张牌「${formation.representations[index]}」\n`
 
             card = cards_info_list[index]
             card.meaning = lodash.random(0, 1) ? ['正位', card.meaning.up] : ['逆位', card.meaning.down]
-            card.pic = `file://./plugins/${this.pluginName}/data/tarotCards/${card.type}/${card.pic}.png`
+            card.pic = `file://${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`
 
             msg += [
                 `「${card.meaning[0]}」${card.name_cn},\n` +
-                `  回应是：${card.meaning[1]}`
+                `回应是：${card.meaning[1]}`
             ]
 
             msgArr.push(msg)
             msgArr.push(segment.image(card.pic))
         }
-        await this.e.reply(await (tools.makeForwarMsg(`[+] 塔罗牌占卜\n${this.e.sender.nickname ? this.e.sender.nickname : this.e.sender.card}`, msgArr, '占卜结束', this.e, global.Bot)))
+        await this.e.reply(await (tools.makeForwardMsg(`[+] 塔罗牌占卜\n${this.e.sender.nickname ? this.e.sender.nickname : this.e.sender.card}`, msgArr, '塔罗牌占卜结束\n感谢开源代码来源：https://github.com/MinatoAquaCrews/nonebot_plugin_tarot', this.e, global.Bot)))
+        return
+    }
+
+    async singleTarot() {
+        let card = this.getTarotData('single'), msg, roll = lodash.random(0, 1)
+        msg = [
+            `\n${this.funcName}` + 
+            `\n「${roll ? '正位' : '逆位'}」${card.name_cn}` +
+            `\n回应是：${roll ? card.meaning.up : card.meaning.down}`
+        ]
+        await this.e.reply(msg, false, { at: true })
+        await this.e.reply(segment.image(`file://${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`))
         return
     }
 
     // 参考 https://github.com/MinatoAquaCrews/nonebot_plugin_tarot
     async tarot() {
 
-        let card = lodash.sample(tarot_cards)
-        let name = card.name_cn
-        let isUp = lodash.random(0, 1)
-        let valid = await this.checkUser()
-        if (!valid) {
+        let isPasseren = await this.isPasseren()
+        if (!isPasseren) {
             this.reply('今日已经为你占卜过了，明天再来吧')
             return
         }
 
-        let banner = lodash.random(0, 10)
-        if (banner == 5) {
+        if (lodash.random(0, 10) == 5) {
             await this.e.reply('“许多傻瓜对千奇百怪的迷信说法深信不疑：象牙、护身符、黑猫、打翻的盐罐、驱邪、占卜、符咒、毒眼、塔罗牌、星象、水晶球、咖啡渣、手相、预兆、预言还有星座。”\n——《人类愚蠢辞典》')
-        }
-
-        if (this.e.raw_message == '新占卜') {
             this.fullTarot()
             return
+        } else {
+            this.singleTarot()
+            return
         }
-
-        await this.e.reply(
-            `\n「${isUp ? '正位' : '逆位'}」${name}\n回应是：${isUp ? card.meaning.up : card.meaning.down}`, false, { at: true }
-        )
-
-        let path = `./plugins/diy/data/tarotCards`
-        let pic = segment.image(`file://${path}/${card.type}/${card.pic}`)
-        await this.reply(pic)
-        return
     }
 }
 
