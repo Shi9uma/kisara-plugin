@@ -334,7 +334,6 @@ export class ghser extends plugin {
 // 点歌
 export class shareMusic extends plugin {
     constructor() {
-        this.reg = 
         super({
             name: '点歌',
             dsc: '点歌系统',
