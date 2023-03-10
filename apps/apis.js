@@ -44,7 +44,7 @@ export class tiangou extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: "^#?(舔狗日志|舔狗日记|日记|日志|舔狗|天狗|沸羊羊)$",
+                    reg: "^#?(舔狗日志|舔狗日记|舔狗|天狗|沸羊羊)$",
                     fnc: 'tiangou'
                 }
             ]
@@ -109,12 +109,13 @@ export class saucenao extends plugin {
                 }
             ]
         })
+        this.prefix = '[+] saucenao 识图'
     }
 
-    async saucenaoSearch(e, numres = 3, similarityRate = 70) {
+    async saucenaoSearch(numres = 3, similarityRate = 70) {
 
         if (apis.saucenao == '') {
-            this.e.reply('未提供有效的 api_key')
+            this.e.reply('未提供有效的 api_key，需要到 saucenao.com 获取 api_key')
             return
         }
 
@@ -126,7 +127,7 @@ export class saucenao extends plugin {
                 params: {
                     url: imgUrl,
                     db: 999,
-                    api_key: apis.saucenao, // 需要到 saucenao.com 获取 api_key
+                    api_key: apis.saucenao,
                     output_type: 2,
                     numres: numres   // 返回多少个结果
                 }
@@ -151,8 +152,9 @@ export class saucenao extends plugin {
 
         if (isSelectArr.length == 0) {
             msg = [
-                `没有找到任何与提供图片相似度高于 ${similarityRate}% 的结果,\n`,
-                '您也可以通过这个链接来自行查找.\n',
+                `${this.prefix}\n` + 
+                `没有找到任何与提供图片相似度高于 ${similarityRate}% 的结果\n` + 
+                `您也可以通过这个链接来自行查找.\n` + 
                 `${saucenaoUrl + '?url=' + imgUrl}`
             ]
             await this.e.reply(msg, true)
@@ -183,56 +185,9 @@ export class saucenao extends plugin {
             forwardMsgArr.push(forwardMsg)
         }
 
-        await this.e.reply(await this.makeForwardMsg(`识图结果\n源链接: ${saucenaoUrl + '?url=' + imgUrl}`, forwardMsgArr, `已列出所有相似度高于 ${similarityRate}% 的 ${isSelectArr.length} 条有效结果`), true)
+        await this.e.reply(await tools.makeForwardMsg(`${this.prefix}\n识图结果, 源链接：${saucenaoUrl + '?url=' + imgurl}`, forwardMsgArr, `已列出所有相似度高于 ${similarityRate}% 的 ${isSelectArr.length} 条有效结果`, this.e, global.Bot))
         await this.e.reply('识图结果已发送完毕, 如果没有消息记录, 则表示识图内容被风控', true, { recallMsg: 60 })
         return
-    }
-
-    async makeForwardMsg(title, forwardMsgArr, end) {
-        let nickname = Bot.nickname
-
-        if (this.e.isGroup) {
-            let info = await Bot.getGroupMemberInfo(this.e.group_id, Bot.uin)
-            nickname = info.card ?? info.nickname
-        }
-        logger.info(this.e.isGroup, info)
-
-        let userInfo = {
-            user_id: Bot.uin,
-            nickname
-        }
-
-        let forwardMsg = [
-            {
-                ...userInfo,
-                message: title
-            }
-        ]
-
-        for (let msg of forwardMsgArr) {
-            forwardMsg.push(
-                {
-                    ...userInfo,
-                    message: msg
-                }
-            )
-        }
-
-        if (end) {
-            forwardMsg.push({
-                ...userInfo,
-                message: end
-            })
-        }
-
-        /** 制作转发内容 */
-        if (this.e.isGroup) {
-            forwardMsg = await this.e.group.makeForwardMsg(forwardMsg)
-        } else {
-            forwardMsg = await this.e.friend.makeForwardMsg(forwardMsg)
-        }
-
-        return forwardMsg
     }
 
     // 主要逻辑
@@ -247,7 +202,7 @@ export class saucenao extends plugin {
 
             // 1. 带图查询模式
             if (this.e.img) {
-                this.saucenaoSearch(e)
+                this.saucenaoSearch()
                 return
             }
 
@@ -275,7 +230,7 @@ export class saucenao extends plugin {
                     return
                 }
 
-                this.saucenaoSearch(e)
+                this.saucenaoSearch()
                 return
             }
 
@@ -340,6 +295,7 @@ export class ghser extends plugin {
     }
 
     async checkUser() {
+        if(this.e.isMaster) return true
         const ghser_key = this.e.logFnc + this.e.user_id
         const expireTime = await redis.get(ghser_key)
         if (expireTime && this.time <= expireTime) {
@@ -378,6 +334,7 @@ export class ghser extends plugin {
 // 点歌
 export class shareMusic extends plugin {
     constructor() {
+        this.reg = 
         super({
             name: '点歌',
             dsc: '点歌系统',
@@ -385,7 +342,7 @@ export class shareMusic extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: "^#?(点歌|来首|听歌|点首|bgm)(.*)$",
+                    reg: "^#?(点歌|来首|听歌|点首|bgm|BGM)(.*)$",
                     fnc: 'shareMusic'
                 }
             ]
@@ -394,7 +351,7 @@ export class shareMusic extends plugin {
 
     async shareMusic(e) {
         let searchURL = "http://127.0.0.1:7894/search?keywords=paramsSearch"  // 网易云
-        let msg = e.msg.replace(/#?(点歌|来首|听歌|点首|bgm)/g, "");
+        let msg = e.msg.replace(/#?(点歌|来首|听歌|点首|bgm|BGM)/g, "");
         try {
             msg = encodeURI(msg);
             let url = searchURL.replace("paramsSearch", msg);
@@ -412,12 +369,6 @@ export class shareMusic extends plugin {
             }
             else if (e.isGroup) {
                 await e.group.shareMusic("163", songList[songIndex].id);
-                /** 使用 ffmpeg 转换成语音
-                let response = await fetch(`https://autumnfish.cn/song/url?id=${songList[0].id}`);
-                const { data } = await response.json();
-                if (!data[0].url) return true;
-                await e.reply(segment.record(data[0].url));
-                */
             }
         }
         catch (error) {
