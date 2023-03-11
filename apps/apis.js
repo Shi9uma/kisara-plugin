@@ -10,7 +10,7 @@ import tools from '../utils/tools.js'
 
 const cd = 2    //所有命令的 cd，单位 小时
 const pluginName = tools.getPluginName()
-const apis = JSON.parse(tools.readFile(`./plugins/${pluginName}/data/apiToken.json`))
+const apis = JSON.parse(tools.readFile(`./plugins/${pluginName}/data/apitoken.json`))
 
 const codes = {
     130: 'API 调用频率超限',
