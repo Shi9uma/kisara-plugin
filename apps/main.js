@@ -6,8 +6,6 @@ import moment from 'moment'
 import plugin from '../../../lib/plugins/plugin.js'
 import tools from '../utils/tools.js'
 
-import Foods from '../data/foods.js'
-
 const content = [
     '占卜: 塔罗牌占卜\n',
     '今天吃什么: 选择困难\n',
@@ -19,6 +17,8 @@ const content = [
     '识图: 「识图 + 图片」, 「引用含有图片的消息并识图」\n',
     '点歌: 「点歌 + 歌曲名, 直接加歌手名以指定」\n'
 ]
+
+const pluginName = tools.getPluginName()
 
 // 查看属性
 // var properties = Object.keys(this.e)
@@ -119,10 +119,9 @@ export class tarot extends plugin {
             ]
         })
 
-        this.pluginName = tools.getPluginName()
-        this.tarotCardsDirPath = `./plugins/${this.pluginName}/data/tarotCards`
+        this.tarotCardsDirPath = `./plugins/${pluginName}/data/tarotCards`
         this.imgType = 'png'
-        this.funcName = '[+] 塔罗牌占卜'
+        this.funcName = `[+] ${this.dsc}`
     }
 
     get key() {
@@ -272,12 +271,13 @@ export class what2eat extends plugin {
             ]
         })
         this.funcName = `[+] ${this.dsc}`
-        this.foodsDataPath = `./plugins/${this.pluginName}/data/foods.json`
+        this.foodsDataPath = `./plugins/${pluginName}/data/foods.json`
+        logger.info(this.foodsDataPath)
         this.foodsData = JSON.parse(tools.readFile(this.foodsDataPath))
     }
 
     async what2eat() {
-        let result = lodash.sampleSize(this.foodsData, 4).join(' | ')
+        let result = lodash.sampleSize(this.foodsData, 5).join(' | ')
         await this.reply(`${this.funcName}\n推荐尝试：${result}`)
         return
     }
