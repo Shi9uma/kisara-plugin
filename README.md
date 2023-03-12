@@ -21,6 +21,7 @@
 ## todos
 
 - [插件热重载](https://juejin.cn/post/6844903478305914894)
+- 机器人词库，[感谢](https://mirai.mamoe.net/topic/1829/强大的二次元聊天机器人词库2w-词条-不定期更新)
 - utils
 	- [ ] init 函数
 	- [ ] 添加权限检测函数，几种权限类型组合
