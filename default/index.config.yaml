@@ -21,6 +21,9 @@ apps:
   schedule:
     - todayNews: true
 
+  chat:
+    - chat: true
+
   test:
     - test: true
 

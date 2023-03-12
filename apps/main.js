@@ -217,7 +217,7 @@ export class tarot extends plugin {
             msgArr.push(msg)
             msgArr.push(segment.image(card.pic))
         }
-        await this.e.reply(await (tools.makeForwardMsg(`对象：${this.e.sender.nickname ? this.e.sender.nickname : this.e.sender.card}`, msgArr, '塔罗牌占卜结束\n感谢开源代码来源：https://github.com/MinatoAquaCrews/nonebot_plugin_tarot', this.e, global.Bot)))
+        await this.e.reply(await (tools.makeForwardMsg(`对象：${this.e.sender.card ? this.e.sender.card : this.e.sender.nickname}`, msgArr, '塔罗牌占卜结束\n感谢开源代码来源：https://github.com/MinatoAquaCrews/nonebot_plugin_tarot', this.e, global.Bot)))
         return
     }
 

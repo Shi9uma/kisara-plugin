@@ -106,7 +106,7 @@ class tools {
      * 读取 yaml 配置文件
      * @param {*} app app 功能
      * @param {*} func app 配置文件名
-     * @param {*} type 读取类型, -config, -default
+     * @param {*} type 读取类型, -config(默认), -default
      * @returns 
      */
     readYamlFile(app, func, type = 'config') {
