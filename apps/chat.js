@@ -1,6 +1,6 @@
-import plugin from '../../lib/plugins/plugin.js'
-import common from '../../lib/common/common.js'
-import tools from '../diy/utils/tools.js'
+import plugin from '../../../lib/plugins/plugin.js'
+import common from '../../../lib/common/common.js'
+import tools from '../utils/tools.js'
 import lodash from 'lodash'
 
 export class chat extends plugin {
