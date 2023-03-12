@@ -31,3 +31,6 @@ configs:
 
   schedule:
     - todayNews
+
+  chat:
+    - chat

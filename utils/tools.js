@@ -30,12 +30,13 @@ class tools {
         if (!this.isDirValid(userConfigDir)) {
             logger.warn(`${this.prefix} 文件夹 ${userConfigDir} 不存在, 正在从默认文件夹中获取配置`)
             this.makeDir(userConfigDir)
-            let defaultConfigFileList = this.getDefaultConfigFileList()
-            for (let fileName of defaultConfigFileList) {
-                if (!this.isFileValid(`${userConfigDir}/${fileName[0]}.${fileName[1]}.yaml`))
-                    this.copyConfigFile(fileName[0], fileName[1])
-                else continue
-            }
+        }
+
+        let defaultConfigFileList = this.getDefaultConfigFileList()
+        for (let fileName of defaultConfigFileList) {
+            if (!this.isFileValid(`${userConfigDir}/${fileName[0]}.${fileName[1]}.yaml`))
+                this.copyConfigFile(fileName[0], fileName[1])
+            else continue
         }
     }
 
