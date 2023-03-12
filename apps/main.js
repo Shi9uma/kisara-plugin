@@ -156,7 +156,7 @@ export class tarot extends plugin {
      */
     getTarotData(type) {
         let filePath = `${this.tarotCardsDirPath}/tarot.json`,
-            tarotData = JSON.parse(tools.readFile(filePath)),   // 读取总数据
+            tarotData = tools.readJsonFile(filePath),   // 读取总数据
             all_cards = tarotData.cards,    // 读取所有卡片信息
             all_formations = tarotData.formations,   // 读取牌阵
             card = {
@@ -272,8 +272,7 @@ export class what2eat extends plugin {
         })
         this.funcName = `[+] ${this.dsc}`
         this.foodsDataPath = `./plugins/${pluginName}/data/foods.json`
-        logger.info(this.foodsDataPath)
-        this.foodsData = JSON.parse(tools.readFile(this.foodsDataPath))
+        this.foodsData = tools.readJsonFile(this.foodsDataPath)
     }
 
     async what2eat() {

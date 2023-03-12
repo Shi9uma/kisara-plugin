@@ -32,7 +32,7 @@ export class todayNews extends plugin {
 
         this.imgType = 'png'
         this.newsImgDir = `./plugins/${pluginName}/data/todayNews`
-        this.configYaml = tools.readYaml('schedule', 'todayNews')
+        this.configYaml = tools.readYamlFile('schedule', 'todayNews')
         this.datatime = new moment().format('yyyy-MM-DD')
 
         // this.task = {

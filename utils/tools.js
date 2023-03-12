@@ -9,15 +9,15 @@ import { fileURLToPath } from "node:url"
 class tools {
     constructor() {
         this.__dirname = dirname(fileURLToPath(import.meta.url))
-        this.pluginName = yaml.parse(fs.readFileSync(`./plugins/${basename(dirname(this.__dirname))}/default/index.config.yaml`, 'utf8')).pluginName
+        this.pluginName = basename(dirname(this.__dirname))
 
         this.defaultDir = `./plugins/${this.pluginName}/default`
         this.userConfigDir = `./plugins/${this.pluginName}/config`
 
-        this.prefix = `# ${this.pluginName}.utils.tools`
+        this.prefix = `[-] ${this.pluginName}.utils.tools`
     }
 
-    init() {    // 还没写完
+    init() {
         // 检查相关配置文件夹
         let defaultDir = this.defaultDir,
             userConfigDir = this.userConfigDir
@@ -29,9 +29,14 @@ class tools {
 
         if (!this.isDirValid(userConfigDir)) {
             logger.warn(`${this.prefix} 文件夹 ${userConfigDir} 不存在, 正在从默认文件夹中获取配置`)
+            this.makeDir(userConfigDir)
+            let defaultConfigFileList = this.getDefaultConfigFileList()
+            for (let fileName of defaultConfigFileList) {
+                if (!this.isFileValid(`${userConfigDir}/${fileName[0]}.${fileName[1]}.yaml`))
+                    this.copyConfigFile(fileName[0], fileName[1])
+                else continue
+            }
         }
-
-        // 检查相关
     }
 
     /**
@@ -76,7 +81,7 @@ class tools {
      * @param {*} dirPath 文件夹路径
      */
     makeDir(dirPath) {
-        fs.mkdir(dirPath, (err) => { if (err) { return logger.info(this.prefix, err) } })
+        fs.mkdir(dirPath, (err) => { if (err) return logger.info(this.prefix, err) })
     }
 
     /**
@@ -85,7 +90,7 @@ class tools {
      * @param {*} to 路径, 到文件
      */
     copyFile(from, to) {
-        fs.copyFile(from, to, (err) => { return logger.info(this.prefix, err) })
+        fs.copyFile(from, to, (err) => { if (err) return logger.info(this.prefix, err) })
     }
 
     /**
@@ -103,7 +108,7 @@ class tools {
      * @param {*} type 读取类型, -config, -default
      * @returns 
      */
-    readYaml(app, func, type = 'config') {
+    readYamlFile(app, func, type = 'config') {
         if (!(type == 'config' || type == 'default')) {
             return logger.error('读取配置文件出错')
         }
@@ -128,6 +133,31 @@ class tools {
     }
 
     /**
+     * 返回 json 文件数据
+     * @param {*} filePath 
+     * @returns 
+     */
+    readJsonFile(filePath) {
+        return JSON.parse(this.readFile(filePath))
+    }
+
+    /**
+     * 写入 json 文件
+     * @param {string} filePath json 文件路径
+     * @param {*} data 要写入的 json 数据
+     * @param {number} tab json 文件默认缩进
+     */
+    writeJsonFile(filePath, data, tab = 4) {
+        if (!this.isFileValid(filePath)) {
+            logger.warn(this.prefix, `文件路径：${filePath} 非法`)
+            return
+        }
+        fs.writeFile(filePath, JSON.stringify(data, null, tab), (err) => {
+            if (err) logger.warn(err)
+        })
+    }
+
+    /**
      * 用于判断功能是否开启
      * @param {*} app app 名称
      * @param {*} func function 名称
@@ -137,7 +167,7 @@ class tools {
         if (!this.isFileValid(`${this.userConfigDir}/index.config.yaml`)) {
             return logger.info(`配置文件 ${this.userConfigDir}/index.config.yaml 不存在`)
         }
-        let configs = this.readYaml('index', 'config', 'config')
+        let configs = this.readYamlFile('index', 'config', 'config')
         for (let _app in configs.apps) {
             for (let _func of configs.apps[_app]) {
                 for (let __func in _func) {
@@ -156,7 +186,7 @@ class tools {
         if (!this.isFileValid(`${this.defaultDir}/index.config.yaml`)) {
             return logger.info(`${this.prefix} 配置文件 ${this.defaultDir}/index.config.yaml 不存在`)
         }
-        let configs = this.readYaml('index', 'config', 'default')
+        let configs = this.readYamlFile('index', 'config', 'default')
         let defaultConfigFileList = []
         for (let app in configs.configs) {
             for (let func of configs.configs[app]) {
