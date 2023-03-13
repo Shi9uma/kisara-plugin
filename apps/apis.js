@@ -356,9 +356,9 @@ export class shareMusic extends plugin {
         })
     }
 
-    async shareMusic(e) {
+    async shareMusic() {
         let searchURL = "http://127.0.0.1:7894/search?keywords=paramsSearch"  // 网易云
-        let msg = e.msg.replace(/#?(点歌|来首|听歌|点首|bgm|BGM)/g, "");
+        let msg = this.e.msg.replace(/#?(点歌|来首|听歌|点首|bgm|BGM)/g, "");
         try {
             msg = encodeURI(msg);
             let url = searchURL.replace("paramsSearch", msg);
@@ -367,15 +367,15 @@ export class shareMusic extends plugin {
             let result = (await response.json()).result;
             let songList = result?.songs?.length ? result.songs : [];
             if (!songList[0]) {
-                await e.reply(`没有在网易云曲库中找到相应歌曲`);
+                await this.e.sendMsg(`没有在网易云曲库中找到相应歌曲`);
                 return true;
             }
             let songIndex = 0;
-            if (e.isPrivate) {
-                await e.friend.shareMusic("163", songList[songIndex].id);
+            if (this.e.isPrivate) {
+                await this.e.friend.shareMusic("163", songList[songIndex].id);
             }
-            else if (e.isGroup) {
-                await e.group.shareMusic("163", songList[songIndex].id);
+            else if (this.e.isGroup) {
+                await this.e.group.shareMusic("163", songList[songIndex].id);
             }
         }
         catch (error) {

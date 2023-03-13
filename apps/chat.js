@@ -26,8 +26,8 @@ export class chat extends plugin {
     }
 
     handleMessage(message) {
-        message = message.replace('{me}', this.botName)
-        message = message.replace('{name}', this.senderName)
+        message = message.replaceAll('{me}', this.botName)
+        message = message.replaceAll('{name}', this.senderName)
         if (message.includes('{segment}')) {
             let msgList = message.split('{segment}')
             return [true, msgList[0], msgList[1]]
@@ -36,7 +36,7 @@ export class chat extends plugin {
 
     async chat() {
         let msg = this.e.raw_message, replyMsg
-        let chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/可爱系二次元bot词库1.5万词V1.2.json`,
+        let chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/傲娇系二次元bot词库5千词V1.2.json`,
             jsonData = tools.readJsonFile(chatLibPath)
         // this.senderName = this.e.sender.card ? this.e.sender.card : this.e.sender.nickname
         this.senderName = '你'
@@ -46,7 +46,7 @@ export class chat extends plugin {
                 if (replyMsg[0]) {
                     await this.e.reply(replyMsg[1])
                     common.sleep(5000)
-                    await this.e.reply(replyMsg[2])
+                    this.e.reply(replyMsg[2])
                 } else {
                     await this.e.reply(replyMsg[1])
                 }
