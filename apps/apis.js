@@ -8,7 +8,7 @@ import axios from 'axios'
 import plugin from '../../../lib/plugins/plugin.js'
 import tools from '../utils/tools.js'
 
-const cd = 2    //所有命令的 cd，单位 小时
+const cd = 1    //所有命令的 cd，单位 小时
 const pluginName = tools.getPluginName()
 const apis = JSON.parse(tools.readFile(`./plugins/${pluginName}/data/apitoken.json`))
 
@@ -49,6 +49,8 @@ export class tiangou extends plugin {
                 }
             ]
         })
+
+        this.prefix = `[+] ${this.name}`
     }
 
     get key() {
@@ -65,6 +67,7 @@ export class tiangou extends plugin {
     }
 
     async checkUser() {
+        if (this.e.isMaster) return true
         const tiangou_key = this.e.logFnc + this.e.user_id
         const expireTime = await redis.get(tiangou_key)
         if (expireTime && this.time <= expireTime) {
@@ -81,15 +84,20 @@ export class tiangou extends plugin {
             this.reply(`你的舔狗日记 cd 在冷却中(${cd}小时)`)
             return
         }
-        let apiUrl = 'https://apis.tianapi.com/tiangou/index?key=' + apis.tiangou
-        apiUrl = encodeURI(apiUrl)
-        let response = await fetch(apiUrl)
-        let { code, msg, result } = await response.json()
-        if (code != '200') {
-            await this.reply(`[+] 舔狗日志：\n${codes[code]}`, true)
+        // let apiUrl = 'https://apis.tianapi.com/tiangou/index?key=' + apis.tiangou
+        let apiUrl = 'https://cloud.qqshabi.cn/api/tiangou/api.php'
+        let response = await axios.get(apiUrl).catch(async (err) => {
+            await this.e.reply(`${this.prefix}：\n${err}`)
+            return
+        })
+
+        if (response.status != '200') {
+            await this.e.reply(`${this.prefix}：\n${res.msg}`, true)
             return
         }
-        await this.reply(`[+] 舔狗日志：\n${result.content}`, true)
+
+        let res = response.data
+        await this.e.reply(`${this.prefix}：\n${res}`, true)
         return
     }
 }
