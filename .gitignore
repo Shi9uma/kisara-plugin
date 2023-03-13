@@ -5,3 +5,4 @@ config
 *apitoken*
 data/todayNews
 test.js
+*customize.js
