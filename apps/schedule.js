@@ -34,13 +34,14 @@ export class todayNews extends plugin {
         this.newsImgDir = `./plugins/${pluginName}/data/todayNews`
         this.configYaml = tools.readYamlFile('schedule', 'todayNews')
         this.datatime = new moment().format('yyyy-MM-DD')
+        this.prefix = `[+] ${this.name}`
 
-        // this.task = {
-        //     cron: this.configYaml.scheduleTime,
-        //     name: '每日简报定时推送任务',
-        //     fnc: () => this.scheduleSendTodayNews(),
-        //     log: true
-        // }
+        this.task = {
+            cron: this.configYaml.scheduleTime,
+            name: '每日简报定时推送',
+            fnc: () => this.scheduleSendTodayNews(),
+            log: true
+        }
 
     }
 
@@ -113,9 +114,11 @@ export class todayNews extends plugin {
         } else {
             let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
             let msg = [
-                `[+] ${datatime} 简报\n`,
+                `${this.prefix}\n` +
+                `日期：${this.datatime}\n`,
                 segment.image(`file://${newsImgPath}`)
-            ]
+            ]        
+    
             await this.e.reply(msg)
             return
         }
@@ -149,14 +152,20 @@ export class todayNews extends plugin {
     async scheduleSendTodayNews() {
         if(!this.checkTodayNewsImg(this.datatime)) {
             await this.getTodayNews(this.datatime)
-            await common.sleep(1000)
+            common.sleep(1000)
         }
-        logger.info('flag')
-        // let scheduleGroups = this.configYaml.scheduleGroups
-        // for(let group_id of scheduleGroups) {
-        //     this.e.group.group_id = group_id
-        //     await this.sendTodayNews()
-        // }
-        // return 
+
+        let newsImgPath = `${this.newsImgDir}/${this.datatime}.${this.imgType}`
+        let msg = [
+            `[+] ${this.task.name}\n` +
+            `日期：${this.datatime}\n`,
+            segment.image(`file://${newsImgPath}`)
+        ]        
+
+        let scheduleGroups = this.configYaml.scheduleGroups
+        for(let group_id of scheduleGroups) {
+            await Bot.pickGroup(Number(group_id)).sendMsg(msg)
+        }
+        return 
     }
 }
