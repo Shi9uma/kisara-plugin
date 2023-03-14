@@ -54,7 +54,7 @@ export class tiangou extends plugin {
     }
 
     async tiangou() {
-        let redisRet = await tools.checkRedis(this.e, 'g', cd, {isMaster: false, getKey: true})
+        let redisRet = await tools.checkRedis(this.e, 'g', cd, {getKey: true})
         if (!redisRet[0]) {
             await this.e.reply(`${this.prefix}\ncd 剩余 ${parseInt(await tools.ttlRedis(redisRet[1]) / 60)} 分钟`, true)
             return
@@ -267,7 +267,7 @@ export class randomImg extends plugin {
     }
 
     async randomImg() {
-        let redisRet = await tools.checkRedis(this.e, 'g', cd, {isMaster: false, getKey: true})
+        let redisRet = await tools.checkRedis(this.e, 'g', cd, {getKey: true})
         if (!redisRet[0]) {
             await this.e.reply(`${this.prefix}\ncd 剩余 ${parseInt(await tools.ttlRedis(redisRet[1]) / 60)} 分钟`, true)
             return
