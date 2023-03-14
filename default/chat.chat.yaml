@@ -2,4 +2,7 @@
 # 2 for 可爱系二次元bot词库1.5万词V1.2.csv
 
 # 回复时的自称
-botName: "本傲娇"
+botName: "我"
+
+# 如果指定了, 会优先使用该值
+senderName: ''

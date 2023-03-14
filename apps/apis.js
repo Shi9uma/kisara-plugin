@@ -38,7 +38,7 @@ const tags = {
 export class tiangou extends plugin {
     constructor() {
         super({
-            name: '舔狗',
+            name: '舔狗日志',
             dsc: '舔狗日志',
             event: 'message',
             priority: 5000,
@@ -287,6 +287,8 @@ export class ghser extends plugin {
                 ]
             }
         )
+
+        this.prefix = `[+] 随机壁纸\n`
     }
 
     get key() {
@@ -328,12 +330,13 @@ export class ghser extends plugin {
         } else {
             apiUrl = 'https://api.ghser.com/random/pc.php'
         }
-        let response = await fetch(apiUrl).catch((err) => logger.error(err))
+        let response = await fetch(apiUrl).catch((error) => {if (error) logger.warn(error)})
         let msg = [
-            ` cd 剩余 ${cd} 小时` + '\n',
+            `${this.prefix}` + 
+            `${this.e.sender.card ? this.e.sender.card : this.e.sender.nickname} cd 剩余 ${cd} 小时\n`,
             segment.image(response.url)
         ]
-        await this.e.reply(msg, false, { at: true })
+        await this.e.reply(msg)
         return
     }
 
@@ -356,7 +359,7 @@ export class shareMusic extends plugin {
         })
     }
 
-    async shareMusic() {
+    async shareMusic(e) {
         let searchURL = "http://127.0.0.1:7894/search?keywords=paramsSearch"  // 网易云
         let msg = this.e.msg.replace(/#?(点歌|来首|听歌|点首|bgm|BGM)/g, "");
         try {
@@ -379,7 +382,7 @@ export class shareMusic extends plugin {
             }
         }
         catch (error) {
-            logger.warn(error);
+            if (error) logger.warn(error)
         }
         return true; //返回true 阻挡消息不再往下
     }
@@ -425,7 +428,7 @@ export class riskValue extends plugin {
             await this.e.reply(msg, true)
         }
         catch (error) {
-            logger.warn(error);
+            if (error) logger.warn(error)
         }
         return true; //返回true 阻挡消息不再往下
     }    

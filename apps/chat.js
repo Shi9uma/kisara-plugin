@@ -23,6 +23,7 @@ export class chat extends plugin {
 
         this.pluginName = tools.getPluginName()
         this.botName = tools.readYamlFile('chat', 'chat').botName
+        this.senderName = tools.readYamlFile('chat', 'chat').senderName
     }
 
     handleMessage(message) {
@@ -34,19 +35,25 @@ export class chat extends plugin {
         } else return [false, message, null]
     }
 
+    dontAnswer() {
+        if (this.e.isMaster || lodash.random(0, 3) == 2) return false
+        else return true
+    }
+
     async chat() {
+        if (this.dontAnswer()) return
         let msg = this.e.raw_message, replyMsg
-        let chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/傲娇系二次元bot词库5千词V1.2.json`,
+        let chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/可爱系二次元bot词库1.5万词V1.2.json`,
             jsonData = tools.readJsonFile(chatLibPath)
-        // this.senderName = this.e.sender.card ? this.e.sender.card : this.e.sender.nickname
-        this.senderName = '你'
+        if (this.senderName == '')
+            this.senderName = this.e.sender.card ? this.e.sender.card : this.e.sender.nickname
         for(let _msg in jsonData) {
             if (msg == _msg) {
                 replyMsg = this.handleMessage(lodash.sample(jsonData[_msg]))
                 if (replyMsg[0]) {
                     await this.e.reply(replyMsg[1])
-                    common.sleep(5000)
-                    this.e.reply(replyMsg[2])
+                    await tools.wait(3)
+                    await this.e.reply(replyMsg[2])
                 } else {
                     await this.e.reply(replyMsg[1])
                 }

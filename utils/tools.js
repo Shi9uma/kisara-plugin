@@ -17,6 +17,10 @@ class tools {
         this.prefix = `[-] ${this.pluginName}.utils.tools`
     }
 
+    /**
+     * 初始化本插件
+     * @returns 
+     */
     init() {
         // 检查相关配置文件夹
         let defaultDir = this.defaultDir,
@@ -38,6 +42,15 @@ class tools {
                 this.copyConfigFile(fileName[0], fileName[1])
             else continue
         }
+    }
+
+    /**
+     * 异步实现秒暂停
+     * @param {*} s 秒
+     * @returns 
+     */
+    wait(s) {
+        return new Promise(resolve => setTimeout(() => resolve(), s * 1000))
     }
 
     /**
@@ -82,7 +95,7 @@ class tools {
      * @param {*} dirPath 文件夹路径
      */
     makeDir(dirPath) {
-        fs.mkdir(dirPath, (err) => { if (err) return logger.info(this.prefix, err) })
+        fs.mkdir(dirPath, (err) => { if (err) logger.warn(this.prefix, err) })
     }
 
     /**
@@ -91,7 +104,7 @@ class tools {
      * @param {*} to 路径, 到文件
      */
     copyFile(from, to) {
-        fs.copyFile(from, to, (err) => { if (err) return logger.info(this.prefix, err) })
+        fs.copyFile(from, to, (err) => { if (err) logger.warn(this.prefix, err) })
     }
 
     /**
@@ -99,7 +112,7 @@ class tools {
      * @param {*} filePath 要删除文件的路径
      */
     deleteFile(filePath) {
-        fs.unlink(filePath, (err) => { return logger.info(this.prefix, err) })
+        fs.unlink(filePath, (err) => { if (err) logger.warn(this.prefix, err) })
     }
 
     /**
@@ -212,7 +225,7 @@ class tools {
         let fromFile = `${this.defaultDir}/${app}.${func}.yaml`
         let toFile = `${this.userConfigDir}/${app}.${func}.yaml`
         this.copyFile(fromFile, toFile, (err) => {
-            return logger.err(this.prefix, err)
+            if (err) logger.warn(this.prefix, err)
         })
     }
 
@@ -233,10 +246,8 @@ class tools {
             let saveImgPath = `${saveDirPath}/${imgName}.${imgType}`
             res.on('end', () => {
                 fs.writeFile(saveImgPath, imgData, 'binary', (err) => {
-                    if (err)
-                        return logger.info(`${this.prefix} 图片 ${imgUrl} 获取失败`)
-                    else
-                        return logger.info(`${this.prefix} 图片 ${imgUrl} 成功保存到 ${saveImgPath}`)
+                    if (err) logger.warn(`${this.prefix} 图片 ${imgUrl} 获取失败`)
+                    else logger.info(`${this.prefix} 图片 ${imgUrl} 成功保存到 ${saveImgPath}`)
                 })
             })
         })

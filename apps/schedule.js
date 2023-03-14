@@ -25,6 +25,10 @@ export class todayNews extends plugin {
                     {
                         reg: '^删(除)?(今|日|今日|今天)?(简|日)?报$',
                         fnc: 'deleteTodayNews'
+                    },
+                    {
+                        reg: '^推送今日简报$',
+                        fnc: 'scheduleSendTodayNews'
                     }
                 ]
             }
@@ -58,6 +62,31 @@ export class todayNews extends plugin {
         return tools.isFileValid(`${this.newsImgDir}/${datatime}.${this.imgType}`)
     }
 
+    deleteTodayNews() {
+        let checkPrivate = (this.e.isGroup || this.e.isMaster) ? true : false
+        if (!checkPrivate) {
+            if (!this.e.isMaster)
+                this.e.reply('为了防止滥用, 仅支持群聊使用', true, { recallMsg: 30 })
+            return
+        }
+        if (this.e.isGroup) {
+            if (!(this.e.group.is_admin || this.e.group.is_owner || this.e.isMaster)) {
+                this.e.reply('只接受管理员的简报删除指令', true, { recallMsg: 30 })
+                return
+            }
+        }
+        let datatime = this.datatime
+        if (!this.checkTodayNewsImg(datatime)) {
+            this.e.reply(`[+] 尚未获取 ${datatime} 简报`)
+            return
+        } else {
+            let deleteNewsPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
+            tools.deleteFile(deleteNewsPath)
+            this.e.reply(`[+] 已删除 ${datatime} 简报`)
+            return
+        }
+    }
+
     async checkKeepTime() {
         if (!(tools.isFileValid(tools.getConfigFilePath('schedule', 'todayNews', 'c')))) {
             let configDirPath = `./plugins/${tools.getPluginName()}/config`
@@ -84,10 +113,10 @@ export class todayNews extends plugin {
     async getTodayNews() {
         // let url = 'http://bjb.yunwj.top/php/tp/lj.php'
         let url = 'http://dwz.2xb.cn/zaob'
-        let response = await fetch(url).catch((err) => logger.info(err))
+        let response = await fetch(url).catch((error) => {if (error) logger.warn(this.prefix, error)})
 
         if (response.status != 200) {
-            await this.e.reply(`[+] 60s 读懂世界\n获取简报失败, 状态码 ${response.status}`)
+            await this.e.reply(`${this.prefix}\n获取简报失败, 状态码 ${response.status}`)
             return
         }
 
@@ -102,7 +131,7 @@ export class todayNews extends plugin {
         let datatime = this.datatime
         this.checkKeepTime()
         if (!this.checkTodayNewsImg(datatime)) {
-            await this.getTodayNews(datatime)
+            this.getTodayNews(datatime)
             let msg
             if (!this.isValidTime()) {
                 msg = `[+] ${datatime} 简报\n正在初始化今日简报信息, 请再次输入获取简报指令\n请注意, 当前时间点 ${new moment().format('yyyy-MM-DD HH:mm:ss')} 获取的简报信息可能有延误\n若出现延误内容, 请通过 删除简报 指令来刷新简报信息`
@@ -124,35 +153,10 @@ export class todayNews extends plugin {
         }
     }
 
-    async deleteTodayNews() {
-        let checkPrivate = (this.e.isGroup || this.e.isMaster) ? true : false
-        if (!checkPrivate) {
-            if (!this.e.isMaster)
-                await this.e.reply('为了防止滥用, 仅支持群聊使用', true, { recallMsg: 30 })
-            return
-        }
-        if (this.e.isGroup) {
-            if (!(this.e.group.is_admin || this.e.group.is_owner || this.e.isMaster)) {
-                await this.e.reply('只接受管理员的简报删除指令', true, { recallMsg: 30 })
-                return
-            }
-        }
-        let datatime = await new moment().format('yyyy-MM-DD')
-        if (!this.checkTodayNewsImg(datatime)) {
-            this.e.reply(`[+] 尚未获取 ${datatime} 简报`)
-            return
-        } else {
-            let deleteNewsPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
-            await tools.deleteFile(deleteNewsPath)
-            await this.e.reply(`[+] 已删除 ${datatime} 简报`)
-            return
-        }
-    }
-
     async scheduleSendTodayNews() {
         if(!this.checkTodayNewsImg(this.datatime)) {
-            await this.getTodayNews(this.datatime)
-            common.sleep(1000)
+            this.getTodayNews(this.datatime)
+            await tools.wait(5)
         }
 
         let newsImgPath = `${this.newsImgDir}/${this.datatime}.${this.imgType}`
@@ -164,7 +168,7 @@ export class todayNews extends plugin {
 
         let scheduleGroups = this.configYaml.scheduleGroups
         for(let group_id of scheduleGroups) {
-            await Bot.pickGroup(Number(group_id)).sendMsg(msg)
+            Bot.pickGroup(Number(group_id)).sendMsg(msg)
         }
         return 
     }
