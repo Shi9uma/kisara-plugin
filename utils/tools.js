@@ -2,6 +2,7 @@
 import fs from 'fs'
 import yaml from 'yaml'
 import https from 'https'
+import moment from 'moment'
 
 import { basename, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -295,6 +296,131 @@ class tools {
         forwardMsg = e.isGroup ? e.group.makeForwardMsg(forwardMsg) : e.friend.makeForwardMsg(forwardMsg)
 
         return forwardMsg
+    }
+
+    /**
+     * 获取 redis 中 key 的值, 需要 await
+     * @param {*} key 
+     * @returns promise 对象
+     */
+    getRedis(key) {
+        return redis.get(key)
+    }
+
+    /**
+     * 查看 key 还有多久失效, 需要 await
+     * @param {*} key
+     * > 查看 tools.genRedisKey 生成的 key 在 redis 中剩余的时间, 单位是 s, 
+     * > 
+     * > 使用示例
+     * > 
+     * > await tools.ttlRedis(tools.checkRedis(..., {getKey: true})[1])
+     * > 
+     * > 这里的 tools.checkRedis() 在指定了 getKey 后, 返回 [bool, key]
+     * @returns 
+     */
+    ttlRedis(key) {
+        return redis.ttl(key)
+    }
+
+    /**
+     * 判断 key 是否已设置, 需要 await
+     * @param {*} key 
+     * @returns promise 对象
+     */
+    isRedisSet(key) {
+        return redis.get(key)
+    }
+
+    /**
+     * 为 key: value 设置 redis 内容
+     * @param {*} key 键
+     * @param {*} seconds 该键值对生存时间, 单位为秒
+     * @param {*} value 值
+     */
+    setRedis(key, seconds, value) {
+        redis.setEx(key, seconds, value)
+    }
+
+    /**
+     * 删除 redis 中的某个键值对, 需要 await
+     * @param {*} key 键
+     * @returns bool, 删除是否成功
+     */
+    async delRedisKey(key) {
+        return (await redis.del(key)) ? true : false
+    }
+
+    /**
+     * 生成统一格式的 key
+     * @param {*} e 传入 this.e
+     * @param {*} type 生成 redis key 的类型
+     * 
+     * 私人: [p, private, isPrivate],
+     * 
+     * 群: [g, group, isGroup],
+     * 
+     * 全局: [global, isGlobal]
+     * @returns 返回生成的 key
+     */
+    genRedisKey(e, type) {
+        let isPrivate = ['p', 'private', 'isPrivate'].includes(type) ? true : false,
+            isGroup = ['g', 'group', 'isGroup'].includes(type) ? true : false,
+            isGlobal = ['global', 'isGlobal'].includes(type) ? true : false,
+            key = e.logFnc
+
+        if (isGroup) {
+            key += `.isGroup.${e.group_id}`
+        } else if (isPrivate) {
+            key += `.isPrivate.${e.user_id}`
+        } else if (isGlobal) {
+            key += `.isGlobal.${e.user_id}`
+        }
+        return key += `.${e.user_id}`
+    }
+
+    /**
+     * 用以确认 redis 中是否已经设置过值, 判断是否允许接下来操作, 设置过返回 false, 没有则返回 true
+     * @param {*} e 传入 this.e
+     * @param {*} value 要设置的键值, 默认传入缺省是今日日期
+     * @param {*} type
+     * > 生成 redis key 的类型
+     * > 
+     * > 私人: [p, private, isPrivate],
+     * > 
+     * > 群: [g, group, isGroup],
+     * > 
+     * > 全局: [global, isGlobal]
+     * @param {*} cd 键值对存活时间, cd * timeFormat
+     * @param {*} timeFormat
+     * > 时间单位
+     * > 
+     * > 小时: [h, hour],
+     * > 
+     * > 分钟: [m, min, minute],
+     * > 
+     * > 秒: else
+     * @param {boolean} isMaster 是否开启主人不受限制
+     * @param {boolean} getKey 是否获取生成的 key
+     * @returns 返回值为 bool 或 [key, bool](if getKey == true)
+     */
+    async checkRedis(e, type, cd, {value = moment().format('yyyy-MM-DD hh'), timeFormat = 'hour', isMaster = true, getKey = false}) {
+
+        let key = this.genRedisKey(e, type)
+
+        if (e.isMaster && isMaster) return getKey == true ? [true, key] : true
+        if(await this.isRedisSet(key)) return getKey == true ? [false, key] : false
+
+        if (['h', 'hour'].includes(timeFormat)) {
+            timeFormat = 60 * 60
+        } else if (['m', 'min', 'minute'].includes(timeFormat)) {
+            timeFormat = 60
+        } else {
+            timeFormat = 1
+        }
+
+        this.setRedis(key, timeFormat * cd, value)
+        return getKey == true ? [true, key] : true
     }
 }
 

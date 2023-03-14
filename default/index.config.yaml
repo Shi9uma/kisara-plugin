@@ -3,7 +3,7 @@ apps:
   apis:
     - tiangou: true
     - saucenao: true
-    - ghser: true
+    - randomImg: true
     - shareMusic: true
     - riskValue: true
 

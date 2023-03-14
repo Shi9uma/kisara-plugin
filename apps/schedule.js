@@ -4,7 +4,6 @@ import fs from 'fs'
 import fetch from "node-fetch"
 import tools from '../utils/tools.js'
 import plugin from '../../../lib/plugins/plugin.js'
-import common from '../../../lib/common/common.js'
 import moment from 'moment'
 
 const pluginName = tools.getPluginName()

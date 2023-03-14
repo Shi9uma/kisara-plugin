@@ -22,34 +22,34 @@
 
 ## todos
 
-- 机器人词库
+- [ ] 机器人词库
+    - [x] 基本功能
     - [ ] 相似度拟合发送
     - [ ] 延时发送
     - [ ] 按时间复读
     - [ ] 闭嘴，在某个群说了闭嘴则写入文件
-
-- utils
+- [ ] utils
   - [x] init 函数
   - [ ] 添加权限检测函数，几种权限类型组合
-  - [ ] 添加 redis 操纵 api 化，按照 `群号.qq.时间`，`friend.qq.time` 的键值来设计
-- ~~塔罗牌更新，逻辑修改~~
-- 简报
+  - [x] 添加 redis 操纵 api 化，按照 `funcName.g.群号.qq号.time`，`funcName.f.qq号.qq号.time` 的键值来设计
+- [x] 塔罗牌功能
+- [x] 简报
   - [x] 简报定时推送
-- Bot 系统优化
+- [ ] Bot 系统优化
   - [x] 插件热重载，需要搭配我配套 fork 出来的 yunzai bot 使用
   - [ ] 一键开关
   - [ ] 主人全局带话，回复某一信息以多群转发
   - [ ] 延时回复功能 doreply
   - [ ] 主人邀请后，会自动添加到群可用列表
-- 识图、搜番、本子等
+- [ ] 识图、搜番、本子等
   - [ ] 手动指定相似性阈值
   - [ ] [番剧识别功能](https://github.com/yeyang52/yenai-plugin/blob/master/apps/picSearch.js)
   - [ ] 延时接收图片功能
   - [ ] 搜本子
-- [计算抽卡期望](https://github.com/MSIsunny/GenshinWishCalculator-py/blob/main/WishSupport.py)
-- [B 站订阅功能，开播、动态推送，按群区分](https://github.com/HeadmasterTan/zhi-plugin.git)
-- [原神角色参考面板插件](https://github.com/howe0116/howe-plugin)，[nga 资源](https://bbs.nga.cn/read.php?tid=25843014&rand=967)
-- 机器人记事本功能
+- [ ] [计算抽卡期望](https://github.com/MSIsunny/GenshinWishCalculator-py/blob/main/WishSupport.py)
+- [ ] [B 站订阅功能，开播、动态推送，按群区分](https://github.com/HeadmasterTan/zhi-plugin.git)
+- [ ] [原神角色参考面板插件](https://github.com/howe0116/howe-plugin)，[nga 资源](https://bbs.nga.cn/read.php?tid=25843014&rand=967)
+- [ ] 机器人记事本功能
 
 ## 可能遇到的问题
 
