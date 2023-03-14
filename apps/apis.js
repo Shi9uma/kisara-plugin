@@ -325,11 +325,18 @@ export class ghser extends plugin {
             }
         }
         let apiUrl
-        if (lodash.random(0, 10) % 2 == 0) {
-            apiUrl = 'https://api.ghser.com/random/pe.php'
-        } else {
-            apiUrl = 'https://api.ghser.com/random/pc.php'
+        switch(lodash.random(1, 3)) {
+            case 1:
+                apiUrl = 'https://api.ghser.com/random/pe.php'
+                break
+            case 2:
+                apiUrl = 'https://api.ghser.com/random/pc.php'
+                break
+            default:
+                apiUrl = 'https://cloud.qqshabi.cn/api/images/api.php'
+                break
         }
+        logger.info(apiUrl)
         let response = await fetch(apiUrl).catch((error) => {if (error) logger.warn(error)})
         let msg = [
             `${this.prefix}` + 

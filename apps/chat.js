@@ -1,5 +1,4 @@
 import plugin from '../../../lib/plugins/plugin.js'
-import common from '../../../lib/common/common.js'
 import tools from '../utils/tools.js'
 import lodash from 'lodash'
 
@@ -22,8 +21,10 @@ export class chat extends plugin {
         )
 
         this.pluginName = tools.getPluginName()
-        this.botName = tools.readYamlFile('chat', 'chat').botName
-        this.senderName = tools.readYamlFile('chat', 'chat').senderName
+        this.configFile = tools.readYamlFile('chat', 'chat')
+        this.botName = this.configFile.botName
+        this.senderName = this.configFile.senderName
+        this.triggerRate = this.configFile.triggerRate
     }
 
     handleMessage(message) {
@@ -36,7 +37,7 @@ export class chat extends plugin {
     }
 
     dontAnswer() {
-        if (this.e.isMaster || lodash.random(0, 3) == 2) return false
+        if (this.e.isMaster || lodash.random(0, 100) < Number(this.triggerRate)) return false
         else return true
     }
 

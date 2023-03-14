@@ -6,3 +6,6 @@ botName: "我"
 
 # 如果指定了, 会优先使用该值
 senderName: ''
+
+# 聊天触发概率, -0 不触发, -100 百分百触发
+triggerRate: '40'
