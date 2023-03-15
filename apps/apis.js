@@ -263,7 +263,7 @@ export class randomImg extends plugin {
             }
         )
 
-        this.prefix = `[+] 随机壁纸`
+        this.prefix = `[+] ${this.name}`
     }
 
     async randomImg() {
@@ -287,11 +287,10 @@ export class randomImg extends plugin {
         }
         let response = await fetch(apiUrl).catch((error) => {if (error) logger.warn(error)})
         let msg = [
-            `${this.prefix}` + 
-            `${this.e.sender.card ? this.e.sender.card : this.e.sender.nickname} cd 剩余 ${cd} 小时\n`,
+            `\n${this.prefix}\n`,
             segment.image(response.url)
         ]
-        await this.e.reply(msg)
+        await this.e.reply(msg, false, { at: true })
         return
     }
 

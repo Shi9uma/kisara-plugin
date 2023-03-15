@@ -11,7 +11,7 @@ apps:
     - cmd: true
 
   main:
-    - help: true
+    - ahelp: true
     - recall: false
     - tarot: true
     - what2eat: true
