@@ -30,14 +30,15 @@ export class chat extends plugin {
     handleMessage(message) {
         message = message.replaceAll('{me}', this.botName)
         message = message.replaceAll('{name}', this.senderName)
+        let msgList
         if (message.includes('{segment}')) {
-            let msgList = message.split('{segment}')
-            return [true, msgList[0], msgList[1]]
-        } else return [false, message, null]
+            msgList = message.split('{segment}')
+        }
+        return msgList ? msgList : [].concat(message)
     }
 
     dontAnswer() {
-        if (this.e.isMaster || lodash.random(0, 100) < Number(this.triggerRate)) return false
+        if (this.e.isMaster || lodash.random(1, 100) < Number(this.triggerRate)) return false
         else return true
     }
 
@@ -51,12 +52,13 @@ export class chat extends plugin {
         for(let _msg in jsonData) {
             if (msg == _msg) {
                 replyMsg = this.handleMessage(lodash.sample(jsonData[_msg]))
-                if (replyMsg[0]) {
-                    await this.e.reply(replyMsg[1])
-                    await tools.wait(3)
-                    await this.e.reply(replyMsg[2])
+                if (replyMsg.length >= 1) {
+                    for (let eachMsg of replyMsg) {
+                        await this.e.reply(eachMsg)
+                        await tools.wait(lodash.random(1, 5))
+                    }
                 } else {
-                    await this.e.reply(replyMsg[1])
+                    await this.e.reply(replyMsg[0])
                 }
             }
             else continue
