@@ -46,12 +46,12 @@ class tools {
     }
 
     /**
-     * 异步实现秒暂停
-     * @param {*} s 秒
+     * 异步实现秒暂停, 需要 await
+     * @param {*} time 秒
      * @returns 
      */
-    wait(s) {
-        return new Promise(resolve => setTimeout(() => resolve(), s * 1000))
+    wait(time) {
+        return new Promise(resolve => setTimeout(() => resolve(), time * 1000))
     }
 
     /**
