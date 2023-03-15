@@ -52,7 +52,7 @@ export class recall extends plugin {
                 name: 'recall',
                 dsc: '撤回 bot 的消息',
                 event: 'message',
-                priority: '100',
+                priority: '5000',
                 rule: [
                     {
                         reg: '^(recall|撤回|撤)$',
