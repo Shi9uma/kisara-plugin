@@ -27,7 +27,8 @@ export class todayNews extends plugin {
                     },
                     {
                         reg: '^推送今日简报$',
-                        fnc: 'scheduleSendTodayNews'
+                        fnc: 'scheduleSendTodayNews',
+                        permission: 'Master'
                     }
                 ]
             }
@@ -51,7 +52,7 @@ export class todayNews extends plugin {
     isValidTime() {
         let datatime = new moment(new Date()).format('yyyy-MM-DD HH')
         let flagTime = moment(new Date()).format('yyyy-MM-DD')
-        if (!moment(datatime).isBetween(`${flagTime} 00`, `${flagTime} 08`)) return true
+        if (!moment(datatime).isBetween(`${flagTime} 01`, `${flagTime} 08`)) return true
         else return false
     }
 
@@ -65,23 +66,23 @@ export class todayNews extends plugin {
         let checkPrivate = (this.e.isGroup || this.e.isMaster) ? true : false
         if (!checkPrivate) {
             if (!this.e.isMaster)
-                this.e.reply('为了防止滥用, 仅支持群聊使用', true, { recallMsg: 30 })
+                this.e.reply(`${this.prefix}\n为了防止滥用, 仅支持群聊使用`, true, { recallMsg: 30 })
             return
         }
         if (this.e.isGroup) {
             if (!(this.e.group.is_admin || this.e.group.is_owner || this.e.isMaster)) {
-                this.e.reply('只接受管理员的简报删除指令', true, { recallMsg: 30 })
+                this.e.reply(`${this.prefix}\n只接受管理员的简报删除指令`, true, { recallMsg: 30 })
                 return
             }
         }
         let datatime = this.datatime
         if (!this.checkTodayNewsImg(datatime)) {
-            this.e.reply(`[+] 尚未获取 ${datatime} 简报`)
+            this.e.reply(`${this.prefix}\n尚未获取日期为 ${datatime} 的简报`)
             return
         } else {
             let deleteNewsPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
             tools.deleteFile(deleteNewsPath)
-            this.e.reply(`[+] 已删除 ${datatime} 简报`)
+            this.e.reply(`${this.prefix}\n已删除日期为 ${datatime} 的简报`)
             return
         }
     }
@@ -104,7 +105,7 @@ export class todayNews extends plugin {
             for (let count = 0; count < (files.length - keepTime); count++) {
                 deleteFilePath = `${this.newsImgDir}/${files[count]}`
                 await tools.deleteFile(deleteFilePath)
-                logger.info(`已清除较早的简报资源: ${deleteFilePath}`)
+                logger.info(`[-] ${this.prefix} 已清除较早的简报资源: ${deleteFilePath}`)
             }
         }
     }
@@ -132,22 +133,23 @@ export class todayNews extends plugin {
                 `${this.prefix}\n` + 
                 `日期：${this.datatime}\n`
             ],
-            tempMsg = msg
+            tempMsg = [].concat(msg)
         this.checkKeepTime()
 
         if (!this.checkTodayNewsImg(datatime)) {
             this.getTodayNews(datatime)
             if (!this.isValidTime()) {
-                tempMsg += `正在初始化今日简报信息\n请注意, 当前时间点 ${new moment().format('yyyy-MM-DD HH:mm:ss')} 获取的简报信息可能有延误\n若出现延误内容, 请通过 删除简报 指令来刷新简报信息`
+                tempMsg.push(`正在初始化今日简报信息, 稍等...`)
+                tempMsg.push(`\n请注意, 当前时间点 ${new moment().format('yyyy-MM-DD HH:mm:ss')} 获取的简报信息可能有延误\n若出现延误内容, 请通过 删除简报 指令来刷新简报信息`)
             } else {
-                tempMsg += `正在初始化今日简报信息`
+                tempMsg.push(`正在初始化今日简报信息, 稍等...`)
             }
             await this.e.reply(tempMsg)
+            await tools.wait(10)
         }
         
-        tools.wait(7)
         if (!this.checkTodayNewsImg(datatime)) return
-        msg += segment.image(`file://${this.newsImgDir}/${datatime}.${this.imgType}`)
+        msg.push(segment.image(`file://${this.newsImgDir}/${datatime}.${this.imgType}`))
         await this.e.reply(msg)
         return
     }
@@ -156,15 +158,15 @@ export class todayNews extends plugin {
         let datatime = new moment().format('yyyy-MM-DD')
         if(!this.checkTodayNewsImg(datatime)) {
             this.getTodayNews(datatime)
-            await tools.wait(5)
+            await tools.wait(10)
         }
 
-        let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
-        let msg = [
-            `[+] ${this.task.name}\n` +
-            `日期：${datatime}\n`,
-            segment.image(`file://${newsImgPath}`)
-        ]        
+        let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`,
+            msg = [
+                `[+] ${this.task.name}\n` +
+                `日期：${datatime}\n`,
+                segment.image(`file://${newsImgPath}`)
+            ]     
 
         let scheduleGroups = this.configYaml.scheduleGroups
         for(let group_id of scheduleGroups) {

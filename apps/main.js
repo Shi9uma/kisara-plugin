@@ -7,6 +7,7 @@ import plugin from '../../../lib/plugins/plugin.js'
 import tools from '../utils/tools.js'
 
 const content = [
+    '[+] 帮助菜单\n' + 
     '占卜: 塔罗牌占卜\n' + 
     '今天吃什么: 选择困难\n' + 
     '舔狗日志: 最喜欢你了\n' + 
@@ -21,24 +22,25 @@ const content = [
 const pluginName = tools.getPluginName()
 
 // 帮助
-export class help extends plugin {
+export class ahelp extends plugin {
     constructor() {
         super({
-            name: 'main_help',
+            name: 'ahelp',
             dsc: '发送自定义插件的 help',
             event: 'message',
             priority: 5000,
             rule: [
                 {
                     reg: '^ahelp$',
-                    fnc: 'help'
+                    fnc: 'ahelp'
                 }
             ]
         })
     }
 
-    async help() {
+    async ahelp() {
         await this.e.reply(content)
+        return
     }
 }
 
@@ -204,12 +206,14 @@ export class tarot extends plugin {
         msg = [
             `${this.prefix}\n` +
             `「${roll ? '正位' : '逆位'}」${card.name_cn}\n` +
-            `回应是：${roll ? card.meaning.up : card.meaning.down}` + 
-            segment.image(`file://${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`)
+            `回应是：${roll ? card.meaning.up : card.meaning.down}`
         ]
-        if (this.e.isGroup)
+        if (this.e.isGroup) {
             await this.e.reply(`\n${msg}`, false, { at: true })
-        else await this.e.reply(msg)
+        } else { 
+            await this.e.reply(msg)
+        }
+        await this.e.reply(segment.image(`file://${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`))
         return
     }
 
