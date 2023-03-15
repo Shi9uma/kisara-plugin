@@ -54,9 +54,9 @@ export class tiangou extends plugin {
     }
 
     async tiangou() {
-        let redisRet = await tools.checkRedis(this.e, 'g', cd, {getKey: true})
-        if (!redisRet[0]) {
-            await this.e.reply(`${this.prefix}\ncd 剩余 ${parseInt(await tools.ttlRedis(redisRet[1]) / 60)} 分钟`, true)
+        let checkRedisResult = await tools.checkRedis(this.e, 'g', cd, {getKey: true})
+        if (checkRedisResult[0]) {
+            await this.e.reply(`${this.prefix}\ncd 剩余 ${parseInt(await tools.ttlRedis(checkRedisResult[1]) / 60)} 分钟`, true)
             return
         }
         // let apiUrl = 'https://apis.tianapi.com/tiangou/index?key=' + apis.tiangou
@@ -267,9 +267,9 @@ export class randomImg extends plugin {
     }
 
     async randomImg() {
-        let redisRet = await tools.checkRedis(this.e, 'g', cd, {getKey: true})
-        if (!redisRet[0]) {
-            await this.e.reply(`${this.prefix}\ncd 剩余 ${parseInt(await tools.ttlRedis(redisRet[1]) / 60)} 分钟`, true)
+        let checkRedisResult = await tools.checkRedis(this.e, 'g', cd, {getKey: true})
+        if (checkRedisResult[0]) {
+            await this.e.reply(`${this.prefix}\ncd 剩余 ${parseInt(await tools.ttlRedis(checkRedisResult[1]) / 60)} 分钟`, true)
             return
         }
 

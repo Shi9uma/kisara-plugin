@@ -7,21 +7,18 @@ import plugin from '../../../lib/plugins/plugin.js'
 import tools from '../utils/tools.js'
 
 const content = [
-    '占卜: 塔罗牌占卜\n',
-    '今天吃什么: 选择困难\n',
-    '舔狗日志: 最喜欢你了\n',
-    '壁纸: 随机获得图片\n',
-    '简报：发送每日简报\n',
-    '风险：查询账号的风险值\n',
-    '骰子: 「r + 数字」\n',
-    '识图: 「识图 + 图片」, 「引用含有图片的消息并识图」\n',
+    '占卜: 塔罗牌占卜\n' + 
+    '今天吃什么: 选择困难\n' + 
+    '舔狗日志: 最喜欢你了\n' + 
+    '壁纸: 随机获得图片\n' + 
+    '简报：发送每日简报\n' + 
+    '风险：查询账号的风险值\n' + 
+    '骰子: 「r + 数字」\n' + 
+    '识图: 「识图 + 图片」, 「引用含有图片的消息并识图」\n' + 
     '点歌: 「点歌 + 歌曲名, 直接加歌手名以指定」\n'
 ]
 
 const pluginName = tools.getPluginName()
-
-// 查看属性
-// var properties = Object.keys(this.e)
 
 // 帮助
 export class help extends plugin {
@@ -30,7 +27,7 @@ export class help extends plugin {
             name: 'main_help',
             dsc: '发送自定义插件的 help',
             event: 'message',
-            priority: 10,
+            priority: 5000,
             rule: [
                 {
                     reg: '^ahelp$',
@@ -41,7 +38,7 @@ export class help extends plugin {
     }
 
     async help() {
-        await this.reply(content, false)
+        await this.e.reply(content)
     }
 }
 
@@ -121,32 +118,13 @@ export class tarot extends plugin {
 
         this.tarotCardsDirPath = `./plugins/${pluginName}/data/tarotCards`
         this.imgType = 'png'
-        this.funcName = `[+] ${this.dsc}`
-    }
-
-    get key() {
-        /** 群，私聊分开 */
-        if (this.e.isGroup) {
-            return `${this.prefix}${this.e.group_id}:${this.e.user_id}`
-        } else {
-            return `${this.prefix}private:${this.e.user_id}`
-        }
-    }
-
-    get time() {
-        return moment().format('X')
+        this.prefix = `[+] ${this.dsc}`
     }
 
     async isPasseren() {
-        if (this.e.isMaster) return true
-        const tarot_key = this.e.logFnc + this.e.user_id
-        const expireTime = await redis.get(tarot_key)
-        if (expireTime && this.time <= expireTime) {
-            return false
-        }
-        const newExpireTime = moment().endOf('day').format('X')
-        await redis.setEx(tarot_key, 3600 * 24, newExpireTime)
-        return true
+        let checkResult = await tools.checkRedis(this.e, 'global', tools.calLeftTime(), {timeFormat: 's'})
+        if (checkResult) return false
+        else return true
     }
 
     /**
@@ -198,7 +176,7 @@ export class tarot extends plugin {
         let formation = fullTarotData.formation,
             cards_info_list = fullTarotData.cards_info_list,
             card = fullTarotData.card
-        await this.e.reply(`${this.funcName}\n启用「${formation.name}」, 抽取 「${formation.cards_num}」张牌, 洗牌中...`)
+        await this.e.reply(`${this.prefix}\n启用「${formation.name}」, 抽取 「${formation.cards_num}」张牌, 洗牌中...`)
         for (let index = 0; index < formation.cards_num; index++) {
             if (formation.is_cut && (index == formation.cards_num - 1))
                 msg = `切牌「${formation.representations[index]}」,\n`
@@ -217,34 +195,33 @@ export class tarot extends plugin {
             msgArr.push(msg)
             msgArr.push(segment.image(card.pic))
         }
-        await this.e.reply(await (tools.makeForwardMsg(`对象：${this.e.sender.card ? this.e.sender.card : this.e.sender.nickname}`, msgArr, '塔罗牌占卜结束\n感谢开源代码来源：https://github.com/MinatoAquaCrews/nonebot_plugin_tarot', this.e, global.Bot)))
+        await this.e.reply(await (tools.makeForwardMsg(`对象：${this.e.sender.card ? this.e.sender.card : this.e.sender.nickname}`, msgArr, '塔罗牌占卜结束\n感谢开源代码来源：MinatoAquaCrews/nonebot_plugin_tarot', this.e, global.Bot)))
         return
     }
 
     async singleTarot() {
         let card = this.getTarotData('single'), msg, roll = lodash.random(0, 1)
         msg = [
-            `${this.funcName}` +
-            `\n「${roll ? '正位' : '逆位'}」${card.name_cn}` +
-            `\n回应是：${roll ? card.meaning.up : card.meaning.down}`
+            `${this.prefix}\n` +
+            `「${roll ? '正位' : '逆位'}」${card.name_cn}\n` +
+            `回应是：${roll ? card.meaning.up : card.meaning.down}` + 
+            segment.image(`file://${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`)
         ]
         if (this.e.isGroup)
             await this.e.reply(`\n${msg}`, false, { at: true })
         else await this.e.reply(msg)
-        await this.e.reply(segment.image(`file://${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`))
         return
     }
 
     // 参考 https://github.com/MinatoAquaCrews/nonebot_plugin_tarot
     async tarot() {
 
-        let isPasseren = await this.isPasseren()
-        if (!isPasseren) {
-            this.reply('今日已经为你占卜过了，明天再来吧')
+        if (!(await this.isPasseren())) {
+            this.e.reply(`\n${this.prefix}\n今日已经为你占卜过了，明天再来吧`, false, {at: true})
             return
         }
 
-        if (lodash.random(0, 3) == 2 || this.e.isMaster) {
+        if (lodash.random(0, 5) == 2 || this.e.isMaster) {
             await this.e.reply('“许多傻瓜对千奇百怪的迷信说法深信不疑：象牙、护身符、黑猫、打翻的盐罐、驱邪、占卜、符咒、毒眼、塔罗牌、星象、水晶球、咖啡渣、手相、预兆、预言还有星座。”\n——《人类愚蠢辞典》')
             this.fullTarot()
             return
@@ -270,14 +247,14 @@ export class what2eat extends plugin {
                 }
             ]
         })
-        this.funcName = `[+] ${this.dsc}`
+        this.prefix = `[+] ${this.dsc}`
         this.foodsDataPath = `./plugins/${pluginName}/data/foods.json`
         this.foodsData = tools.readJsonFile(this.foodsDataPath)
     }
 
     async what2eat() {
         let result = lodash.sampleSize(this.foodsData, 5).join(' | ')
-        await this.reply(`${this.funcName}\n推荐尝试：${result}`)
+        await this.reply(`${this.prefix}\n推荐尝试：${result}`)
         return
     }
 }
@@ -287,7 +264,7 @@ export class dice extends plugin {
     constructor() {
         super({
             name: 'roll',
-            dsc: 'roll骰子',
+            dsc: 'roll 骰子',
             event: 'message',
             priority: 5000,
             rule: [
@@ -301,14 +278,18 @@ export class dice extends plugin {
                 }
             ]
         })
+
+        this.prefix = `[+] ${this.dsc}`
+
     }
 
     async r() {
-        const range = this.e.msg.split(' ').map(Number).filter(Number.isInteger)
-        const end = range.pop() ?? 100
-        const start = range.pop() ?? 1
-        const result = lodash.random(start, end)
-        await this.reply(`在 ${start} 和 ${end} 间roll到了：${result}`)
+        let range = this.e.msg.split(' ').map(Number).filter(Number.isInteger)
+        let end = range.pop() ?? 100
+        let start = range.pop() ?? 1
+        let result = lodash.random(start, end)
+        await this.e.reply(`${this.prefix}\n在 ${start} 和 ${end} 间 roll 到了：${result}`)
+        return
     }
 }
 

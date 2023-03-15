@@ -13,7 +13,7 @@ export class todayNews extends plugin {
         super(
             {
                 name: '今日简报',
-                dsc: '利用 api 返回每日日报',
+                dsc: '今日简报',
                 event: 'message',
                 priority: 5000,
                 rule: [
@@ -37,7 +37,7 @@ export class todayNews extends plugin {
         this.newsImgDir = `./plugins/${pluginName}/data/todayNews`
         this.configYaml = tools.readYamlFile('schedule', 'todayNews')
         this.datatime = new moment().format('yyyy-MM-DD')
-        this.prefix = `[+] ${this.name}`
+        this.prefix = `[+] ${this.dsc}`
 
         this.task = {
             cron: this.configYaml.scheduleTime,
@@ -127,41 +127,42 @@ export class todayNews extends plugin {
     }
 
     async sendTodayNews() {
-        let datatime = this.datatime
+        let datatime = this.datatime,
+            msg = [
+                `${this.prefix}\n` + 
+                `日期：${this.datatime}\n`
+            ],
+            tempMsg = msg
         this.checkKeepTime()
+
         if (!this.checkTodayNewsImg(datatime)) {
             this.getTodayNews(datatime)
-            let msg
             if (!this.isValidTime()) {
-                msg = `[+] ${datatime} 简报\n正在初始化今日简报信息, 请再次输入获取简报指令\n请注意, 当前时间点 ${new moment().format('yyyy-MM-DD HH:mm:ss')} 获取的简报信息可能有延误\n若出现延误内容, 请通过 删除简报 指令来刷新简报信息`
+                tempMsg += `正在初始化今日简报信息\n请注意, 当前时间点 ${new moment().format('yyyy-MM-DD HH:mm:ss')} 获取的简报信息可能有延误\n若出现延误内容, 请通过 删除简报 指令来刷新简报信息`
             } else {
-                msg = `[+] ${datatime} 简报\n正在初始化今日简报信息, 请再次输入获取简报指令`
+                tempMsg += `正在初始化今日简报信息`
             }
-            await this.e.reply(msg)
-            return
-        } else {
-            let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
-            let msg = [
-                `${this.prefix}\n` +
-                `日期：${this.datatime}\n`,
-                segment.image(`file://${newsImgPath}`)
-            ]        
-    
-            await this.e.reply(msg)
-            return
+            await this.e.reply(tempMsg)
         }
+        
+        tools.wait(7)
+        if (!this.checkTodayNewsImg(datatime)) return
+        msg += segment.image(`file://${this.newsImgDir}/${datatime}.${this.imgType}`)
+        await this.e.reply(msg)
+        return
     }
 
     async scheduleSendTodayNews() {
-        if(!this.checkTodayNewsImg(this.datatime)) {
-            this.getTodayNews(this.datatime)
+        let datatime = new moment().format('yyyy-MM-DD')
+        if(!this.checkTodayNewsImg(datatime)) {
+            this.getTodayNews(datatime)
             await tools.wait(5)
         }
 
-        let newsImgPath = `${this.newsImgDir}/${this.datatime}.${this.imgType}`
+        let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
         let msg = [
             `[+] ${this.task.name}\n` +
-            `日期：${this.datatime}\n`,
+            `日期：${datatime}\n`,
             segment.image(`file://${newsImgPath}`)
         ]        
 

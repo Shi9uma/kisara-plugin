@@ -380,9 +380,17 @@ class tools {
     }
 
     /**
-     * 用以确认 redis 中是否已经设置过值, 判断是否允许接下来操作, 设置过返回 false, 没有则返回 true
+     * 计算现在到目标时间剩余的秒数
+     * @param {*} endTime 目标时间, 缺省是 '23:59:59'
+     * @returns 剩余时间, 单位是秒
+     */
+    calLeftTime(endTime = '23:59:59') {
+        return moment(endTime, 'hh:mm:ss').diff(moment(), 'seconds')
+    }
+
+    /**
+     * redis 中是否有过值, 有返回 true, 没有则返回 false
      * @param {*} e 传入 this.e
-     * @param {*} value 要设置的键值, 默认传入缺省是今日日期
      * @param {*} type
      * > 生成 redis key 的类型
      * > 
@@ -392,8 +400,9 @@ class tools {
      * > 
      * > 全局: [global, isGlobal]
      * @param {*} cd 键值对存活时间, cd * timeFormat
+     * @param {*} value 要设置的键值, 默认传入缺省是今日日期
      * @param {*} timeFormat
-     * > 时间单位
+     * > 时间单位, 默认是 hour
      * > 
      * > 小时: [h, hour],
      * > 
@@ -404,12 +413,12 @@ class tools {
      * @param {boolean} getKey 是否获取生成的 key
      * @returns 返回值为 bool 或 [key, bool](if getKey == true)
      */
-    async checkRedis(e, type, cd, {value = moment().format('yyyy-MM-DD hh'), timeFormat = 'hour', isMaster = true, getKey = false}) {
+    async checkRedis(e, type, cd, {value = moment().format('yyyy-MM-DD'), timeFormat = 'hour', isMaster = true, getKey = false}) {
 
         let key = this.genRedisKey(e, type)
 
-        if (e.isMaster && isMaster) return getKey == true ? [true, key] : true
-        if(await this.isRedisSet(key)) return getKey == true ? [false, key] : false
+        if (e.isMaster && isMaster) return getKey == true ? [false, key] : false
+        if(await this.isRedisSet(key)) return getKey == true ? [true, key] : true
 
         if (['h', 'hour'].includes(timeFormat)) {
             timeFormat = 60 * 60
@@ -420,7 +429,7 @@ class tools {
         }
 
         this.setRedis(key, timeFormat * cd, value)
-        return getKey == true ? [true, key] : true
+        return getKey == true ? [false, key] : false
     }
 }
 
