@@ -1,6 +1,6 @@
 
 import fs from 'fs'
-import yaml from 'yaml'
+import yaml from 'js-yaml'
 import https from 'https'
 import moment from 'moment'
 
@@ -120,19 +120,19 @@ class tools {
      * 读取 yaml 配置文件
      * @param {*} app app 功能
      * @param {*} func app 配置文件名
-     * @param {*} type 读取类型, -config(默认), -default
+     * @param {string} type 读取类型, -config(默认), -default
+     * @param {string} encoding 读取格式, 默认 utf8
      * @returns 
      */
-    readYamlFile(app, func, type = 'config') {
+    readYamlFile(app, func, type = 'config', encoding = 'utf8') {
         if (!(type == 'config' || type == 'default')) {
             return logger.error('读取配置文件出错')
         }
         let filePath = `./plugins/${this.pluginName}/${type}/${app}.${func}.yaml`
-        // let filePath = `../${type}/${app}.${func}.yaml`
         if (this.isFileValid(filePath)) {
-            return yaml.parse(fs.readFileSync(filePath, 'utf8'))
+            return yaml.load(fs.readFileSync(filePath, 'utf8'))
         } else {
-            return logger.error(`${this.prefix} 找不到 ${filePath} 文件`)
+            return logger.warn(`${this.prefix} 找不到 ${filePath} 文件`)
         }
     }
 
@@ -385,7 +385,7 @@ class tools {
      * @returns 剩余时间, 单位是秒
      */
     calLeftTime(endTime = '23:59:59') {
-        return moment(endTime, 'hh:mm:ss').diff(moment(), 'seconds')
+        return moment(endTime, 'HH:mm:ss').diff(moment(), 'seconds')
     }
 
     /**
