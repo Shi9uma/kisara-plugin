@@ -179,10 +179,11 @@ class tools {
      * @returns 
      */
     isFuncEnable(app, func) {
-        if (!this.isFileValid(`${this.userConfigDir}/index.config.yaml`)) {
-            return logger.info(`配置文件 ${this.userConfigDir}/index.config.yaml 不存在`)
-        }
-        let configs = this.readYamlFile('index', 'config', 'config')
+        let userConfigFile = `${this.userConfigDir}/index.config.yaml`
+        if (!this.isFileValid(userConfigFile))
+            return logger.warn(`${this.prefix} 配置文件 ${userConfigFile} 不存在`)
+        
+        let configs = this.readYamlFile('index', 'config')
         for (let _app in configs.apps) {
             for (let _func of configs.apps[_app]) {
                 for (let __func in _func) {
@@ -191,16 +192,16 @@ class tools {
                 }
             }
         }
-        return logger.error(`${this.prefix} 功能 [${app}][${func}] 不存在`)
+        return logger.error(`${this.prefix} 功能 ${app}.${func} 不存在, 跳过加载, 请检查文件 ${userConfigFile}`)
     }
 
     /**
      * 获取配置文件列表
      */
     getDefaultConfigFileList() {
-        if (!this.isFileValid(`${this.defaultDir}/index.config.yaml`)) {
+        if (!this.isFileValid(`${this.defaultDir}/index.config.yaml`))
             return logger.info(`${this.prefix} 配置文件 ${this.defaultDir}/index.config.yaml 不存在`)
-        }
+
         let configs = this.readYamlFile('index', 'config', 'default')
         let defaultConfigFileList = []
         for (let app in configs.configs) {
@@ -461,7 +462,7 @@ class tools {
      *  senderName: ''
      * }, groupId
      * // 返回特例设置内容, 如果没有特例, 则使用全局内容
-     * keyDict = tools.applyGroupConfig(keyDict, groupId, 'chat', 'chat')
+     * keyDict = tools.applyCaseConfig(keyDict, groupId, 'chat', 'chat')
      * ```
      * @param {*} caseId 特例名称, 例如群号, QQ 号, 如果未找到值则使用全局设置
      * @param {*} app **app**.js
@@ -470,7 +471,7 @@ class tools {
      * @param {*} encoding 编码类型, 默认 utf8
      * @returns 
      */
-    applyGroupConfig(keyDict, caseId, app, func, type = 'config', encoding = 'utf8') {
+    applyCaseConfig(keyDict, caseId, app, func, type = 'config', encoding = 'utf8') {
         let configFile = this.readYamlFile(app, func, type, encoding),
             groupConfig = configFile[caseId] ? configFile[caseId] : {}
         for(let key in keyDict) {

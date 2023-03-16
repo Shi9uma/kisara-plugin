@@ -21,7 +21,7 @@ export class chat extends plugin {
         )
 
         this.pluginName = tools.getPluginName()
-        this.keyDict = tools.applyGroupConfig({botName: '', senderName: '', triggerRate: ''}, this.group_id, 'chat', 'chat')
+        this.keyDict = tools.applyCaseConfig({botName: '', senderName: '', triggerRate: ''}, this.group_id, 'chat', 'chat')
     }
 
     handleMessage(message) {
@@ -35,10 +35,7 @@ export class chat extends plugin {
     }
 
     dontAnswer() {
-        let b = Number(this.keyDict.triggerRate)
-        let a = (this.e.isMaster || lodash.random(1, 100) < b) ? false : true
-        logger.warn(a, b)
-        return a
+        return (this.e.isMaster || lodash.random(1, 100) <= this.keyDict.triggerRate) ? false : true
     }
 
     async chat() {

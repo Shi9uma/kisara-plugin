@@ -1,7 +1,6 @@
 import { segment } from 'icqq'
 
 import lodash from 'lodash'
-import moment from 'moment'
 import fetch from "node-fetch"
 import axios from 'axios'
 

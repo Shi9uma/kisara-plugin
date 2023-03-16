@@ -74,7 +74,6 @@
 ## 札记
 
 - 插件的命名逻辑：`schedule.todayNews.yaml`：这是一个 todayNews 功能的配置文件，`schedule` 称为 app，`todayNews` 称为 func
-- 阅读了 Yunzai 的源码，发现使用 `index.js` 作为插件入口的方式下，不会自动监听，现在尝试直接热重载单个 app 的方式，还在探索中
 
 ## 致谢
 
