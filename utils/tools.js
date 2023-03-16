@@ -118,8 +118,8 @@ class tools {
 
     /**
      * 读取 yaml 配置文件
-     * @param {*} app app 功能
-     * @param {*} func app 配置文件名
+     * @param {*} app **app**.js
+     * @param {*} func expend calss **func** extends plugin
      * @param {string} type 读取类型, -config(默认), -default
      * @param {string} encoding 读取格式, 默认 utf8
      * @returns 
@@ -174,8 +174,8 @@ class tools {
 
     /**
      * 用于判断功能是否开启
-     * @param {*} app app 名称
-     * @param {*} func function 名称
+     * @param {*} app **app**.js
+     * @param {*} func expend calss **func** extends plugin
      * @returns 
      */
     isFuncEnable(app, func) {
@@ -213,8 +213,8 @@ class tools {
 
     /**
      * 只从 default 文件夹将所需的配置文件复制出来
-     * @param {*} app 
-     * @param {*} func 
+     * @param {*} app **app**.js
+     * @param {*} func expend calss **func** extends plugin
      */
     copyConfigFile(app, func) {
         if (!this.isDirValid(this.defaultDir)) {
@@ -430,6 +430,53 @@ class tools {
 
         this.setRedis(key, timeFormat * cd, value)
         return getKey == true ? [false, key] : false
+    }
+
+    /**
+     * 判断是否存在特例设置
+     * @param {*} caseId 特例名称, 例如群号, QQ 号
+     * @param {*} app **app**.js
+     * @param {*} func expend calss **func** extends plugin
+     * @param {*} type -config(默认), -default
+     * @param {*} encoding 编码类型, 默认 utf8
+     * @returns 存在与否
+     */
+    isGroupConfig(caseId, app, func, type = 'config', encoding = 'utf8') {
+        let configFile = this.readYamlFile(app, func, type, encoding)
+        for (let key of Object.keys(configFile)) {
+            if (key == caseId) 
+                return true
+        }
+        return false
+    }
+
+    /**
+     * 获取特例设置内容
+     * @param {*} keyDict 想要取得的字典键值对集合, 
+     * 
+     * 例如：
+     * ```javascript
+     * let keyDict = {
+     *  botName: '',
+     *  senderName: ''
+     * }, groupId
+     * // 返回特例设置内容, 如果没有特例, 则使用全局内容
+     * keyDict = tools.applyGroupConfig(keyDict, groupId, 'chat', 'chat')
+     * ```
+     * @param {*} caseId 特例名称, 例如群号, QQ 号, 如果未找到值则使用全局设置
+     * @param {*} app **app**.js
+     * @param {*} func expend calss **func** extends plugin
+     * @param {*} type -config(默认), -default
+     * @param {*} encoding 编码类型, 默认 utf8
+     * @returns 
+     */
+    applyGroupConfig(keyDict, caseId, app, func, type = 'config', encoding = 'utf8') {
+        let configFile = this.readYamlFile(app, func, type, encoding),
+            groupConfig = configFile[caseId] ? configFile[caseId] : {}
+        for(let key in keyDict) {
+            keyDict[key] = groupConfig[key] ? groupConfig[key] : configFile[key]
+        }
+        return keyDict
     }
 }
 

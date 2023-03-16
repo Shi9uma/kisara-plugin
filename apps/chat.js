@@ -21,15 +21,12 @@ export class chat extends plugin {
         )
 
         this.pluginName = tools.getPluginName()
-        this.configFile = tools.readYamlFile('chat', 'chat')
-        this.botName = this.configFile.botName
-        this.senderName = this.configFile.senderName
-        this.triggerRate = this.configFile.triggerRate
+        this.keyDict = tools.applyGroupConfig({botName: '', senderName: '', triggerRate: ''}, this.group_id, 'chat', 'chat')
     }
 
     handleMessage(message) {
-        message = message.replaceAll('{me}', this.botName)
-        message = message.replaceAll('{name}', this.senderName)
+        message = message.replaceAll('{me}', this.keyDict.botName)
+        message = message.replaceAll('{name}', this.keyDict.senderName)
         let msgList
         if (message.includes('{segment}')) {
             msgList = message.split('{segment}')
@@ -38,20 +35,23 @@ export class chat extends plugin {
     }
 
     dontAnswer() {
-        if (this.e.isMaster || lodash.random(1, 100) < Number(this.triggerRate)) return false
-        else return true
+        let b = Number(this.keyDict.triggerRate)
+        let a = (this.e.isMaster || lodash.random(1, 100) < b) ? false : true
+        logger.warn(a, b)
+        return a
     }
 
     async chat() {
         if (this.dontAnswer()) return
-        let msg = this.e.raw_message, replyMsg
-        let chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/可爱系二次元bot词库1.5万词V1.2.json`,
-            jsonData = tools.readJsonFile(chatLibPath)
-        if (this.senderName == '')
-            this.senderName = this.e.sender.card ? this.e.sender.card : this.e.sender.nickname
-        for(let _msg in jsonData) {
+
+        let msg = this.e.raw_message,
+            replyMsg,
+            chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/可爱系二次元bot词库1.5万词V1.2.json`,
+            chatData = tools.readJsonFile(chatLibPath)
+
+        for(let _msg in chatData) {
             if (msg == _msg) {
-                replyMsg = this.handleMessage(lodash.sample(jsonData[_msg]))
+                replyMsg = this.handleMessage(lodash.sample(chatData[_msg]))
                 if (replyMsg.length >= 1) {
                     for (let eachMsg of replyMsg) {
                         await this.e.reply(eachMsg)
