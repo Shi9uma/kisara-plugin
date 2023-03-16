@@ -1,8 +1,13 @@
-dontgit
 node_modules
-package.json
+dontgit
+
 config
-*apitoken*
 data/todayNews
-test.js
+data/chatLibrary/temp
+
+*test.js
 *customize.js
+
+*apitoken.json
+
+package.json

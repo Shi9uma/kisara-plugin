@@ -107,6 +107,14 @@ class tools {
     copyFile(from, to) {
         fs.copyFile(from, to, (err) => { if (err) logger.warn(this.prefix, err) })
     }
+    
+    /**
+     * 创建文件
+     * @param {*} filePath 目标路径
+     */
+    touchFile(filePath, data = '') {
+        fs.writeFile(filePath, data, (err) => {if (err) logger.warn(this.prefix, err)})
+    }
 
     /**
      * 删除指定文件
