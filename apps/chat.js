@@ -21,12 +21,11 @@ export class chat extends plugin {
         )
 
         this.pluginName = tools.getPluginName()
-        this.keyDict = tools.applyCaseConfig({botName: '', senderName: '', triggerRate: ''}, this.group_id, 'chat', 'chat')
     }
 
-    handleMessage(message) {
-        message = message.replaceAll('{me}', this.keyDict.botName)
-        message = message.replaceAll('{name}', this.keyDict.senderName)
+    handleMessage(message, keyDict) {
+        message = message.replaceAll('{me}', keyDict.botName)
+        message = message.replaceAll('{name}', keyDict.senderName)
         let msgList
         if (message.includes('{segment}')) {
             msgList = message.split('{segment}')
@@ -34,12 +33,13 @@ export class chat extends plugin {
         return msgList ? msgList : [].concat(message)
     }
 
-    dontAnswer() {
-        return (this.e.isMaster || lodash.random(1, 100) <= this.keyDict.triggerRate) ? false : true
+    dontAnswer(keyDict) {
+        return (this.e.isMaster || lodash.random(1, 100) <= keyDict.triggerRate) ? false : true
     }
 
     async chat() {
-        if (this.dontAnswer()) return
+        let keyDict = tools.applyCaseConfig({botName: '', senderName: '', triggerRate: ''}, this.e.group_id, 'chat', 'chat')
+        if (this.dontAnswer(keyDict)) return
 
         let msg = this.e.raw_message,
             replyMsg,
@@ -48,7 +48,7 @@ export class chat extends plugin {
 
         for(let _msg in chatData) {
             if (msg == _msg) {
-                replyMsg = this.handleMessage(lodash.sample(chatData[_msg]))
+                replyMsg = this.handleMessage(lodash.sample(chatData[_msg]), keyDict)
                 if (replyMsg.length >= 1) {
                     for (let eachMsg of replyMsg) {
                         await this.e.reply(eachMsg)
