@@ -310,14 +310,13 @@ class tools {
 
     /**
      * 查看 key 还有多久失效, 需要 await
-     * @param {*} key
-     * > 查看 tools.genRedisKey 生成的 key 在 redis 中剩余的时间, 单位是 s, 
-     * > 
-     * > 使用示例
-     * > 
-     * > await tools.ttlRedis(tools.checkRedis(..., {getKey: true})[1])
-     * > 
-     * > 这里的 tools.checkRedis() 在指定了 getKey 后, 返回 [bool, key]
+     * @param {*} key 查看 tools.genRedisKey 生成的 key 在 redis 中剩余的时间, 单位是 s
+     * 
+     * 使用例：
+     * ```javascript
+     * // 这里的 tools.checkRedis() 在指定了 getKey 后, 返回 [bool, key]
+     * await tools.ttlRedis(tools.checkRedis(..., {getKey: true})[1])
+     * ```
      * @returns 
      */
     ttlRedis(key) {
@@ -355,13 +354,15 @@ class tools {
     /**
      * 生成统一格式的 key
      * @param {*} e 传入 this.e
-     * @param {*} type 生成 redis key 的类型
+     * @param {*} type 
      * 
-     * 私人: [p, private, isPrivate],
-     * 
-     * 群: [g, group, isGroup],
-     * 
-     * 全局: [global, isGlobal]
+     * > 生成 redis key 的类型
+     * > 
+     * > 私人: [p, private, isPrivate],
+     * > 
+     * > 群: [g, group, isGroup],
+     * > 
+     * > 全局: [global, isGlobal]
      * @returns 返回生成的 key
      */
     genRedisKey(e, type) {
@@ -382,7 +383,7 @@ class tools {
 
     /**
      * 计算现在到目标时间剩余的秒数
-     * @param {*} endTime 目标时间, 缺省是 '23:59:59'
+     * @param {*} endTime 目标时间, 缺省是 '23:59:59', 即用于生成按日结算的 redis key
      * @returns 剩余时间, 单位是秒
      */
     calLeftTime(endTime = '23:59:59') {
@@ -391,6 +392,21 @@ class tools {
 
     /**
      * redis 中是否有过值, 有返回 true, 没有则返回 false
+     * 
+     * 使用例：
+     * ```javascript
+     * let cd = 2
+     * let checkRedisResult
+     * 
+     * // 检查 this.e 的 isGlobal 是否存在, 若存在直接返回 true
+     * // 若不存在, 返回 false, 并向 redis 里生成一个 this.e.logFnc.isGlobal.qq号 的 key
+     * checkRedisResult = tools.checkRedis(this.e, 'global', cd)
+     * 
+     * // 检查 this.e 的 isGlabal 是否存在, 无论存在与否, 都会返回 查询到/新生成 的 [boolean, key] 列表
+     * checkRedisResult = tools.checkRedis(this.e, 'global', cd, { getKey: true })
+     * // 然后用返回的 key 查询该 key 剩余的时间等
+     * tools.ttlRedis(checkRedisResult[1])
+     * ```
      * @param {*} e 传入 this.e
      * @param {*} type
      * > 生成 redis key 的类型
@@ -442,7 +458,7 @@ class tools {
      * @param {*} encoding 编码类型, 默认 utf8
      * @returns 存在与否
      */
-    isGroupConfig(caseId, app, func, type = 'config', encoding = 'utf8') {
+    isCaseConfig(caseId, app, func, type = 'config', encoding = 'utf8') {
         let configFile = this.readYamlFile(app, func, type, encoding)
         for (let key of Object.keys(configFile)) {
             if (key == caseId) 
@@ -455,7 +471,7 @@ class tools {
      * 获取特例设置内容
      * @param {*} keyDict 想要取得的字典键值对集合, 
      * 
-     * 例如：
+     * 使用例：
      * ```javascript
      * let keyDict = {
      *  botName: '',
