@@ -1,6 +1,7 @@
 import { segment } from 'icqq'
 import plugin from '../../../lib/plugins/plugin.js'
 import tools from '../utils/tools.js'
+import lodash from 'lodash'
 
 const pluginName = tools.getPluginName()
 
@@ -99,7 +100,7 @@ export class tarot extends plugin {
             msgArr.push(msg)
             msgArr.push(segment.image(card.pic))
         }
-        await this.e.reply(await (tools.makeForwardMsg(`对象：${this.e.sender.card ? this.e.sender.card : this.e.sender.nickname}`, msgArr, '塔罗牌占卜结束\n感谢开源代码来源：MinatoAquaCrews/nonebot_plugin_tarot', this.e, global.Bot)))
+        await this.e.reply(await (tools.makeForwardMsg(`对象：${this.e.sender.card ? this.e.sender.card : this.e.sender.nickname}`, msgArr, '塔罗牌占卜结束\n感谢开源代码：MinatoAquaCrews/nonebot_plugin_tarot', this.e, global.Bot)))
         return
     }
 
