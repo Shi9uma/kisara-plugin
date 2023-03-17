@@ -17,7 +17,7 @@ const content = [
 
 const pluginName = tools.getPluginName()
 
-// 帮助
+// ahelp
 export class ahelp extends plugin {
     constructor() {
         super({
@@ -40,7 +40,7 @@ export class ahelp extends plugin {
     }
 }
 
-// 撤回 bot 的消息
+// recall
 export class recall extends plugin {
     constructor() {
         super(
@@ -98,7 +98,7 @@ export class recall extends plugin {
     }
 }
 
-// 今天吃什么
+// what2eat
 export class what2eat extends plugin {
     constructor() {
         super({
@@ -125,11 +125,11 @@ export class what2eat extends plugin {
     }
 }
 
-// 骰子
+// roll
 export class dice extends plugin {
     constructor() {
         super({
-            name: 'roll',
+            name: 'dice',
             dsc: 'roll 骰子',
             event: 'message',
             priority: 5000,

@@ -33,7 +33,7 @@ const tags = {
     source: '图片来源',
 }
 
-// 舔狗日记
+// 舔狗日志
 export class tiangou extends plugin {
     constructor() {
         super({
@@ -76,7 +76,7 @@ export class tiangou extends plugin {
     }
 }
 
-// saucenao 识图
+// 识图
 export class saucenao extends plugin {
     constructor() {
         super({
@@ -249,7 +249,7 @@ export class randomImg extends plugin {
     constructor() {
         super(
             {
-                name: '随机壁纸',
+                name: '随机图片',
                 dsc: '利用公开接口返回随机壁纸',
                 event: 'message',
                 priority: 5000,
@@ -341,7 +341,7 @@ export class shareMusic extends plugin {
     }
 }
 
-// 查看 QQ 账号风险值
+// 账号风险值查询
 export class riskValue extends plugin {
     constructor() {
         super({

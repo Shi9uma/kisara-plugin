@@ -8,6 +8,7 @@ import moment from 'moment'
 
 const pluginName = tools.getPluginName()
 
+// 今日简报
 export class todayNews extends plugin {
     constructor() {
         super(

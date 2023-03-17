@@ -3,6 +3,7 @@ import tools from '../utils/tools.js'
 import lodash from 'lodash'
 import similarity from 'string-similarity'
 
+// 自机聊天
 export class chat extends plugin {
     constructor() {
         super(

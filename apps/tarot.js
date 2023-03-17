@@ -5,7 +5,7 @@ import lodash from 'lodash'
 
 const pluginName = tools.getPluginName()
 
-// 占卜
+// tarot
 export class tarot extends plugin {
     constructor() {
         super({
