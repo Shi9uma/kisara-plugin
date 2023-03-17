@@ -24,9 +24,9 @@
 
 ## 安装方法
 
-- 将插件整个放在 `./Yunzai-bot/plugins/` 下，默认插件名称为 `diy`，您可以随意修改该插件的名称，暂时没测试过中文路径能否正常运行，请尽可能使用英文路径
+- 将插件整个放在 `./Yunzai-bot/plugins/` 下，默认插件名称为 `kisara`，您可以随意修改该插件的名称，暂时没测试过中文路径能否正常运行，请尽可能使用英文路径
 - 本插件开发和应用环境都在 Linux 平台, 暂时没有测试过 Windows 平台
-- 获取本插件的指令：`git clone https://github.com/Shi9uma/oicqdiy.git ./Yunzai-bot/plugins/{期望的插件名}`，请您自行修改后面的路径以保证插件能被正常加载
+- 获取本插件的指令：`git clone https://github.com/Shi9uma/kisara-plugin.git ./Yunzai-bot/plugins/{期望的插件名}`，请您自行修改后面的路径以保证插件能被正常加载
 - 本插件还引入了 `shelljs，axios` 等依赖，您在启动插件后，会接收到相应缺少插件的依赖报错。此时您可以回到 `./Yunzai-bot` 的根目录下，使用 `npm install {缺失的依赖名称}`，这里我推荐您使用 [cnpm](https://zhuanlan.zhihu.com/p/120159632)（安装后可以直接将 npm 修改成 cnpm 即可，其他不变），访问速度更快。
 
 ## todos
