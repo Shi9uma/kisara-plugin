@@ -1,6 +1,6 @@
-# kisara plugin
+# <center> kisara-plugin </center>
 
-> 因为使用了木更作为 chat 对象的自称，导致变得越来越喜欢木更了，所以决定将插件名称更名为 **kisara plugin**，**当然本插件还是不限定文件夹名称，您可以继续 diy 插件的名字**
+> 因为使用了木更作为 chat 对象的自称，导致变得越来越喜欢木更了，所以决定将插件名称更名为 **kisara-plugin**，**当然本插件还是不限定文件夹名称，您可以继续 diy 插件的名字**
 >
 > 根据各种插件学习而魔改，如果您有其他建议欢迎提交 issue，能点个 star 就是最大的鼓励了
 >
@@ -35,6 +35,7 @@
   - [x] 基本功能
   - [x] 按群设置特例信息
   - [x] 相似度拟合检索词库
+  - [ ] 更好地回复含有机器人名字的内容，提高沉浸感
   - [ ] 人工干预词库，临时保存, 审核
   - [ ] 使用 gpt-2 训练词库
   - [ ] 指令关闭功能，写入 redis
@@ -66,10 +67,6 @@
 
 ## 可能遇到的问题
 
->   默认配置文件夹 ${dirName} 不存在, 为保证插件正常运行, 请通过 github 获取默认配置文件。
-
-遇到这个问题只需要从本 github 仓库获取默认配置文件夹 `default` 即可(需要包含所有 yaml 文件)，也可以通过修改本插件的 `index.js` 逻辑来启用插件，但不能保证之后所有插件能正常使用。
-
 >   关于与 `插件目录/data/apitoken.json` 文件相关错误的情况。
 
 需要自行申请 apikey，请按照相关提示修改该文件相关 key，对应的您也可以自行增改 api 文件
@@ -84,7 +81,7 @@
 
 ## 札记
 
-- 插件的命名逻辑：`schedule.todayNews.yaml`：这是一个 todayNews 功能的配置文件，`schedule` 称为 app，`todayNews` 称为 func
+- 插件的命名逻辑：`schedule.todayNews.yaml`：这是一个 `todayNews` 功能的配置文件，`schedule` 称为 app，`todayNews` 称为 func
 
 ## 致谢
 
@@ -96,4 +93,3 @@
 6.   椰奶插件，[yeyang52/yenai-plugin](https://github.com/yeyang52/yenai-plugin.git)
 7.   计算抽卡期望源码，[MSIsunny/GenshinWishCalculator-py](https://github.com/MSIsunny/GenshinWishCalculator-py.git)
 8.   角色参考面板功能，[howe0116/howe-plugin](https://github.com/howe0116/howe-plugin.git)
-9.   
