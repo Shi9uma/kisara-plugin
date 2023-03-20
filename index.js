@@ -1,15 +1,16 @@
 import fs from 'fs'
 import tools from './utils/tools.js'
 
-// 进行初始化检查
-tools.init()
-
-/**
- * 加载插件
- */
 const pluginName = tools.getPluginName()
 const appList = fs.readdirSync(`./plugins/${pluginName}/apps`).filter(file => file.endsWith('.js'))
 
+logger.info('----------- ^_^ -----------')
+logger.info(`正在加载 ${pluginName} 插件`)
+
+// 初始化检查
+tools.init()
+
+// 正式加载插件
 let loadedAppList = []
 appList.forEach((file) => {
 	loadedAppList.push(import(`./apps/${file}`))
@@ -34,3 +35,6 @@ for (let i in appList) {
 
 // 这里必须得是 apps
 export { apps }
+
+logger.info(`插件 ${pluginName} 加载完成, enjoy~`)
+logger.info('----------- ^_^ -----------')

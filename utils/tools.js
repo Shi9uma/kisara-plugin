@@ -24,6 +24,7 @@ class tools {
      * @returns 
      */
     init() {
+
         // 检查相关配置文件夹
         let defaultDir = this.defaultDir,
             userConfigDir = this.userConfigDir,
@@ -43,8 +44,10 @@ class tools {
         }
 
         for (let fileName of defaultConfigFileList) {
-            if (!this.isFileValid(`${userConfigDir}/${fileName[0]}.${fileName[1]}.yaml`))
+            if (!this.isFileValid(`${userConfigDir}/${fileName[0]}.${fileName[1]}.yaml`)) {
+                logger.warn(this.prefix, `copying ${defaultDir}/${fileName[0]}.${fileName[1]}.yaml => ${userConfigDir}/${fileName[0]}.${fileName[1]}.yaml`)
                 this.copyConfigFile(fileName[0], fileName[1])
+            }
             else continue
         }
 
@@ -54,6 +57,7 @@ class tools {
             if (!this.isFileValid(jsonFilePath))
                 this.copyFile(`${jsonFileDir}/${file}`, jsonFilePath)
         })
+
     }
 
     /**
