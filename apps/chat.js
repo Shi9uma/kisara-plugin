@@ -35,10 +35,6 @@ export class chat extends plugin {
         return msgList ? msgList : [].concat(message)
     }
 
-    dontAnswer(keyDict) {
-        return (this.e.isMaster || lodash.random(1, 100) <= keyDict.triggerRate) ? false : true
-    }
-
     async doReply(chatData, _msg, keyDict) {
         let replyMsg = this.handleMessage(lodash.sample(chatData[_msg]), keyDict)
         if (replyMsg.length >= 1) {
@@ -52,12 +48,19 @@ export class chat extends plugin {
         return
     }
 
-    async chat() {
-        let keyDict = tools.applyCaseConfig({botName: '', senderName: '', triggerRate: '', similarityRate: ''}, this.e.group_id, 'chat', 'chat')
-        if (this.dontAnswer(keyDict)) return
+    dontAnswer(keyDict, msg) {
+        if (keyDict.ngWords.includes(msg)) return true
+        return (this.e.isMaster || lodash.random(1, 100) <= keyDict.triggerRate) ? false : true
+    }
 
-        let msg = this.e.raw_message,
-            chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/可爱系二次元bot词库1.5万词V1.2.json`,
+    async chat() {
+        let keyDict = tools.applyCaseConfig({botName: '', senderName: '', triggerRate: '', similarityRate: '', ngWords: ''}, this.e.group_id, 'chat', 'chat'),
+            isCheckAt = tools.checkAt(this.e, true),
+            msg = isCheckAt[0] ? this.e.raw_message.replaceAll(isCheckAt[1], '').replaceAll(keyDict.botName, '') : this.e.raw_message.replaceAll(keyDict.botName, '')
+
+        if (this.dontAnswer(keyDict, msg)) return
+
+        let chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/可爱系二次元bot词库1.5万词V1.2.json`,
             chatData = tools.readJsonFile(chatLibPath)
 
         let similarityList = []        
@@ -67,7 +70,7 @@ export class chat extends plugin {
                 return
             }
             let similarityRate = similarity.compareTwoStrings(_msg, msg)
-            if (similarityRate >= Number(keyDict.similarityRate)) {
+            if (similarityRate * 100 >= Number(keyDict.similarityRate)) {
                 similarityList.push({
                     similarityRate: similarityRate,
                     _msg: _msg,

@@ -14,6 +14,7 @@ class tools {
 
         this.defaultDir = `./plugins/${this.pluginName}/default`
         this.userConfigDir = `./plugins/${this.pluginName}/config`
+        this.dataDir = `./plugins/${this.pluginName}/data`
 
         this.prefix = `[-] ${this.pluginName}.utils.tools`
     }
@@ -25,7 +26,11 @@ class tools {
     init() {
         // 检查相关配置文件夹
         let defaultDir = this.defaultDir,
-            userConfigDir = this.userConfigDir
+            userConfigDir = this.userConfigDir,
+            defaultConfigFileList = this.getDefaultConfigFileList(),
+            jsonFileDir = `${defaultDir}/json`,
+            dataDir = this.dataDir
+
 
         if (!this.isDirValid(defaultDir)) {
             logger.warn(`${this.prefix} 文件夹 ${defaultDir} 不存在, 请从本仓库获取完整的文件夹`)
@@ -37,12 +42,18 @@ class tools {
             this.makeDir(userConfigDir)
         }
 
-        let defaultConfigFileList = this.getDefaultConfigFileList()
         for (let fileName of defaultConfigFileList) {
             if (!this.isFileValid(`${userConfigDir}/${fileName[0]}.${fileName[1]}.yaml`))
                 this.copyConfigFile(fileName[0], fileName[1])
             else continue
         }
+
+        let jsonFileList = fs.readdirSync(jsonFileDir).filter(file => file.endsWith('.json'))
+        jsonFileList.forEach((file) => {
+            let jsonFilePath = `${dataDir}/${file}`
+            if (!this.isFileValid(jsonFilePath))
+                this.copyFile(`${jsonFileDir}/${file}`, jsonFilePath)
+        })
     }
 
     /**
@@ -138,7 +149,7 @@ class tools {
         }
         let filePath = `./plugins/${this.pluginName}/${type}/${app}.${func}.yaml`
         if (this.isFileValid(filePath)) {
-            return yaml.load(fs.readFileSync(filePath, 'utf8'))
+            return yaml.load(fs.readFileSync(filePath, encoding))
         } else {
             return logger.warn(`${this.prefix} 找不到 ${filePath} 文件`)
         }
@@ -273,22 +284,15 @@ class tools {
      * @returns 
      */
     makeForwardMsg(title, forwardMsgArr, end, e, Bot) {
-        let nickname = Bot.nickname
-
-        if (e.isGroup) {
-            let info = Bot.getGroupMemberInfo(e.group_id, Bot.uin)
-            nickname = info.card ?? info.nickname
-        }
-
-        let userInfo = {
-            user_id: Bot.uin,
-            nickname
-        }
-
-        let forwardMsg = [{
-            ...userInfo,
-            message: title
-        }]
+        let nickname = Bot.nickname,
+            userInfo = {
+                user_id: Bot.uin,
+                nickname
+            },
+            forwardMsg = [{
+                ...userInfo,
+                message: title
+            }]
 
         for (let msg of forwardMsgArr) {
             forwardMsg.push({
@@ -502,6 +506,21 @@ class tools {
             keyDict[key] = groupConfig[key] ? groupConfig[key] : configFile[key]
         }
         return keyDict
+    }
+
+    /**
+     * 用以判断是否为 at 事件
+     * @param {*} e 传入 this.e
+     * @param {boolean} isReturnMsgList   true 则返回 [bool, message.text], 默认 false, 且返回 [false, '']
+     * @returns 
+     */
+    checkAt(e, isReturnMsgList = false) {
+        let msgList = e.message
+        for (let msg of msgList) {
+            if (msg.type == 'at')
+                return isReturnMsgList ? [true, msg.text] : true
+        }
+        return isReturnMsgList ? [false, ''] : false
     }
 }
 

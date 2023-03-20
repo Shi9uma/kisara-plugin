@@ -8,6 +8,6 @@ data/chatLibrary/temp
 *test.js
 *customize.js
 
-*apitoken.json
+data/apitoken.json
 
 package.json
