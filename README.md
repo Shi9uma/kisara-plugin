@@ -1,4 +1,4 @@
-# <center> kisara-plugin </center>
+# kisara-plugin
 
 > 因为使用了木更作为 chat 对象的自称，导致变得越来越喜欢木更了，所以决定将插件名称更名为 **kisara-plugin**，**当然本插件还是不限定文件夹名称，您可以继续 diy 插件的名字**
 >
@@ -24,10 +24,13 @@
 
 ## 安装方法
 
-- 将插件整个放在 `./Yunzai-bot/plugins/` 下，默认插件名称为 `kisara`，您可以随意修改该插件的名称，暂时没测试过中文路径能否正常运行，请尽可能使用英文路径
-- 本插件开发和应用环境都在 Linux 平台, 暂时没有测试过 Windows 平台
-- 获取本插件的指令：`git clone https://github.com/Shi9uma/kisara-plugin.git ./Yunzai-bot/plugins/{期望的插件名}`，请您自行修改后面的路径以保证插件能被正常加载
-- 本插件还引入了 `shelljs，axios` 等依赖，您在启动插件后，会接收到相应缺少插件的依赖报错。此时您可以回到 `./Yunzai-bot` 的根目录下，使用 `npm install {缺失的依赖名称}`，这里我推荐您使用 [cnpm](https://zhuanlan.zhihu.com/p/120159632)（安装后可以直接将 npm 修改成 cnpm 即可，其他不变），访问速度更快。
+-   将插件整个放在 `./Yunzai-bot/plugins/` 下，默认插件名称为 `kisara`，您可以随意修改该插件的名称，暂时没测试过中文路径能否正常运行，请尽可能使用英文路径。
+
+-   本插件开发和应用环境都在 Linux 平台, 暂时没有测试过 Windows 平台。
+
+-   获取本插件的指令：`git clone https://github.com/Shi9uma/kisara-plugin.git ./Yunzai-bot/plugins/{期望的插件名}`，请您自行修改后面的路径以保证插件能被正常加载。
+
+-   本插件还引入了 `shelljs，axios` 等依赖，您在启动插件后，会接收到相应缺少插件的依赖报错。此时您可以回到 `./Yunzai-bot` 的根目录下，使用 `npm install {缺失的依赖名称}`，这里我推荐您使用 [cnpm](https://zhuanlan.zhihu.com/p/120159632)（安装后可以直接将 npm 修改成 cnpm 即可，其他不变），访问速度更快。
 
 ## todos
 
@@ -81,9 +84,11 @@
 
 ## 札记
 
-- 插件的命名逻辑：`schedule.todayNews.yaml`：这是一个 `todayNews` 功能的配置文件，`schedule` 称为 app，`todayNews` 称为 func
+-   插件的命名逻辑：`schedule.todayNews.yaml`：这是一个 `todayNews` 功能的配置文件，`schedule` 称为 app，`todayNews` 称为 func
 
 ## 致谢
+
+本插件创建之初是作为个人纯魔改自用，在开发过程中不断参考了各位为这个社区做贡献的大佬们的仓库而深受启发，感谢各位为开源社区做出贡献。
 
 1.   本家机器人框架，Yunzai-Bot，[Le-niao/Yunzai-Bot](https://github.com/Le-niao/Yunzai-Bot.git)
 2.   塔罗牌占卜功能，[MinatoAquaCrews/nonebot_plugin_tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot.git)
