@@ -49,6 +49,7 @@ export class chat extends plugin {
     }
 
     dontAnswer(keyDict, msg) {
+        if (msg == '') return true
         if (keyDict.ngWords.includes(msg)) return true
         return (this.e.isMaster || lodash.random(1, 100) <= keyDict.triggerRate) ? false : true
     }
