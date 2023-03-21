@@ -49,12 +49,14 @@ export class chat extends plugin {
     }
 
     dontAnswer(keyDict, msg) {
-        if (keyDict.ngWords.includes(msg)) return true
-        return (this.e.isMaster || lodash.random(1, 100) <= keyDict.triggerRate) ? false : true
+
+        if (keyDict.ngWords.includes(msg)) return true  // ngWords 不回复
+        if (keyDict.bans.includes(this.e.sender.user_id)) return true // ban 账号不回复
+        return (this.e.isMaster || lodash.random(1, 100) <= keyDict.triggerRate) ? false : true // 触发概率及主人情况
     }
 
     async chat() {
-        let keyDict = tools.applyCaseConfig({botName: '', senderName: '', triggerRate: '', similarityRate: '', ngWords: ''}, this.e.group_id, 'chat', 'chat'),
+        let keyDict = tools.applyCaseConfig({botName: '', senderName: '', triggerRate: '', similarityRate: '', ngWords: '', bans: ''}, this.e.group_id, 'chat', 'chat'),
             isCheckAt = tools.checkAt(this.e, true),
             msg = isCheckAt[0] ? this.e.raw_message.replaceAll(isCheckAt[1], '').replaceAll(keyDict.botName, '') : this.e.raw_message.replaceAll(keyDict.botName, '')
 
