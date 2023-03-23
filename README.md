@@ -79,6 +79,7 @@
   - [x] 基本功能
   - [x] 指定 roll 的数量
   - [x] 指定上下限
+  - [ ] 研究跑团的玩法
 - [ ] [计算抽卡期望](https://github.com/MSIsunny/GenshinWishCalculator-py/blob/main/WishSupport.py)
 - [ ] [B 站订阅功能，开播、动态推送，按群区分](https://github.com/HeadmasterTan/zhi-plugin.git)
 - [ ] [原神角色参考面板插件](https://github.com/howe0116/howe-plugin)，[nga 资源](https://bbs.nga.cn/read.php?tid=25843014&rand=967)

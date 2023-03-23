@@ -154,11 +154,15 @@ export class dice extends plugin {
         switch(argCount) {
             case 1:
                 count = 1, end = rangeList.pop() ?? 100, start = 1
-                msg += `在 ${start} 和 ${end} 中 roll 到了 ${lodash.random(start, end)}`
+                msg += `在 ${start} 到 ${end} 中 roll 到了 ${lodash.random(start, end)}`
                 break
             case 2:
                 count = 1, end = rangeList.pop() ?? 100, start = rangeList.pop() ?? 1
-                msg += `在 ${start} 和 ${end} 中 roll 到了 ${lodash.random(start, end)}`
+                if (start > end) {
+                    let temp = start
+                    start = end, end = temp
+                }
+                msg += `在 ${start} 到 ${end} 中 roll 到了 ${lodash.random(start, end)}`
                 break
             case 3:
                 count = rangeList.pop() ?? 1, end = rangeList.pop() ?? 100, start = rangeList.pop() ?? 1
@@ -170,7 +174,7 @@ export class dice extends plugin {
                 for (; i <= end; i++)
                     numList.push(i)
                 numList = lodash.sampleSize(numList, count)
-                msg += `在 ${start} 和 ${end} 中 roll 到了 ${numList.length} 个数: `
+                msg += `在 ${start} 到 ${end} 中 roll 到了 ${numList.length} 个数: `
                 for (let num of numList)
                     msg += `${num} `
                 break
