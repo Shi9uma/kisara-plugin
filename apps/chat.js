@@ -48,19 +48,18 @@ export class chat extends plugin {
         return
     }
 
-    dontAnswer(keyDict, msg) {
+    dontAnswer(keyDict, msg, isCheckAt) {
 
         if (keyDict.ngWords.includes(msg)) return true  // ngWords 不回复
         if (keyDict.bans.includes(this.e.sender.user_id)) return true // ban 账号不回复
-        return (this.e.isMaster || lodash.random(1, 100) <= keyDict.triggerRate) ? false : true // 触发概率及主人情况
+        return (this.e.isMaster || isCheckAt || lodash.random(1, 100) <= keyDict.triggerRate) ? false : true // 触发概率及主人情况
     }
 
     async chat() {
         let keyDict = tools.applyCaseConfig({botName: '', senderName: '', triggerRate: '', similarityRate: '', ngWords: '', bans: ''}, this.e.group_id, 'chat', 'chat'),
             isCheckAt = tools.checkAt(this.e, true),
             msg = isCheckAt[0] ? this.e.raw_message.replaceAll(isCheckAt[1], '').replaceAll(keyDict.botName, '') : this.e.raw_message.replaceAll(keyDict.botName, '')
-
-        if (this.dontAnswer(keyDict, msg)) return
+        if (this.dontAnswer(keyDict, msg, isCheckAt[0])) return
 
         let chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/可爱系二次元bot词库1.5万词V1.2.json`,
             chatData = tools.readJsonFile(chatLibPath)

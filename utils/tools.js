@@ -369,8 +369,8 @@ class tools {
 
     /**
      * 生成统一格式的 key
-     * @param {*} e 传入 this.e
-     * @param {*} type 
+     * @param { object } e 传入 this.e
+     * @param {'private' | 'group' | 'global'} type 
      * 
      * > 生成 redis key 的类型
      * > 
@@ -434,7 +434,7 @@ class tools {
      * > 全局: [global, isGlobal]
      * @param {*} cd 键值对存活时间, cd * timeFormat
      * @param {*} value 要设置的键值, 默认传入缺省是今日日期
-     * @param {*} timeFormat
+     * @param {'hour' | 'minute'} timeFormat
      * > 时间单位, 默认是 hour
      * > 
      * > 小时: [h, hour],
@@ -470,7 +470,7 @@ class tools {
      * @param {*} caseId 特例名称, 例如群号, QQ 号
      * @param {*} app **app**.js
      * @param {*} func expend calss **func** extends plugin
-     * @param {*} type -config(默认), -default
+     * @param {'config' | 'default'} type -config(默认), -default
      * @param {*} encoding 编码类型, 默认 utf8
      * @returns 存在与否
      */
@@ -499,7 +499,7 @@ class tools {
      * @param {*} caseId 特例名称, 例如群号, QQ 号, 如果未找到值则使用全局设置
      * @param {*} app **app**.js
      * @param {*} func expend calss **func** extends plugin
-     * @param {*} type -config(默认), -default
+     * @param {'config' | 'default'} type -config(默认), -default
      * @param {*} encoding 编码类型, 默认 utf8
      * @returns 
      */
@@ -515,7 +515,7 @@ class tools {
     /**
      * 用以判断是否为 at 事件
      * @param {*} e 传入 this.e
-     * @param {boolean} isReturnMsgList   true 则返回 [bool, message.text], 默认 false, 且返回 [false, '']
+     * @param {boolean} isReturnMsgList   true 则返回 [bool, message.text], 默认 false 返回 [false, '']
      * @returns 
      */
     checkAt(e, isReturnMsgList = false) {

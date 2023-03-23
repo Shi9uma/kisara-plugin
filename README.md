@@ -18,9 +18,9 @@
 
 可以在 `apps` 文件夹中打开 `.js` 后缀文件查看批注。
 
-初次运行后会自行创建一个 `./config` 文件夹，并将 `index.config.yaml` 自动复制过去
+初次运行后会自行创建一个 `./config` 文件夹，并将 `index.config.yaml` 自动复制过去。
 
-功能开关在 `config/index.config.yaml` 文件中
+功能开关在 `config/index.config.yaml` 文件中。
 
 ## 安装方法
 
@@ -34,6 +34,9 @@
 
 ## todos
 
+- [ ] 菜单 main.ahelp
+  - [ ] 重写菜单输出逻辑, 使用 `main.ahelp.yaml`
+  - [ ] 其他功能的使用手册
 - [ ] 机器人聊天
   - [x] 基本功能
   - [x] 按群设置特例信息
@@ -41,15 +44,19 @@
   - [x] 添加一些屏蔽词
   - [x] 更好地回复含有机器人名字的内容，提高沉浸感
   - [x] 屏蔽某些单独账号
+  - [x] 如果是 @ 必回, 避免出现很多不回的情况
   - [ ] 人工干预词库，临时保存, 审核
   - [ ] 使用 gpt-2 训练词库
   - [ ] 指令关闭功能，写入 redis
 - [ ] utils
-  - [x] init 函数
+  - [x] init 初始化
   - [ ] 添加权限检测函数，几种权限类型组合
   - [x] 添加 redis 操纵 api 化，按照 `fncName.isGroup.群号.qq号.time`，`fucName.isPrivate.qq号.qq号.time` 的键值来设计
   - [x] yaml 文件读取全局默认设置和特例设置
 - [x] 塔罗牌占卜
+  - [x] 基本功能
+  - [x] 按群区分触发几率
+  - [ ] redis 存储占卜内容
 - [x] 简报
   - [x] 简报定时推送
 - [ ] Bot 系统优化
@@ -63,8 +70,15 @@
   - [x] 搜图
   - [ ] 手动指定相似性阈值
   - [ ] [番剧识别功能](https://github.com/yeyang52/yenai-plugin/blob/master/apps/picSearch.js)
-  - [ ] 延时接收图片功能
-  - [ ] 搜本子
+  - [ ] 延时识图
+  - [ ] ~~搜本子~~
+- [ ] 随机壁纸
+  - [x] 基本功能
+  - [ ] 添加 pixiv 支持
+- [x] roll 骰子
+  - [x] 基本功能
+  - [x] 指定 roll 的数量
+  - [x] 指定上下限
 - [ ] [计算抽卡期望](https://github.com/MSIsunny/GenshinWishCalculator-py/blob/main/WishSupport.py)
 - [ ] [B 站订阅功能，开播、动态推送，按群区分](https://github.com/HeadmasterTan/zhi-plugin.git)
 - [ ] [原神角色参考面板插件](https://github.com/howe0116/howe-plugin)，[nga 资源](https://bbs.nga.cn/read.php?tid=25843014&rand=967)
