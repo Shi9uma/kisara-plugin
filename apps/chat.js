@@ -35,6 +35,12 @@ export class chat extends plugin {
         return msgList ? msgList : [].concat(message)
     }
 
+    dontAnswer(keyDict, msg) {
+        if (keyDict.ngWords.includes(msg)) return true  // ngWords 不回复
+        if (keyDict.bans.includes(this.e.sender.user_id)) return true // ban 账号不回复
+        return (this.e.isMaster || lodash.random(1, 100) <= keyDict.triggerRate || this.e.atme) ? false : true // 主人回复、触发概率情况以及 at 回复
+    }
+
     async doReply(chatData, _msg, keyDict) {
         let replyMsg = this.handleMessage(lodash.sample(chatData[_msg]), keyDict)
         if (replyMsg.length >= 1) {
@@ -48,23 +54,16 @@ export class chat extends plugin {
         return
     }
 
-    dontAnswer(keyDict, msg, isCheckAt) {
-
-        if (keyDict.ngWords.includes(msg)) return true  // ngWords 不回复
-        if (keyDict.bans.includes(this.e.sender.user_id)) return true // ban 账号不回复
-        return (this.e.isMaster || isCheckAt || lodash.random(1, 100) <= keyDict.triggerRate) ? false : true // 触发概率及主人情况
-    }
-
     async chat() {
         let keyDict = tools.applyCaseConfig({botName: '', senderName: '', triggerRate: '', similarityRate: '', ngWords: '', bans: ''}, this.e.group_id, 'chat', 'chat'),
-            isCheckAt = tools.checkAt(this.e, true),
-            msg = isCheckAt[0] ? this.e.raw_message.replaceAll(isCheckAt[1], '').replaceAll(keyDict.botName, '') : this.e.raw_message.replaceAll(keyDict.botName, '')
-        if (this.dontAnswer(keyDict, msg, isCheckAt[0])) return
+            msg = this.e.atme ? this.e.original_msg.replaceAll(keyDict.botName, '') : this.e.raw_message.replaceAll(keyDict.botName, '')
+
+        if (this.dontAnswer(keyDict, msg)) return
 
         let chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/可爱系二次元bot词库1.5万词V1.2.json`,
-            chatData = tools.readJsonFile(chatLibPath)
-
-        let similarityList = []        
+            chatData = tools.readJsonFile(chatLibPath),
+            similarityList = []
+            
         for (let _msg in chatData) {
             if (_msg == msg) {  // 词库中找到了键值对的情况
                 await this.doReply(chatData, _msg, keyDict)

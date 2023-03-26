@@ -512,20 +512,6 @@ class tools {
         return keyDict
     }
 
-    /**
-     * 用以判断是否为 at 事件
-     * @param {*} e 传入 this.e
-     * @param {boolean} isReturnMsgList   true 则返回 [bool, message.text], 默认 false 返回 [false, '']
-     * @returns 
-     */
-    checkAt(e, isReturnMsgList = false) {
-        let msgList = e.message
-        for (let msg of msgList) {
-            if (msg.type == 'at')
-                return isReturnMsgList ? [true, msg.text] : true
-        }
-        return isReturnMsgList ? [false, ''] : false
-    }
 }
 
 export default new tools()

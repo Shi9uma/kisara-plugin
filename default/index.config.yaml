@@ -14,7 +14,6 @@ apps:
     - ahelp: true
     - recall: false
     - what2eat: true
-    - dice: true
 
   gachaCalculator:
     - gachaCalculator: true
@@ -27,6 +26,9 @@ apps:
 
   chat:
     - chat: true
+
+  dice:
+    - dice: true
 
 # 部分功能的配置关系, 作用于 default, config 文件夹内命名方式, 一般不需要改动
 configs:
