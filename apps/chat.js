@@ -60,7 +60,7 @@ export class chat extends plugin {
 
         if (this.dontAnswer(keyDict, msg)) return
 
-        let chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/可爱系二次元bot词库1.5万词V1.2.json`,
+        let chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/1.5w.json`,
             chatData = tools.readJsonFile(chatLibPath),
             similarityList = []
             

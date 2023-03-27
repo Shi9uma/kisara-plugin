@@ -46,8 +46,8 @@
   - [x] 屏蔽某些单独账号
   - [x] 如果是 @ 必回, 避免出现很多不回的情况
   - [ ] 人工干预词库，临时保存, 审核
-  - [ ] 使用 gpt-2 训练词库
   - [ ] 指令关闭功能，写入 redis
+  - [ ] 使用 gpt 训练词库**(长期项目)**
 - [ ] utils
   - [x] init 初始化
   - [x] 添加 redis 操纵 api 化，按照 `fncName.isGroup.群号.qq号.time`，`fucName.isPrivate.qq号.qq号.time` 的键值来设计
@@ -58,7 +58,7 @@
   - [x] 按群区分触发几率
   - [ ] redis 存储占卜内容
   - [ ] 在 `tarot.tarot.yaml` 写入期望塔罗牌占卜间隔时间
-  - [ ] 完整的塔罗牌占卜流程，包括提问者提出问题、洗牌、抽牌和正逆位
+  - [ ] 完整的塔罗牌占卜流程，包括提问者提出问题、洗牌、抽牌和正逆位**(长期项目)**
 - [x] 简报
   - [x] 简报定时推送
 - [ ] Bot 系统优化
@@ -82,7 +82,7 @@
   - [x] 指定 roll 的数量
   - [x] 指定上下限
   - [ ] 研究跑团的玩法，`.ra技能检定`，`r3d100 100 中 roll 3 个`
-  - [ ] 完整的跑团玩法(长期项目)
+  - [ ] 完整的跑团玩法**(长期项目)**
 - [ ] [计算抽卡期望](https://github.com/MSIsunny/GenshinWishCalculator-py/blob/main/WishSupport.py)
 - [ ] [B 站订阅功能，开播、动态推送，按群区分](https://github.com/HeadmasterTan/zhi-plugin.git)
 - [ ] [原神角色参考面板插件](https://github.com/howe0116/howe-plugin)，[nga 资源](https://bbs.nga.cn/read.php?tid=25843014&rand=967)
@@ -117,3 +117,7 @@
 5.   白纸插件，[HeadmasterTan/zhi-plugin](https://github.com/HeadmasterTan/zhi-plugin.git)
 7.   计算抽卡期望源码，[MSIsunny/GenshinWishCalculator-py](https://github.com/MSIsunny/GenshinWishCalculator-py.git)
 8.   角色参考面板功能，[howe0116/howe-plugin](https://github.com/howe0116/howe-plugin.git)
+
+## 其他
+
+预计会选择采用 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp.git) 搭配 golang/python 实现由 kisara-plugin 到 kisara-bot 的转变
