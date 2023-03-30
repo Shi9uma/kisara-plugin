@@ -11,15 +11,6 @@ const cd = 2    //所有命令的 cd，默认单位是小时
 const pluginName = tools.getPluginName()
 const apis = JSON.parse(tools.readFile(`./plugins/${pluginName}/data/apitoken.json`))
 
-const codes = {
-    130: 'API 调用频率超限',
-    150: 'API 可用次数不足',
-    190: '当前 key 已限制使用',
-    200: '成功请求',
-    230: 'key 错误或为空',
-    250: '数据返回为空',
-}
-
 const tags = {
     title: '标题',
     pixiv_id: 'pixiv id',
@@ -117,7 +108,6 @@ export class saucenao extends plugin {
         ).catch((error) => {
             if (error) {
                 this.e.reply(`识图 api 无反应, 状态：${error}`, true, { recallMsg: 90 })
-                logger.info(response)
                 return
             }
         })

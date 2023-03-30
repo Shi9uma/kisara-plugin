@@ -2,6 +2,7 @@ import plugin from '../../../lib/plugins/plugin.js'
 import tools from '../utils/tools.js'
 import lodash from 'lodash'
 import similarity from 'string-similarity'
+import axios from 'axios'
 
 // 自机聊天
 export class chat extends plugin {
@@ -9,7 +10,7 @@ export class chat extends plugin {
         super(
             {
                 name: '自机聊天',
-                dsc: '自动匹配词库聊天功能',
+                dsc: '聊天 bot',
                 event: 'message',
                 priority: 8000,
                 rule: [
@@ -23,6 +24,7 @@ export class chat extends plugin {
         )
 
         this.pluginName = tools.getPluginName()
+        this.prefix = `[+] ${this.name}`
     }
 
     handleMessage(message, keyDict) {
@@ -55,7 +57,7 @@ export class chat extends plugin {
     }
 
     async chat() {
-        let keyDict = tools.applyCaseConfig({botName: '', senderName: '', triggerRate: '', similarityRate: '', ngWords: '', bans: ''}, this.e.group_id, 'chat', 'chat'),
+        let keyDict = tools.applyCaseConfig({ botName: '', senderName: '', triggerRate: '', similarityRate: '', ngWords: '', bans: '' }, this.e.group_id, 'chat', 'chat'),
             msg = this.e.atme ? this.e.original_msg.replaceAll(keyDict.botName, '') : this.e.raw_message.replaceAll(keyDict.botName, '')
 
         if (this.dontAnswer(keyDict, msg)) return
@@ -63,7 +65,7 @@ export class chat extends plugin {
         let chatLibPath = `./plugins/${this.pluginName}/data/chatLibrary/lib/1.5w.json`,
             chatData = tools.readJsonFile(chatLibPath),
             similarityList = []
-            
+
         for (let _msg in chatData) {
             if (_msg == msg) {  // 词库中找到了键值对的情况
                 await this.doReply(chatData, _msg, keyDict)
@@ -85,6 +87,39 @@ export class chat extends plugin {
             await this.doReply(chatData, similarityList[0]._msg, keyDict)
         }
 
+        return
+    }
+
+    async chatgpt() {   // 该功能因实际效果不理想, 已经弃用
+
+        let msg = this.e.message[1].text
+        if (this.e.img) return
+        if (!(this.e.atme)) return
+
+        let params = JSON.stringify({
+            "model": "text-davinci-003",
+            "prompt": msg,
+            "max_tokens": 4000,
+            "temperature": 0
+        }),
+            apiTokenPath = `./plugins/${this.pluginName}/data/apitoken.json`,
+            api_key = tools.readJsonFile(apiTokenPath).chatgpt
+
+        let config = {
+            method: 'post',
+            url: 'https://api.openai.com/v1/completions',
+            headers: {
+                'Authorization': `Bearer ${api_key}`,
+                'Content-Type': 'application/json'
+            },
+            data: params
+        }
+
+        let response = await axios(config)
+
+        await tools.wait(3)
+        let gptResponseData = response.data.choices[0]
+        await this.e.reply(gptResponseData.text.replace('\n', ''), true, { at: true })
         return
     }
 }

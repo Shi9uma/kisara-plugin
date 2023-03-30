@@ -97,14 +97,19 @@
 `apitoken.json` 文件内容示例如下：
 ```json
 {
-  "saucenao": "需要到 https://saucenao.com/ 自行申请",
-  "api1": "xxxxxx"
+    "saucenao": "需要到 https://saucenao.com/ 自行申请"
 }
 ```
 
 ## 札记
 
 -   插件的命名逻辑：`schedule.todayNews.yaml`：这是一个 `todayNews` 功能的配置文件，`schedule` 称为 app，`todayNews` 称为 func
+
+-   关于启用 `chatgpt` 功能, 需要自备账号与 api, 相关链接如下
+    - [准备好个人的 OpenAI API Key](https://platform.openai.com/account/api-keys)
+    - [查看个人 api 使用量](https://platform.openai.com/account/usage)
+    - 将个人的 `api key` 填入到 `./data/apitoken.json` 文件中, 注意格式
+
 
 ## 致谢
 
