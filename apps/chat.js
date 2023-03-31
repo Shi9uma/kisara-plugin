@@ -58,7 +58,7 @@ export class chat extends plugin {
 
     async chat() {
         let keyDict = tools.applyCaseConfig({ botName: '', senderName: '', triggerRate: '', similarityRate: '', ngWords: '', bans: '' }, this.e.group_id, 'chat', 'chat'),
-            msg = this.e.atme ? this.e.original_msg.replaceAll(keyDict.botName, '') : this.e.raw_message.replaceAll(keyDict.botName, '')
+            msg = this.e.msg ? (this.e.atme ? this.e.original_msg.replaceAll(keyDict.botName, '') : this.e.msg.replaceAll(keyDict.botName, '')) : ''
 
         if (this.dontAnswer(keyDict, msg)) return
 
