@@ -47,7 +47,7 @@
   - [x] 如果是 @ 必回, 避免出现很多不回的情况
   - [ ] 人工干预词库，临时保存, 审核
   - [ ] 指令关闭功能，写入 redis
-  - [ ] 使用 gpt 训练词库**(长期项目)**
+  - [ ] 使用 gpt 训练词库 **(长期项目)**
 - [ ] utils
   - [x] init 初始化
   - [x] 添加 redis 操纵 api 化，按照 `fncName.isGroup.群号.qq号.time`，`fucName.isPrivate.qq号.qq号.time` 的键值来设计
@@ -82,7 +82,7 @@
   - [x] 指定 roll 的数量
   - [x] 指定上下限
   - [ ] 研究跑团的玩法，`.ra技能检定`，`r3d100 100 中 roll 3 个`
-  - [ ] 完整的跑团玩法**(长期项目)**
+  - [ ] 完整的跑团玩法 **(长期项目)**
 - [ ] [计算抽卡期望](https://github.com/MSIsunny/GenshinWishCalculator-py/blob/main/WishSupport.py)
 - [ ] [B 站订阅功能，开播、动态推送，按群区分](https://github.com/HeadmasterTan/zhi-plugin.git)
 - [ ] [原神角色参考面板插件](https://github.com/howe0116/howe-plugin)，[nga 资源](https://bbs.nga.cn/read.php?tid=25843014&rand=967)
@@ -99,6 +99,22 @@
 {
     "saucenao": "需要到 https://saucenao.com/ 自行申请"
 }
+```
+
+>   **点歌** 功能需要 docker 支持, 相关 `docker-compose.yml` 如下:
+
+```yaml
+version: "3"
+
+services:
+
+  NeteaseCloudMusicApi:
+    container_name: NeteaseCloudMusicApi
+    image: gnehs/neteasecloudmusicapi-docker
+    ports:
+      - 7894:3000
+    restart: always
+
 ```
 
 ## 札记
@@ -122,6 +138,7 @@
 5.   白纸插件，[HeadmasterTan/zhi-plugin](https://github.com/HeadmasterTan/zhi-plugin.git)
 7.   计算抽卡期望源码，[MSIsunny/GenshinWishCalculator-py](https://github.com/MSIsunny/GenshinWishCalculator-py.git)
 8.   角色参考面板功能，[howe0116/howe-plugin](https://github.com/howe0116/howe-plugin.git)
+9.   网易云音乐解析工具, [Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi.git)
 
 ## 其他
 
