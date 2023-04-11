@@ -512,6 +512,33 @@ class tools {
         return keyDict
     }
 
+    /**
+     * 编码：' ' => '%20'
+     * @param {string} url 
+     * @returns {string} 编码结果
+     */
+    encode(url) {
+        return encodeURIComponent(url)
+    }
+
+    /**
+     * 解码：'%20' => ' '
+     * @param {string} url 
+     * @returns {string} 解码结果
+     */
+    decode(url) {
+        return decodeURIComponent(url)
+    }
+
+    /**
+     * 查看对象的 键：值 属性
+     * @param {Object} obj 
+     * @returns 字典
+     */
+    checkObject(obj) {
+        return Object.entries(obj)
+    }
+
 }
 
 export default new tools()
