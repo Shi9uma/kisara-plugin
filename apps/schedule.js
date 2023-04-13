@@ -129,7 +129,7 @@ export class todayNews extends plugin {
             let dom = new jsdom.JSDOM(data)
             let redirectUrl = this.selectSingleElement('a', dom).href
             logger.warn(redirectUrl)
-            await this.e.sendMsg(`${this.prefix} 出现重定向 302 错误, 请更新 cookies`)
+            await this.e.reply(`${this.prefix}\n出现重定向 302 错误, 请更新 cookies`)
             return true
         }
     }
@@ -208,40 +208,40 @@ export class todayNews extends plugin {
             datatime[datatime.indexOf(element)] = parseInt(element, 10).toString()
         })
         let queryStringList = [`易即今日`, `今日简报(${datatime[1]}月${datatime[2]}日)`]
+        // queryStringList = [`易即今日`, `今日简报(4月11日)`]
         let key = `${queryStringList[0]}.${queryStringList}`
         let imgUrl = await tools.getRedis(key)
         if (imgUrl) return imgUrl
 
         // 获取今日简报 url
         let searchUrl = `https://weixin.sogou.com/weixin?ie=utf8&type=2&query=${queryStringList[0]}${queryStringList[1]}`
-
         let [searchHtmlStatus, searchHtmlData] = await this.getHtmlData(searchUrl, cookies)
-        await tools.wait(3)
+        await tools.wait(2)
         if ((await this.isRedirect(searchHtmlStatus, searchHtmlData))) return false
-        await tools.wait(1)
 
         let searchHtmlDom = new jsdom.JSDOM(searchHtmlData),
             articleIndex = this.getArticleIndex(searchHtmlDom, queryStringList)
-
         if (articleIndex == -1) return false    // 没有相应文章, 直接返回 false
 
         let imgWebUrl = tools.decode(this.selectSingleElement(`ul.news-list li:nth-child(${articleIndex}) div:nth-child(2) a`, searchHtmlDom).href)
 
         // 获取今日简报
         imgWebUrl = `https://weixin.sogou.com${imgWebUrl}`
-
-        let [imgWebHtmlStatus, imgWebHtmlData] = [200, tools.readFile('./plugins/kisara/dontgit/imgWebHtml.html')]
-        await tools.wait(3)
+        let [imgWebHtmlStatus, imgWebHtmlData] = await this.getHtmlData(imgWebUrl, cookies)
+        // [imgWebHtmlStatus, imgWebHtmlData] = [200, tools.readFile('./plugins/kisara/dontgit/imgWebHtml.html')]
+        await tools.wait(2)
         if ((await this.isRedirect(imgWebHtmlStatus, imgWebHtmlData))) return false
-        await tools.wait(1)
-
 
         // 访问图片并保存
         let pattern = /cdn_url: '(.*)',/g
         let newsImgUrl = pattern.exec(imgWebHtmlData)[1]
         let newsImgName = this.datatime
-        tools.setRedis(key, tools.calLeftTime(), newsImgUrl)
         tools.saveUrlImg(newsImgUrl, newsImgName, this.newsImgDir, this.imgType)
+        await tools.wait(2)
+        if (this.checkTodayNewsImg(new moment().format('yyyy-MM-DD'))){
+            logger.info('获取今日简报: ', datatime, queryStringList, searchUrl, imgWebUrl, newsImgUrl)
+            tools.setRedis(key, tools.calLeftTime(), newsImgUrl)
+        }
 
         return true
     }
