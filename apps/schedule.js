@@ -123,41 +123,37 @@ export class todayNews extends plugin {
         return flag
     }
 
-    async isRedirect(status, data) {
-        if (status == 200) return false
-        else {
-            let dom = new jsdom.JSDOM(data)
-            let redirectUrl = this.selectSingleElement('a', dom).href
-            logger.warn(redirectUrl)
-            await this.e.reply(`${this.prefix}\n出现重定向 302 错误, 请更新 cookies`)
-            return true
-        }
-    }
-
     async generateCookies() {
         let url = 'https://weixin.sogou.com/'
         let response = (await axios.get(url = url, { headers: this.generateNewHeaders() }))
         return response.headers['set-cookie']
     }
 
-    async getHtmlData(url, cookies) {
+    async getHtmlData(url) {
         let response
         await axios.get(
             url = url,
             {
-                headers: this.headers,
-                maxRedirects: 0,
-                cookies: cookies
+                headers: this.headers
             }
         ).then((_response) => {
             response = _response
         }).catch((err) => {
-            if (err) {
-                if (err.response.status == 302)
-                    response = err.response
-            }
+            if (err) logger.warn(err)
         })
-        return [response.status, response.data]
+
+        let responseUrl = response.request.res.responseUrl
+
+        if (responseUrl.includes('antispider')) {
+            let antispiderHtmlDom = new jsdom.JSDOM(response.data)
+            let _captchaImgUrl = this.selectSingleElement('#seccodeImage', antispiderHtmlDom).src
+            let captchaImgUrl = `https://weixin.sogou.com/antispider/${_captchaImgUrl}`
+            let saveDirPath = `./plugins/${this.pluginName}/dontgit/`
+
+            logger.warn(captchaImgUrl)
+            tools.saveUrlImg(captchaImgUrl, 'captchaImg', saveDirPath, 'png')
+        }
+        return response.data
     }
 
     async checkKeepTime() {
@@ -215,22 +211,21 @@ export class todayNews extends plugin {
 
         // 获取今日简报 url
         let searchUrl = `https://weixin.sogou.com/weixin?ie=utf8&type=2&query=${queryStringList[0]}${queryStringList[1]}`
-        let [searchHtmlStatus, searchHtmlData] = await this.getHtmlData(searchUrl, cookies)
+        let searchHtmlData = await this.getHtmlData(searchUrl, cookies)
         await tools.wait(2)
-        if ((await this.isRedirect(searchHtmlStatus, searchHtmlData))) return false
 
         let searchHtmlDom = new jsdom.JSDOM(searchHtmlData),
             articleIndex = this.getArticleIndex(searchHtmlDom, queryStringList)
         if (articleIndex == -1) return false    // 没有相应文章, 直接返回 false
 
         let imgWebUrl = tools.decode(this.selectSingleElement(`ul.news-list li:nth-child(${articleIndex}) div:nth-child(2) a`, searchHtmlDom).href)
+        if (!imgWebUrl) return false
 
         // 获取今日简报
         imgWebUrl = `https://weixin.sogou.com${imgWebUrl}`
-        let [imgWebHtmlStatus, imgWebHtmlData] = await this.getHtmlData(imgWebUrl, cookies)
+        let imgWebHtmlData = await this.getHtmlData(imgWebUrl, cookies)
         // [imgWebHtmlStatus, imgWebHtmlData] = [200, tools.readFile('./plugins/kisara/dontgit/imgWebHtml.html')]
         await tools.wait(2)
-        if ((await this.isRedirect(imgWebHtmlStatus, imgWebHtmlData))) return false
 
         // 访问图片并保存
         let pattern = /cdn_url: '(.*)',/g
@@ -238,8 +233,8 @@ export class todayNews extends plugin {
         let newsImgName = this.datatime
         tools.saveUrlImg(newsImgUrl, newsImgName, this.newsImgDir, this.imgType)
         await tools.wait(2)
-        if (this.checkTodayNewsImg(new moment().format('yyyy-MM-DD'))){
-            logger.info('获取今日简报: ', datatime, queryStringList, searchUrl, imgWebUrl, newsImgUrl)
+        if (this.checkTodayNewsImg(new moment().format('yyyy-MM-DD'))) {
+            logger.warn('获取今日简报: ', datatime, queryStringList, searchUrl, imgWebUrl, newsImgUrl)
             tools.setRedis(key, tools.calLeftTime(), newsImgUrl)
         }
 
@@ -253,11 +248,11 @@ export class todayNews extends plugin {
                 `日期：${this.datatime}\n`
             ],
             tempMsg = [].concat(msg)
-        this.checkKeepTime()
+        await this.checkKeepTime()
 
         if (!this.checkTodayNewsImg(datatime)) {
-            if (!(await this.getTodayNewsPlus()))
-                this.getTodayNews()
+            // if (!(await this.getTodayNewsPlus()))
+            this.getTodayNews()
 
             if (!this.isValidTime()) {
                 tempMsg.push(`正在初始化今日简报信息, 稍等...`)
@@ -278,8 +273,8 @@ export class todayNews extends plugin {
     async scheduleSendTodayNews() {
         let datatime = new moment().format('yyyy-MM-DD')
         if (!this.checkTodayNewsImg(datatime)) {
-            if (!(await this.getTodayNewsPlus()))
-                this.getTodayNews()
+            // if (!(await this.getTodayNewsPlus()))
+            this.getTodayNews()
             await tools.wait(10)
         }
 

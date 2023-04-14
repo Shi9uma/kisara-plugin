@@ -122,13 +122,13 @@ class tools {
     copyFile(from, to) {
         fs.copyFile(from, to, (err) => { if (err) logger.warn(this.prefix, err) })
     }
-    
+
     /**
      * 创建文件
      * @param {*} filePath 目标路径
      */
     touchFile(filePath, data = '') {
-        fs.writeFile(filePath, data, (err) => {if (err) logger.warn(this.prefix, err)})
+        fs.writeFile(filePath, data, (err) => { if (err) logger.warn(this.prefix, err) })
     }
 
     /**
@@ -171,6 +171,18 @@ class tools {
     }
 
     /**
+     * 将数据写入到目标文件
+     * @param {*} filePath 目标文件路径, 若不存在将直接创建
+     * @param {*} data 要写入的数据
+     * @returns 
+     */
+    writeFile(filePath, data) {
+        if (!this.isFileValid(filePath))
+            this.touchFile(filePath)
+        return fs.writeFileSync(filePath, data, 'utf8')
+    }
+
+    /**
      * 返回 json 文件数据
      * @param {*} filePath 
      * @returns 
@@ -205,7 +217,7 @@ class tools {
         let userConfigFile = `${this.userConfigDir}/index.config.yaml`
         if (!this.isFileValid(userConfigFile))
             return logger.warn(`${this.prefix} 配置文件 ${userConfigFile} 不存在`)
-        
+
         let configs = this.readYamlFile('index', 'config')
         for (let _app in configs.apps) {
             for (let _func of configs.apps[_app]) {
@@ -259,7 +271,7 @@ class tools {
      * @param {*} imgUrl 图像 url
      * @param {*} imgName 要保存成的图像名字, 无后缀
      * @param {*} saveDirPath 图像保存文件夹路径
-     * @param {*} imgType 图像保存的类型(后缀名)
+     * @param {string} imgType 图像保存的类型(后缀名)
      */
     saveUrlImg(imgUrl, imgName, saveDirPath, imgType = 'png') {
         https.get(imgUrl, (res) => {
@@ -446,12 +458,12 @@ class tools {
      * @param {boolean} getKey 是否获取生成的 key
      * @returns 返回值为 bool 或 [key, bool](if getKey == true)
      */
-    async checkRedis(e, type, cd, {value = moment().format('yyyy-MM-DD'), timeFormat = 'hour', isMaster = true, getKey = false}) {
+    async checkRedis(e, type, cd, { value = moment().format('yyyy-MM-DD'), timeFormat = 'hour', isMaster = true, getKey = false }) {
 
         let key = this.genRedisKey(e, type)
 
         if (e.isMaster && isMaster) return getKey == true ? [false, key] : false
-        if(await this.isRedisSet(key)) return getKey == true ? [true, key] : true
+        if (await this.isRedisSet(key)) return getKey == true ? [true, key] : true
 
         if (['h', 'hour'].includes(timeFormat)) {
             timeFormat = 60 * 60
@@ -477,7 +489,7 @@ class tools {
     isCaseConfig(caseId, app, func, type = 'config', encoding = 'utf8') {
         let configFile = this.readYamlFile(app, func, type, encoding)
         for (let key of Object.keys(configFile)) {
-            if (key == caseId) 
+            if (key == caseId)
                 return true
         }
         return false
@@ -506,7 +518,7 @@ class tools {
     applyCaseConfig(keyDict, caseId, app, func, type = 'config', encoding = 'utf8') {
         let configFile = this.readYamlFile(app, func, type, encoding),
             groupConfig = configFile[caseId] ? configFile[caseId] : {}
-        for(let key in keyDict) {
+        for (let key in keyDict) {
             keyDict[key] = groupConfig[key] ? groupConfig[key] : configFile[key]
         }
         return keyDict
