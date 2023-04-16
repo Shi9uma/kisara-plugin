@@ -459,7 +459,9 @@ class tools {
      * @param {boolean} setRedis 是否同时向 redis 添加一个 key
      * @returns 返回值为 bool 或 [key, bool](if getKey == true)
      */
-    async checkRedis(e, type, cd, { value = moment().format('yyyy-MM-DD'), timeFormat = 'hour', isMaster = true, getKey = false, setRedis = true }) {
+    async checkRedis(e, type, cd, options = {}) {
+
+        let { value = moment().format('yyyy-MM-DD'), timeFormat = 'hour', isMaster = true, getKey = false, setRedis = true } = options
 
         let key = this.genRedisKey(e, type)
 
