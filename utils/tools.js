@@ -456,9 +456,10 @@ class tools {
      * > 秒: else
      * @param {boolean} isMaster 是否开启主人不受限制
      * @param {boolean} getKey 是否获取生成的 key
+     * @param {boolean} setRedis 是否同时向 redis 添加一个 key
      * @returns 返回值为 bool 或 [key, bool](if getKey == true)
      */
-    async checkRedis(e, type, cd, { value = moment().format('yyyy-MM-DD'), timeFormat = 'hour', isMaster = true, getKey = false }) {
+    async checkRedis(e, type, cd, { value = moment().format('yyyy-MM-DD'), timeFormat = 'hour', isMaster = true, getKey = false, setRedis = true }) {
 
         let key = this.genRedisKey(e, type)
 
@@ -473,8 +474,9 @@ class tools {
             timeFormat = 1
         }
 
-        this.setRedis(key, timeFormat * cd, value)
+        if (setRedis) this.setRedis(key, timeFormat * cd, value)
         return getKey == true ? [false, key] : false
+
     }
 
     /**

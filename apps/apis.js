@@ -44,7 +44,7 @@ export class tiangou extends plugin {
     }
 
     async tiangou() {
-        let checkRedisResult = await tools.checkRedis(this.e, 'g', cd, {getKey: true})
+        let checkRedisResult = await tools.checkRedis(this.e, 'g', cd, { getKey: true })
         if (checkRedisResult[0]) {
             await this.e.reply(`${this.prefix}\ncd 剩余 ${parseInt(await tools.ttlRedis(checkRedisResult[1]) / 60)} 分钟`, true)
             return
@@ -112,8 +112,8 @@ export class saucenao extends plugin {
             }
         })
 
-        let responseData = response.data.results, 
-            isSelectArr = [], 
+        let responseData = response.data.results,
+            isSelectArr = [],
             msg
 
         for (let obj1 of responseData) {
@@ -124,16 +124,16 @@ export class saucenao extends plugin {
 
         if (isSelectArr.length == 0) {
             msg = [
-                `${this.prefix}\n` + 
-                `没有找到任何与提供图片相似度高于 ${similarityRate}% 的结果\n` + 
-                `您也可以通过这个链接来自行查找.\n` + 
+                `${this.prefix}\n` +
+                `没有找到任何与提供图片相似度高于 ${similarityRate}% 的结果\n` +
+                `您也可以通过这个链接来自行查找.\n` +
                 `${saucenaoUrl + '?url=' + imgUrl}`
             ]
             await this.e.reply(msg, true)
             return
         }
 
-        let forwardMsg = [], 
+        let forwardMsg = [],
             forwardMsgArr = []
         for (let obj2 of isSelectArr) {
             forwardMsg = [
@@ -256,14 +256,14 @@ export class randomImg extends plugin {
     }
 
     async randomImg() {
-        let checkRedisResult = await tools.checkRedis(this.e, 'g', cd, {getKey: true})
+        let checkRedisResult = await tools.checkRedis(this.e, 'g', cd, { getKey: true, setRedis: false })
         if (checkRedisResult[0]) {
             await this.e.reply(`${this.prefix}\ncd 剩余 ${parseInt(await tools.ttlRedis(checkRedisResult[1]) / 60)} 分钟`, true)
             return
         }
 
         let apiUrl
-        switch(lodash.random(1, 3)) {
+        switch (lodash.random(1, 3)) {
             case 1:
                 apiUrl = 'https://api.ghser.com/random/pe.php'
                 break
@@ -274,12 +274,19 @@ export class randomImg extends plugin {
                 apiUrl = 'https://cloud.qqshabi.cn/api/images/api.php'
                 break
         }
-        let response = await fetch(apiUrl).catch((error) => {if (error) logger.warn(error)})
+        let response = await fetch(apiUrl).catch((error) => { if (error) logger.warn(error) })
+        
+        tools.wait(2)
+        if (!response) return
+
         let msg = [
             `\n${this.prefix}\n`,
             segment.image(response.url)
         ]
+
         await this.e.reply(msg, false, { at: true })
+        await tools.checkRedis(this.e, 'g', cd)
+
         return
     }
 
@@ -340,7 +347,7 @@ export class riskValue extends plugin {
             event: 'message',
             priority: 5000,
             rule: [
-                { 
+                {
                     reg: "^#?(查询风险值|查风险|风险|封号概率|查询封号|封号|查封号)$",
                     fnc: 'riskValue'
                 }
@@ -374,5 +381,5 @@ export class riskValue extends plugin {
             if (error) logger.warn(error)
         }
         return true; //返回true 阻挡消息不再往下
-    }    
+    }
 }
