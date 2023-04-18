@@ -112,13 +112,15 @@ export class saucenao extends plugin {
             }
         })
 
-        let responseData = response.data.results,
+        let responseData = response.data.results ? response.data.results : response.data.header.message,
             isSelectArr = [],
             msg
-
-        for (let obj1 of responseData) {
-            if (obj1.header.similarity >= similarityRate) {
-                isSelectArr.push([obj1, obj1.header.similarity])
+        
+        if (!responseData.includes('Specified file no longer exists on the remote server!')) {
+            for (let obj1 of responseData) {
+                if (obj1.header.similarity >= similarityRate) {
+                    isSelectArr.push([obj1, obj1.header.similarity])
+                }
             }
         }
 
@@ -157,7 +159,7 @@ export class saucenao extends plugin {
             forwardMsgArr.push(forwardMsg)
         }
 
-        await this.e.reply(await (tools.makeForwardMsg(`${this.prefix}\n识图结果, 源链接：${saucenaoUrl + '?url=' + imgUrl}`, forwardMsgArr, `已列出所有相似度高于 ${similarityRate}% 的 ${isSelectArr.length} 条有效结果`, this.e, global.Bot)))
+        await this.e.reply(tools.makeForwardMsg(`${this.prefix}\n识图结果, 源链接：${saucenaoUrl + '?url=' + imgUrl}`, forwardMsgArr, `已列出所有相似度高于 ${similarityRate}% 的 ${isSelectArr.length} 条有效结果`, this.e, global.Bot))
         await this.e.reply('识图结果已发送完毕, 如果没有消息记录, 则表示识图内容被风控', true, { recallMsg: 60 })
         return
     }
@@ -334,7 +336,7 @@ export class shareMusic extends plugin {
         catch (error) {
             if (error) logger.warn(error)
         }
-        return true; //返回true 阻挡消息不再往下
+        return
     }
 }
 
