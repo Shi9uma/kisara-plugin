@@ -41,7 +41,7 @@ export class chat extends plugin {
         if (msg == '') return true  // 空消息不回复
         if (keyDict.ngWords.includes(msg)) return true  // ngWords 不回复
         if (keyDict.bans.includes(this.e.sender.user_id)) return true // ban 账号不回复
-        return (this.e.isMaster || lodash.random(1, 100) <= keyDict.triggerRate || this.e.atBot) ? false : true // 主人回复、触发概率情况以及 at 回复
+        return (this.e.isMaster || lodash.random(1, 100) <= keyDict.triggerRate || (this.e.atBot && keyDict.atReply)) ? false : true // 主人回复、触发概率情况以及 at 回复
     }
 
     async doReply(chatData, _msg, keyDict) {
@@ -58,7 +58,7 @@ export class chat extends plugin {
     }
 
     async chat() {
-        let keyDict = tools.applyCaseConfig({ botName: '', senderName: '', triggerRate: '', similarityRate: '', ngWords: '', bans: '' }, this.e.group_id, 'chat', 'chat'),
+        let keyDict = tools.applyCaseConfig({ botName: '', senderName: '', triggerRate: '', similarityRate: '', ngWords: '', bans: '', atReply: ''}, this.e.group_id, 'chat', 'chat'),
             msg = this.e.msg ? this.e.msg.replaceAll(keyDict.botName, '') : ''
 
         if (this.dontAnswer(keyDict, msg)) return

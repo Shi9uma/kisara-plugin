@@ -523,7 +523,7 @@ class tools {
         let configFile = this.readYamlFile(app, func, type, encoding),
             groupConfig = configFile[caseId] ? configFile[caseId] : {}
         for (let key in keyDict) {
-            keyDict[key] = groupConfig[key] ? groupConfig[key] : configFile[key]
+            keyDict[key] = groupConfig[key] != undefined ? groupConfig[key] : configFile[key]
         }
         return keyDict
     }

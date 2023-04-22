@@ -50,7 +50,7 @@ export class dice extends plugin {
                 msg += `在 ${start} 到 ${end} 中 roll 到了 ${lodash.random(start, end)}`
                 break
             case 3:
-                count = rangeList.pop() ?? 1, end = rangeList.pop() ?? 100, start = rangeList.pop() ?? 1
+                count = (rangeList.pop() ?? 1), end = rangeList.pop() ?? 100, start = rangeList.pop() ?? 1
                 if (start > end) {
                     let temp = start
                     start = end, end = temp
@@ -58,8 +58,12 @@ export class dice extends plugin {
                 let numList = new Array, i = start
                 for (; i <= end; i++)
                     numList.push(i)
+                if (count > 30) {
+                    count = 30
+                    msg += `roll 骰子个数过多, 自动减少为 30 个\n`
+                }
                 numList = lodash.sampleSize(numList, count)
-                msg += `在 ${start} 到 ${end} 中 roll 到了 ${numList.length} 个数: `
+                msg += `在 ${start} 到 ${end} 中 roll 到了 ${numList.length} 个数: \n`
                 for (let num of numList)
                     msg += `${num} `
                 break
