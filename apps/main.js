@@ -12,7 +12,9 @@ const content = [
     '风险：查询账号的风险值\n' + 
     '骰子: 「r + 数字」\n' + 
     '识图: 「识图 + 图片」, 「引用含有图片的消息并识图」\n' + 
-    '点歌: 「点歌 + 歌曲名, 直接加歌手名以指定」\n'
+    '点歌: 「点歌 + 歌曲名, 直接加歌手名以指定」\n' + 
+    '> powered by Le-niao/Yunzai-Bot\n' + 
+    '> plugin supported with Shi9uma/kisara-plugin'
 ]
 
 const pluginName = tools.getPluginName()
@@ -77,7 +79,7 @@ export class recall extends plugin {
         }
 
         if (this.e.source.user_id != Bot.uin) {
-            await this.e.reply('无法撤回非本数字生命发的消息', true, { recallMsg: 10 })
+            await this.e.reply('无法撤回非账号发送的消息', true, { recallMsg: 10 })
             return
         }
 
