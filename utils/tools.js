@@ -551,8 +551,17 @@ class tools {
      * @param {Object} obj 
      * @returns 字典
      */
-    checkObject(obj) {
+    checkObjectKeys(obj) {
         return Object.entries(obj)
+    }
+
+    /**
+     * 查看对象所拥有的属性
+     * @param {Object} obj 
+     * @returns 
+     */
+    checkObjectProperties(obj) {
+        return Object.getOwnPropertyNames(obj)
     }
 
 }

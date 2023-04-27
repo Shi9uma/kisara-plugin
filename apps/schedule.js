@@ -285,8 +285,14 @@ export class todayNews extends plugin {
                 segment.image(`file://${newsImgPath}`)
             ]
 
-        let scheduleGroups = tools.readYamlFile('schedule', 'todayNews').scheduleGroups
+        let scheduleGroups = tools.readYamlFile('schedule', 'todayNews').scheduleGroups, ensureGroups = []
         for (let group_id of scheduleGroups) {
+            if (Bot.pickGroup(Number(group_id)).pickMember(Bot.uin)._info != undefined)
+                ensureGroups.push(group_id)
+        }
+        await tools.wait(2)
+
+        for (let group_id of ensureGroups) {
             Bot.pickGroup(Number(group_id)).sendMsg(msg)
         }
         return
