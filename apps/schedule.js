@@ -301,6 +301,7 @@ export class todayNews extends plugin {
 
         for (let group_id of scheduleGroups) {
             Bot.pickGroup(Number(group_id)).sendMsg(msg)
+            await tools.wait(1)
         }
         return
     }

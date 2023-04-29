@@ -356,7 +356,7 @@ class tools {
      * @param {*} key 
      * @returns promise 对象
      */
-    isRedisSet(key) {
+    async isRedisSet(key) {
         return redis.get(key)
     }
 
@@ -402,9 +402,9 @@ class tools {
         if (isGroup) {
             key += `.isGroup.${e.group_id}`
         } else if (isPrivate) {
-            key += `.isPrivate.${e.user_id}`
+            key += `.isPrivate`
         } else if (isGlobal) {
-            key += `.isGlobal.${e.user_id}`
+            key += `.isGlobal`
         }
         return key += `.${e.user_id}`
     }

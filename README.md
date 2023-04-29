@@ -50,7 +50,7 @@
   - [ ] 使用 gpt 训练词库 **(长期项目)**
 - [ ] utils
   - [x] init 初始化
-  - [x] 添加 redis 操纵 api 化, 按照 `fncName.isGroup.群号.qq号.time`, `fucName.isPrivate.qq号.qq号.time` 的键值来设计
+  - [x] 添加 redis 操纵 api 化, 按照 `fncName.isGroup.群号.qq号`, `fucName.isPrivate.qq号.qq号` 的键值来设计, eg. `[tarot][refreshTarot].isGlobal.123456789`, `[tarot][refreshTarot].isGroup.987654321.123456789`
   - [x] yaml 文件读取全局默认设置和特例设置
   - [ ] 添加权限检测函数, 几种权限类型组合
 - [x] 塔罗牌占卜

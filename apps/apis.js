@@ -105,9 +105,9 @@ export class saucenao extends plugin {
                     numres: numres   // 返回多少个结果
                 }
             }
-        ).catch((error) => {
+        ).catch(async function (error) {
             if (error) {
-                this.e.reply(`识图 api 无反应, 状态：${error}`, true, { recallMsg: 90 })
+                await this.e.reply(`识图 api 无反应, 状态：${error}`, true, { recallMsg: 90 })
                 return
             }
         })
@@ -115,7 +115,7 @@ export class saucenao extends plugin {
         let responseData = response.data.results ? response.data.results : response.data.header.message,
             isSelectArr = [],
             msg
-        
+
         if (!responseData.includes('Specified file no longer exists on the remote server!')) {
             for (let obj1 of responseData) {
                 if (obj1.header.similarity >= similarityRate) {
@@ -277,7 +277,7 @@ export class randomImg extends plugin {
                 break
         }
         let response = await fetch(apiUrl).catch((error) => { if (error) logger.warn(error) })
-        
+
         tools.wait(2)
         if (!response) return
 

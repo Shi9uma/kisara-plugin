@@ -17,6 +17,11 @@ export class tarot extends plugin {
                 {
                     reg: '^#?占卜$',
                     fnc: 'tarot'
+                },
+                {
+                    reg: '^#?刷新占卜$',
+                    fnc: 'refreshTarot',
+                    permission: 'Master'
                 }
             ]
         })
@@ -27,7 +32,7 @@ export class tarot extends plugin {
     }
 
     async isPasseren() {
-        let checkResult = await tools.checkRedis(this.e, 'global', tools.calLeftTime(), {timeFormat: 's'})
+        let checkResult = await tools.checkRedis(this.e, 'global', tools.calLeftTime(), { timeFormat: 's' })
         if (checkResult) return false
         else return true
     }
@@ -66,7 +71,7 @@ export class tarot extends plugin {
                 // 抽取牌数据
                 cards_info_list = lodash.sampleSize(all_cards, formation.cards_num)
 
-            return {formation, cards_info_list, card}
+            return { formation, cards_info_list, card }
         } else if (type == 'single') {
             return lodash.sample(all_cards)
         } else {
@@ -113,7 +118,7 @@ export class tarot extends plugin {
         ]
         if (this.e.isGroup) {
             await this.e.reply(`\n${msg}`, false, { at: true })
-        } else { 
+        } else {
             await this.e.reply(msg)
         }
         await this.e.reply(segment.image(`file://${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`))
@@ -124,11 +129,11 @@ export class tarot extends plugin {
     async tarot() {
 
         if (!(await this.isPasseren())) {
-            this.e.reply(`\n${this.prefix}\n今日已经为你占卜过了，明天再来吧`, false, {at: true})
+            await this.e.reply(`\n${this.prefix}\n今日已经为你占卜过了，明天再来吧`, false, { at: true })
             return
         }
 
-        if (this.e.isMaster || lodash.random(1, 100) <= tools.applyCaseConfig({triggerRate: ''}, this.e.group_id, 'tarot', 'tarot').triggerRate) {
+        if (this.e.isMaster || lodash.random(1, 100) <= tools.applyCaseConfig({ triggerRate: '' }, this.e.group_id, 'tarot', 'tarot').triggerRate) {
             await this.e.reply('“许多傻瓜对千奇百怪的迷信说法深信不疑：象牙、护身符、黑猫、打翻的盐罐、驱邪、占卜、符咒、毒眼、塔罗牌、星象、水晶球、咖啡渣、手相、预兆、预言还有星座。”\n——《人类愚蠢辞典》')
             this.fullTarot()
             return
@@ -136,5 +141,27 @@ export class tarot extends plugin {
             this.singleTarot()
             return
         }
+    }
+
+    async refreshTarot() {
+
+        this.e.user_id = this.e.source.user_id
+        this.e.logFnc = this.e.logFnc.replace('[refreshTarot]', '[tarot]')
+        let deleteKey = tools.genRedisKey(this.e, 'global')
+        let msg = `${this.prefix}\n`
+
+        if ((await tools.isRedisSet(deleteKey) == null)) {
+            msg += `对象 ${this.e.user_id} 还没有占卜过噢`
+        } else {
+            let deleteResult = await tools.delRedisKey(deleteKey)
+            if (deleteResult) {
+                msg += `已经为 ${this.e.user_id} 重新洗牌`
+            } else {
+                msg += `为 ${this.e.user_id} 重新洗牌失败, 请查看日志`
+            }
+        }
+
+        await this.e.reply(msg, false, { recallMsg: 90 })
+        return
     }
 }
