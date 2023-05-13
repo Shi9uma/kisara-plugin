@@ -22,7 +22,7 @@ export class todayNews extends plugin {
                 priority: 5000,
                 rule: [
                     {
-                        reg: '^(简报|新闻|日报)$',
+                        reg: '^(简报|新闻|日报|news|NEWS)$',
                         fnc: 'sendTodayNews'
                     },
                     {
@@ -43,7 +43,6 @@ export class todayNews extends plugin {
         this.configYaml = tools.readYamlFile('schedule', 'todayNews')
         this.datatime = new moment().format('yyyy-MM-DD')
         this.prefix = `[+] ${this.dsc}`
-        this.headers = this.generateNewHeaders()
 
         this.task = {
             cron: this.configYaml.scheduleTime,
@@ -64,7 +63,8 @@ export class todayNews extends plugin {
     checkTodayNewsImg(datatime) {
         if (!tools.isDirValid(this.newsImgDir))    // 一般只有第一次使用会创建
             tools.makeDir(this.newsImgDir)
-        return tools.isFileValid(`${this.newsImgDir}/${datatime}.${this.imgType}`)
+        let imgFilePath = `${this.newsImgDir}/${datatime}.${this.imgType}`
+        return (tools.isFileValid(imgFilePath)) && (tools.getFileStat(imgFilePath).size != 0)
     }
 
     deleteTodayNews() {
@@ -90,70 +90,6 @@ export class todayNews extends plugin {
             this.e.reply(`${this.prefix}\n已删除日期为 ${datatime} 的简报`)
             return
         }
-    }
-
-    generateNewHeaders() {
-        return {
-            'Accept': 'text/html, application/xhtml+xml, application/xml; q=0.9, image/webp, image/apng, */*; q=0.8, application/signed-exchange; v=b3; q=0.9',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN, zh; q=0.9, en; q=0.8',
-            'User-Agent': new userAgent().toString()
-        }
-    }
-
-    selectSingleElement(reg, dom) {
-        return dom.window.document.querySelector(reg)
-    }
-
-    selectAllElement(reg, dom) {
-        return dom.window.document.querySelectorAll(reg)
-    }
-
-    getArticleIndex(dom, queryStringList) {
-        let author = queryStringList[0], title = queryStringList[1], count = 0, flag = -1
-        let tempDom = this.selectAllElement('ul.news-list li', dom)
-        tempDom.forEach((item) => {
-            count += 1
-            let itemDom = new jsdom.JSDOM(item.innerHTML),
-                _title = this.selectSingleElement('div.txt-box a', itemDom).textContent,
-                _author = this.selectSingleElement('div.txt-box div a', itemDom).textContent
-
-            if (author == _author && title == _title) flag = count
-        })
-        return flag
-    }
-
-    async generateCookies() {
-        let url = 'https://weixin.sogou.com/'
-        let response = (await axios.get(url = url, { headers: this.generateNewHeaders() }))
-        return response.headers['set-cookie']
-    }
-
-    async getHtmlData(url) {
-        let response
-        await axios.get(
-            url = url,
-            {
-                headers: this.headers
-            }
-        ).then((_response) => {
-            response = _response
-        }).catch((err) => {
-            if (err) logger.warn(err)
-        })
-
-        let responseUrl = response.request.res.responseUrl
-
-        if (responseUrl.includes('antispider')) {
-            let antispiderHtmlDom = new jsdom.JSDOM(response.data)
-            let _captchaImgUrl = this.selectSingleElement('#seccodeImage', antispiderHtmlDom).src
-            let captchaImgUrl = `https://weixin.sogou.com/antispider/${_captchaImgUrl}`
-            let saveDirPath = `./plugins/${this.pluginName}/dontgit/`
-
-            logger.warn(captchaImgUrl)
-            tools.saveUrlImg(captchaImgUrl, 'captchaImg', saveDirPath, 'png')
-        }
-        return response.data
     }
 
     async checkKeepTime() {
@@ -196,51 +132,6 @@ export class todayNews extends plugin {
         return
     }
 
-    async getTodayNewsPlus() {
-
-        let cookies = await this.generateCookies()
-        let datatime = (new moment().format('yyyy-MM-DD')).split('-')
-        datatime.forEach((element) => {
-            datatime[datatime.indexOf(element)] = parseInt(element, 10).toString()
-        })
-        let queryStringList = [`易即今日`, `今日简报(${datatime[1]}月${datatime[2]}日)`]
-        // queryStringList = [`易即今日`, `今日简报(4月11日)`]
-        let key = `${queryStringList[0]}.${queryStringList}`
-        let imgUrl = await tools.getRedis(key)
-        if (imgUrl) return imgUrl
-
-        // 获取今日简报 url
-        let searchUrl = `https://weixin.sogou.com/weixin?ie=utf8&type=2&query=${queryStringList[0]}${queryStringList[1]}`
-        let searchHtmlData = await this.getHtmlData(searchUrl, cookies)
-        await tools.wait(2)
-
-        let searchHtmlDom = new jsdom.JSDOM(searchHtmlData),
-            articleIndex = this.getArticleIndex(searchHtmlDom, queryStringList)
-        if (articleIndex == -1) return false    // 没有相应文章, 直接返回 false
-
-        let imgWebUrl = tools.decode(this.selectSingleElement(`ul.news-list li:nth-child(${articleIndex}) div:nth-child(2) a`, searchHtmlDom).href)
-        if (!imgWebUrl) return false
-
-        // 获取今日简报
-        imgWebUrl = `https://weixin.sogou.com${imgWebUrl}`
-        let imgWebHtmlData = await this.getHtmlData(imgWebUrl, cookies)
-        // [imgWebHtmlStatus, imgWebHtmlData] = [200, tools.readFile('./plugins/kisara/dontgit/imgWebHtml.html')]
-        await tools.wait(2)
-
-        // 访问图片并保存
-        let pattern = /cdn_url: '(.*)',/g
-        let newsImgUrl = pattern.exec(imgWebHtmlData)[1]
-        let newsImgName = this.datatime
-        tools.saveUrlImg(newsImgUrl, newsImgName, this.newsImgDir, this.imgType)
-        await tools.wait(2)
-        if (this.checkTodayNewsImg(new moment().format('yyyy-MM-DD'))) {
-            logger.warn('获取今日简报: ', datatime, queryStringList, searchUrl, imgWebUrl, newsImgUrl)
-            tools.setRedis(key, tools.calLeftTime(), newsImgUrl)
-        }
-
-        return true
-    }
-
     async sendTodayNews() {
         let datatime = this.datatime,
             msg = [
@@ -251,7 +142,6 @@ export class todayNews extends plugin {
         await this.checkKeepTime()
 
         if (!this.checkTodayNewsImg(datatime)) {
-            // if (!(await this.getTodayNewsPlus()))
             this.getTodayNews()
 
             if (!this.isValidTime()) {
@@ -273,7 +163,6 @@ export class todayNews extends plugin {
     async scheduleSendTodayNews() {
         let datatime = new moment().format('yyyy-MM-DD')
         if (!this.checkTodayNewsImg(datatime)) {
-            // if (!(await this.getTodayNewsPlus()))
             this.getTodayNews()
             await tools.wait(10)
         }
@@ -286,18 +175,6 @@ export class todayNews extends plugin {
             ]
 
         let scheduleGroups = tools.readYamlFile('schedule', 'todayNews').scheduleGroups
-
-        /*
-        let ensureGroups = []
-        for (let group_id of scheduleGroups) {
-            // logger.info(Bot.uin, Bot.pickGroup(Number(group_id)).pickMember(Bot.uin)._info)
-            if (Bot.pickGroup(Number(group_id)).pickMember(Bot.uin)._info != undefined)
-                ensureGroups.push(group_id)
-        }
-        await tools.wait(2)
-
-        // logger.warn(scheduleGroups, ensureGroups)
-        */
 
         for (let group_id of scheduleGroups) {
             Bot.pickGroup(Number(group_id)).sendMsg(msg)

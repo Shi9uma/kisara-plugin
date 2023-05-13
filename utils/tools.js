@@ -101,9 +101,19 @@ class tools {
     /**
      * 判断文件是否有效
      * @param {*} fileName 文件路径
+     * @returns 文件是否存在
      */
     isFileValid(fileName) {
         return fs.existsSync(fileName)
+    }
+
+    /**
+     * 获取文件相关信息, 例如大小, 创建时间等
+     * @param {*} fileName 文件路径
+     * @returns 字典
+     */
+    getFileStat(fileName) {
+        return fs.statSync(fileName)
     }
 
     /**
