@@ -170,6 +170,20 @@ class tools {
     }
 
     /**
+     * 读取框架全局文件
+     * @param {*} configType bot, group, other, qq, redis
+     * @returns 
+     */
+    readGlobalYamlFile(configType, encoding = 'utf8') {
+        let filePath = `./config/config/${configType}.yaml`
+        if (this.isFileValid(filePath)) {
+            return yaml.load(fs.readFileSync(filePath, encoding))
+        } else {
+            return logger.warn(`${this.prefix} 找不到 ${filePath} 文件`)
+        }
+    }
+
+    /**
      * 读取文件内容
      * @param {*} filePath 
      * @returns 
@@ -572,6 +586,41 @@ class tools {
      */
     checkObjectProperties(obj) {
         return Object.getOwnPropertyNames(obj)
+    }
+
+    /**
+     * 向指定目标转发消息
+     * @param {*} type 类型: **Friend**, **Group**
+     * @param {*} msg 要转发的消息
+     * @param {*} target 转发目标
+     * @param {*} from 来源
+     * @param {*} Bot 传入 Bot
+     * @returns 
+     */
+    async notify(type, msg, target, from, Bot) {
+        if (!Bot) {
+            return logger.warn(`${this.prefix} 请先传入 global.Bot`)
+        }
+
+        let _msg = [
+            `[+] notify\n` +
+            `来自 ${from} 的消息:\n` + 
+            `------------------\n`
+        ]
+        _msg.push(msg)
+        _msg.push('\n------------------')
+
+        switch (type) {
+            case 'Friend':
+                Bot.pickFriend(Number(target)).sendMsg(_msg)
+                break;
+            case 'Group':
+                Bot.pickGroup(Number(target)).sendMsg(_msg)
+                break;
+            default:
+                return logger.warn(`${this.prefix} invalid type!`)
+        }
+        return
     }
 
 }

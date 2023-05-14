@@ -161,10 +161,22 @@ export class todayNews extends plugin {
     }
 
     async scheduleSendTodayNews() {
+
+        if (this.e) {
+            await this.e.reply(`${this.prefix}\n获取今日简报中...`)
+        }
+
         let datatime = new moment().format('yyyy-MM-DD')
+
         if (!this.checkTodayNewsImg(datatime)) {
             this.getTodayNews()
             await tools.wait(10)
+            if (!this.checkTodayNewsImg(datatime)) {
+                let masterList = tools.readGlobalYamlFile('other').masterQQ
+                for (let master of masterList)
+                    await tools.notify('Friend', `[+] ${this.task.name}\n日期：${datatime}\n获取今日简报失败, 请手动重新获取`, Number(master), 'system', Bot)
+                return
+            }
         }
 
         let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`,

@@ -143,4 +143,4 @@ services:
 
 ## 其他
 
-预计会选择采用 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp.git) 搭配 golang/python 实现由 kisara-plugin 到 kisara-bot 的转变
+后续会选择采用 onebot 标准, 依托 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp.git) 搭配 golang/python 实现由 kisara-plugin 到 kisara-bot 的转变
