@@ -41,7 +41,12 @@ export class chat extends plugin {
         if (msg == '') return true  // 空消息不回复
         if (keyDict.ngWords.includes(msg)) return true  // ngWords 不回复
         if (keyDict.banList.includes(this.e.sender.user_id.toString())) return true // ban 账号不回复
-        return (this.e.isMaster || keyDict.isReplyList.includes(this.e.sender.user_id.toString()) || lodash.random(1, 100) <= keyDict.triggerRate || (this.e.atBot && keyDict.atReply)) ? false : true // 主人回复, 必回 QQ, 触发概率情况, at 回复
+        return (
+            (tools.isAtSomeone(this.e, Bot.uin) ? (keyDict.atReply ? true : false) : false) ||
+            (this.e.isMaster ? (tools.checkAt(this.e) ? (tools.isAtSomeone(this.e, Bot.uin) ? true : false) : true) : false) ||
+            keyDict.isReplyList.includes(this.e.sender.user_id.toString()) ||
+            lodash.random(1, 100) <= keyDict.triggerRate
+        ) ? false : true // 主人回复, 必回 QQ, 触发概率, at 回复
     }
 
     async doReply(chatData, _msg, keyDict) {
@@ -59,15 +64,15 @@ export class chat extends plugin {
 
     async chat() {
         let _keyDict = {
-                botName: '',
-                senderName: '',
-                triggerRate: '',
-                similarityRate: '',
-                ngWords: '',
-                isReplyList: '',
-                banList: '',
-                atReply: ''
-            }
+            botName: '',
+            senderName: '',
+            triggerRate: '',
+            similarityRate: '',
+            ngWords: '',
+            isReplyList: '',
+            banList: '',
+            atReply: ''
+        }
         let keyDict = tools.applyCaseConfig(_keyDict, this.e.group_id, 'chat', 'chat'),
             msg = this.e.msg ? this.e.msg.replaceAll(keyDict.botName, '') : ''
 

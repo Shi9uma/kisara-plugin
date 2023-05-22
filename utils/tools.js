@@ -604,7 +604,7 @@ class tools {
 
         let _msg = [
             `[+] notify\n` +
-            `来自 ${from} 的消息:\n` + 
+            `来自 ${from} 的消息:\n` +
             `------------------\n`
         ]
         _msg.push(msg)
@@ -621,6 +621,40 @@ class tools {
                 return logger.warn(`${this.prefix} invalid type!`)
         }
         return
+    }
+
+    /**
+     * 用于检查 msg 中是否含有 at 的情况
+     * @param {*} e 传入 this.e
+     * @param {boolean} getDetail 默认是 false
+     * > getDetail = flase, 返回 bool
+     * 
+     * > getDetail = true, 返回 [bool, atList]
+     * @returns 
+     */
+    checkAt(e, getDetail = false) {
+        let msg = e.message, atList = []
+        for (let _msg of msg) {
+            if (_msg['type'] == 'at') {
+                atList.push(_msg)
+            }
+        }
+        return getDetail ? [atList.length != 0, atList] : atList.length != 0
+    }
+
+    /**
+     * 判断当前消息中, at 的 qq 号是否与传入的 qq 号相同
+     * @param {*} e 传入 this.e
+     * @param {int} cond 传入 qq 号
+     * @returns 
+     */
+    isAtSomeone(e, cond) {
+        let res = this.checkAt(e, true)
+        if (!res[0]) return false
+        for (let msg of res[1]) {
+            if (msg['qq'] == cond) return true
+        }
+        return false
     }
 
 }

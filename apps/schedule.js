@@ -162,15 +162,17 @@ export class todayNews extends plugin {
 
     async scheduleSendTodayNews() {
 
-        if (this.e) {
-            await this.e.reply(`${this.prefix}\n获取今日简报中...`)
-        }
-
         let datatime = new moment().format('yyyy-MM-DD')
 
         if (!this.checkTodayNewsImg(datatime)) {
+
+            if (this.e) {
+                await this.e.reply(`${this.prefix}\n获取今日简报中...`)
+            }
+
             this.getTodayNews()
             await tools.wait(10)
+            
             if (!this.checkTodayNewsImg(datatime)) {
                 let masterList = tools.readGlobalYamlFile('other').masterQQ
                 for (let master of masterList)
@@ -189,8 +191,10 @@ export class todayNews extends plugin {
         let scheduleGroups = tools.readYamlFile('schedule', 'todayNews').scheduleGroups
 
         for (let group_id of scheduleGroups) {
-            Bot.pickGroup(Number(group_id)).sendMsg(msg)
+
             await tools.wait(1)
+            Bot.pickGroup(Number(group_id)).sendMsg(msg)
+
         }
         return
     }

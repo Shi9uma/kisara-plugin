@@ -28,7 +28,7 @@
 
 -   本插件开发和应用环境都在 Linux 平台, 暂时没有测试过 Windows 平台。
 
--   获取本插件的指令：`git clone https://github.com/Shi9uma/kisara-plugin.git ./Yunzai-bot/plugins/{期望的插件名}`, 请您自行修改后面的路径以保证插件能被正常加载。
+-   获取本插件的指令：`git clone https://github.com/shi9uma/kisara-plugin.git ./Yunzai-bot/plugins/{期望的插件名}`, 请您自行修改后面的路径以保证插件能被正常加载。
 
 -   本插件还引入了 `shelljs, axios` 等依赖, 您在启动插件后, 会接收到相应缺少插件的依赖报错。此时您可以回到 `./Yunzai-bot` 的根目录下, 使用 `npm install {缺失的依赖名称}`, 这里我推荐您使用 [cnpm](https://zhuanlan.zhihu.com/p/120159632)（安装后可以直接将 npm 修改成 cnpm 即可, 其他不变）, 访问速度更快。
 
@@ -58,7 +58,7 @@
   - [x] 按群区分触发几率
   - [ ] redis 存储占卜内容
   - [ ] 在 `tarot.tarot.yaml` 写入期望塔罗牌占卜间隔时间
-  - [ ] 完整的塔罗牌占卜流程, 包括提问者提出问题、洗牌、抽牌和正逆位**(长期项目)**
+  - [ ] 完整的塔罗牌占卜流程, 包括提问者提出问题、洗牌、抽牌和正逆位 **(长期项目)**
 - [x] 简报
   - [x] 简报定时推送
   - [ ] 简报换源, 易即今日
