@@ -125,10 +125,18 @@ export class todayNews extends plugin {
             return
         }
 
+        let datatime = new moment().format('yyyy-MM-DD')
         let res = await response.json()
         let newsImgUrl = res.imageUrl
         let newsImgName = res.datatime
         tools.saveUrlImg(newsImgUrl, newsImgName, this.newsImgDir, this.imgType)
+
+        if (datatime != res.datatime) {
+            let masterList = tools.readGlobalYamlFile('other').masterQQ
+            for (let master of masterList)
+                await tools.notify('Friend', `${this.prefix}\n当前日期：${datatime}\n简报日期：${res.datatime}\n简报内容出现延误, 请查看日志`, Number(master), 'system', Bot)
+        }
+
         return
     }
 
@@ -145,10 +153,10 @@ export class todayNews extends plugin {
             this.getTodayNews()
 
             if (!this.isValidTime()) {
-                tempMsg.push(`正在初始化今日简报信息, 稍等...`)
-                tempMsg.push(`\n请注意, 当前时间点 ${new moment().format('yyyy-MM-DD HH:mm:ss')} 获取的简报信息可能有延误\n若出现延误内容, 请通过 删除简报 指令来刷新简报信息`)
+                tempMsg.push(`正在初始化今日简报信息, 请稍等...`)
+                tempMsg.push(`\n请注意, 当前时刻 ${new moment().format('yyyy-MM-DD HH:mm:ss')} 获取的简报信息可能有延误\n若出现延误内容, 请通过 删除简报 指令来刷新简报信息`)
             } else {
-                tempMsg.push(`正在初始化今日简报信息, 稍等...`)
+                tempMsg.push(`正在初始化今日简报信息, 请稍等...`)
             }
             await this.e.reply(tempMsg)
             await tools.wait(10)
@@ -163,6 +171,7 @@ export class todayNews extends plugin {
     async scheduleSendTodayNews() {
 
         let datatime = new moment().format('yyyy-MM-DD')
+        await this.checkKeepTime()
 
         if (!this.checkTodayNewsImg(datatime)) {
 

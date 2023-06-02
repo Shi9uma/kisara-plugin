@@ -107,7 +107,7 @@ export class saucenao extends plugin {
             }
         ).catch(async function (error) {
             if (error) {
-                await this.e.reply(`识图 api 无反应, 状态：${error}`, true, { recallMsg: 90 })
+                await this.e.reply(`${this.prefix}\n识图 api 无反应, 状态：${error}`, true, { recallMsg: 90 })
                 return
             }
         })
@@ -168,10 +168,20 @@ export class saucenao extends plugin {
     async saucenaoCheckType(e) {
         try {
             // 防止滥用
-            let checkPrivate = (this.e.isGroup || this.e.isMaster) ? true : false
-            if (!checkPrivate) {
-                this.e.reply('为防止滥用, 已禁止私聊使用')
+            if (!(this.e.isGroup || this.e.isMaster)) {
+                await this.e.reply(`${this.prefix}\n为防止滥用, 已禁止私聊使用`)
                 return
+            }
+
+            if (!(this.e.img || this.e.source)) {   // 在更新了第三种查询方式后, 该控制语句应修改
+                let msg = [
+                    `${this.prefix}\n` + 
+                    `识图用法: \n` + 
+                    `1. 输入 '识图' + 图片; \n` + 
+                    `2. 直接引用含有图片的消息, 并输入 '识图'`
+                ]
+                await this.e.reply(msg)
+                return 
             }
 
             // 1. 带图查询模式
@@ -200,7 +210,7 @@ export class saucenao extends plugin {
                 }
 
                 if (!this.e.img) {
-                    await this.e.reply('引用目标没有图片可供查询', true)
+                    await this.e.reply(`${this.prefix}\n引用目标没有图片可供查询`, true)
                     return
                 }
 
@@ -229,8 +239,8 @@ export class saucenao extends plugin {
             return
         }
         catch (err) {
-            logger.info(err)
-            await this.e.reply('程序出错, 请查看日志')
+            logger.warn(err)
+            await this.e.reply(`${this.prefix}\n程序出错, 请查看日志`)
             return
         }
     }
