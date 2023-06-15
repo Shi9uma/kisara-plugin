@@ -105,12 +105,12 @@ export class saucenao extends plugin {
                     numres: numres   // 返回多少个结果
                 }
             }
-        ).catch(async function (error) {
-            if (error) {
-                await this.e.reply(`${this.prefix}\n识图 api 无反应, 状态：${error}`, true, { recallMsg: 90 })
-                return
-            }
-        })
+        )
+
+        if (response.status != 200) {
+            await this.e.reply(`${this.prefix}\n树状图设计者无反应, 状态：${response.status}`, true, { recallMsg: 90 })
+            return
+        }
 
         let responseData = response.data.results ? response.data.results : response.data.header.message,
             isSelectArr = [],
@@ -175,13 +175,13 @@ export class saucenao extends plugin {
 
             if (!(this.e.img || this.e.source)) {   // 在更新了第三种查询方式后, 该控制语句应修改
                 let msg = [
-                    `${this.prefix}\n` + 
-                    `识图用法: \n` + 
-                    `1. 输入 '识图' + 图片; \n` + 
+                    `${this.prefix}\n` +
+                    `识图用法: \n` +
+                    `1. 输入 '识图' + 图片; \n` +
                     `2. 直接引用含有图片的消息, 并输入 '识图'`
                 ]
                 await this.e.reply(msg)
-                return 
+                return
             }
 
             // 1. 带图查询模式
@@ -322,7 +322,7 @@ export class shareMusic extends plugin {
     }
 
     async shareMusic(e) {
-        let searchURL = "http://127.0.0.1:7894/search?keywords=paramsSearch"  // 网易云
+        let searchURL = "http://127.0.0.1:7895/search?keywords=paramsSearch"  // 网易云
         let msg = this.e.msg.replace(/#?(点歌|来首|听歌|点首|bgm|BGM)/g, "");
         try {
             msg = encodeURI(msg);

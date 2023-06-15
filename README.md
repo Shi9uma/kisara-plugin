@@ -8,10 +8,10 @@
 >
 > **本插件的图片与其他素材均来自于网络, 仅供交流学习使用, 如有侵权请联系, 会立即删除**
 
-- 本插件依附于上游框架 Yunzai Bot, 您可以从下方获取到这个框架
-    - [Gitee 目前还在维护的版本(推荐)](https://gitee.com/yoimiya-kokomi/Yunzai-Bot.git)
-    - [Github 上其他 fork 版本](https://github.com/yoimiya-kokomi/Miao-Yunzai.git)
-    - [Github 本家](https://github.com/Le-niao/Yunzai-Bot), 目前处于禁用状态
+本插件依附于上游框架 Yunzai Bot, 您可以从下方获取到这个框架
+  - [Gitee 目前还在维护的版本(推荐)](https://gitee.com/yoimiya-kokomi/Yunzai-Bot.git)
+  - [Github 上其他 fork 版本](https://github.com/yoimiya-kokomi/Miao-Yunzai.git)
+  - [Github 本家](https://github.com/Le-niao/Yunzai-Bot), 目前处于禁用状态
 
 
 ## 目前功能
@@ -113,7 +113,7 @@ services:
     container_name: NeteaseCloudMusicApi
     image: gnehs/neteasecloudmusicapi-docker
     ports:
-      - 7894:3000
+      - 7895:3000
     restart: always
 
 ```
@@ -143,4 +143,4 @@ services:
 
 ## 其他
 
-后续会选择采用 onebot 标准, 依托 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp.git) 搭配 golang/python 实现由 kisara-plugin 到 kisara-bot 的转变
+后续会选择采用 onebot 标准, 依托 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp.git) 搭配 golang, python 实现由 kisara-plugin 到 kisara-bot 的转变
