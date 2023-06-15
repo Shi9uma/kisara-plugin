@@ -1,5 +1,8 @@
+# 是否开启完整 tarot 功能
+triggerFullTarot: true
+
 # 全局触发完整塔罗占卜的概率, -0 不触发, -100 百分百触发
-triggerRate: 45
+triggerRate: 5
 
 # =========== 群聊单独设置 ===========
 123456: # 示例
