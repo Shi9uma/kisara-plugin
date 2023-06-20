@@ -14,7 +14,7 @@ const content = [
     '识图: 「识图 + 图片」, 「引用含有图片的消息并识图」\n' + 
     '点歌: 「点歌 + 歌曲名, 直接加歌手名以指定」\n' + 
     '> powered by Le-niao/Yunzai-Bot\n' + 
-    '> plugin supported with Shi9uma/kisara-plugin'
+    '> plugin by shi9uma/kisara-plugin'
 ]
 
 const pluginName = tools.getPluginName()

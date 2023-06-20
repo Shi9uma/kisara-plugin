@@ -77,15 +77,16 @@ export class saucenao extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#?(识图|搜图|出处|来源)$',
+                    reg: '^#?(识图|搜图|出处|来源)(.*)$',
                     fnc: 'saucenaoCheckType'
                 }
             ]
         })
         this.prefix = '[+] saucenao 识图'
+        this.defaultSimilarityRate = 70
     }
 
-    async saucenaoSearch(numres = 3, similarityRate = 70) {
+    async saucenaoSearch(similarityRate = this.defaultSimilarityRate, numres = 3) {
 
         if (apis.saucenao == '') {
             await this.e.reply('未提供有效的 api_key，需要到 saucenao.com 获取 api_key')
@@ -173,12 +174,16 @@ export class saucenao extends plugin {
                 return
             }
 
+            let tmp = Number(this.e.msg.replace(/#?(识图|搜图|出处|来源)/g, ''))
+            let similarityRate = !isNaN(tmp) && (0 < tmp < 100) ? tmp : this.defaultSimilarityRate
+
             if (!(this.e.img || this.e.source)) {   // 在更新了第三种查询方式后, 该控制语句应修改
                 let msg = [
                     `${this.prefix}\n` +
                     `识图用法: \n` +
-                    `1. 输入 '识图' + 图片; \n` +
-                    `2. 直接引用含有图片的消息, 并输入 '识图'`
+                    `1. 输入 '识图' + 图片\n` +
+                    `2. 直接引用含有图片的消息, 并输入 '识图' \n` + 
+                    `3. 输入'识图数字', 可以指定相似度阈值, 默认 70`
                 ]
                 await this.e.reply(msg)
                 return
@@ -186,7 +191,7 @@ export class saucenao extends plugin {
 
             // 1. 带图查询模式
             if (this.e.img) {
-                this.saucenaoSearch()
+                this.saucenaoSearch(similarityRate)
                 return
             }
 
@@ -214,13 +219,11 @@ export class saucenao extends plugin {
                     return
                 }
 
-                this.saucenaoSearch()
+                this.saucenaoSearch(similarityRate)
                 return
             }
 
             return
-
-
 
             // 3. 延时查询模式(未完成)
             let time
