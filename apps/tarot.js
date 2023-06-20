@@ -2,6 +2,7 @@ import { segment } from 'icqq'
 import plugin from '../../../lib/plugins/plugin.js'
 import tools from '../utils/tools.js'
 import lodash from 'lodash'
+import sharp from 'sharp'
 
 const pluginName = tools.getPluginName()
 
@@ -81,47 +82,54 @@ export class tarot extends plugin {
     }
 
     async fullTarot() {
-        let msg, msgArr = []
+        let msg = [], msgArr = [], roll, imgBuffer
         let fullTarotData = this.getTarotData('full')
         let formation = fullTarotData.formation,
             cards_info_list = fullTarotData.cards_info_list,
             card = fullTarotData.card
+            
         await this.e.reply(`${this.prefix}\n启用「${formation.name}」, 抽取 「${formation.cards_num}」张牌, 洗牌中...`)
         for (let index = 0; index < formation.cards_num; index++) {
             if (formation.is_cut && (index == formation.cards_num - 1))
-                msg = `切牌「${formation.representations[index]}」,\n`
+                msg = [`切牌「${formation.representations[index]}」\n`]
             else
-                msg = `第「${index + 1}」张牌「${formation.representations[index]}」\n`
+                msg = [`第「${index + 1}」张牌「${formation.representations[index]}」\n`]
+
+            roll = lodash.random(0, 1)
 
             card = cards_info_list[index]
-            card.meaning = lodash.random(0, 1) ? ['正位', card.meaning.up] : ['逆位', card.meaning.down]
-            card.pic = `file://${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`
+            card.meaning = roll ? ['正位', card.meaning.up] : ['逆位', card.meaning.down]
+            card.pic = `${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`
 
-            msg += [
-                `「${card.meaning[0]}」${card.name_cn},\n` +
-                `回应是：${card.meaning[1]}`
-            ]
+            imgBuffer = sharp(card.pic)
+            imgBuffer = roll ? await imgBuffer.toBuffer() : await imgBuffer.rotate(180).toBuffer()
+
+            msg.push(`「${card.meaning[0]}」${card.name_cn}\n`)
+            msg.push(`回应是: ${card.meaning[1]}\n`)
+            msg.push(segment.image(imgBuffer))
 
             msgArr.push(msg)
-            msgArr.push(segment.image(card.pic))
         }
-        await this.e.reply(await (tools.makeForwardMsg(`对象：${this.e.sender.card ? this.e.sender.card : this.e.sender.nickname}`, msgArr, '塔罗牌占卜结束\n感谢开源代码：MinatoAquaCrews/nonebot_plugin_tarot', this.e, global.Bot)))
+
+        await this.e.reply(tools.makeForwardMsg(`对象：${this.e.sender.card ? this.e.sender.card : this.e.sender.nickname}`, msgArr, '塔罗牌占卜结束\n感谢开源代码：MinatoAquaCrews/nonebot_plugin_tarot', this.e, global.Bot))
         return
     }
 
     async singleTarot() {
         let card = this.getTarotData('single'), msg, roll = lodash.random(0, 1)
         msg = [
-            `${this.prefix}\n` +
-            `「${roll ? '正位' : '逆位'}」${card.name_cn}\n` +
+            `${this.prefix}\n`,
+            `「${roll ? '正位' : '逆位'}」${card.name_cn}\n`,
             `回应是：${roll ? card.meaning.up : card.meaning.down}`
         ]
-        if (this.e.isGroup) {
-            await this.e.reply(`\n${msg}`, false, { at: true })
-        } else {
-            await this.e.reply(msg)
-        }
-        await this.e.reply(segment.image(`file://${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`))
+
+        let tarotImgPath = `${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`
+        let imgBuffer = sharp(tarotImgPath)
+        imgBuffer = roll ? await imgBuffer.toBuffer() : await imgBuffer.rotate(180).toBuffer()
+        msg.push(segment.image(imgBuffer))
+
+        await this.e.reply(msg, true)
+        // await this.e.reply(segment.image(`file://${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`))
         return
     }
 
@@ -129,13 +137,13 @@ export class tarot extends plugin {
     async tarot() {
 
         if (!(await this.isPasseren())) {
-            await this.e.reply(`\n${this.prefix}\n今日已经为你占卜过了，明天再来吧`, false, { at: true })
+            await this.e.reply(`${this.prefix}\n今日已经为你占卜过了, 明天再来吧`, true)
             return
         }
 
         let configCase = tools.applyCaseConfig({ triggerFullTarot: '', triggerRate: '' }, this.e.group_id, 'tarot', 'tarot')
 
-        if ( ( configCase.triggerFullTarot ) && ( this.e.isMaster || lodash.random(1, 100) <=  configCase.triggerRate)) {
+        if ((configCase.triggerFullTarot) && (this.e.isMaster || lodash.random(1, 100) <= configCase.triggerRate)) {
             await this.e.reply('“许多傻瓜对千奇百怪的迷信说法深信不疑：象牙、护身符、黑猫、打翻的盐罐、驱邪、占卜、符咒、毒眼、塔罗牌、星象、水晶球、咖啡渣、手相、预兆、预言还有星座。”\n——《人类愚蠢辞典》')
             this.fullTarot()
             return
