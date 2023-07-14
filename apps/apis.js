@@ -174,8 +174,8 @@ export class saucenao extends plugin {
                 return
             }
 
-            let tmp = Number(this.e.msg.replace(/#?(识图|搜图|出处|来源)/g, ''))
-            let similarityRate = !isNaN(tmp) && (0 < tmp < 100) ? tmp : this.defaultSimilarityRate
+            let similarityRate = Number(this.e.msg.match(/\d+/)?.[0])
+            similarityRate = (similarityRate && (0 < similarityRate && similarityRate < 100)) ? similarityRate : this.defaultSimilarityRate
 
             if (!(this.e.img || this.e.source)) {   // 在更新了第三种查询方式后, 该控制语句应修改
                 let msg = [
