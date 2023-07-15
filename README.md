@@ -32,7 +32,8 @@
 
 -   本插件还引入了 `shelljs, axios` 等依赖, 您在启动插件后, 会接收到相应缺少插件的依赖报错。此时您可以回到 `./Yunzai-bot` 的根目录下, 使用 `npm install {缺失的依赖名称}`, 这里我推荐您使用 [cnpm](https://zhuanlan.zhihu.com/p/120159632)（安装后可以直接将 npm 修改成 cnpm 即可, 其他不变）, 访问速度更快。
 
-## todos
+## features
+
 
 - [ ] 菜单 main.ahelp
   - [ ] 重写菜单输出逻辑, 不同的功能也有自定义的 ahelp 信息, 使用 `main.ahelp.yaml`
@@ -133,12 +134,12 @@ services:
 
 1.   本家机器人框架, Yunzai-Bot, [Le-niao/Yunzai-Bot](https://github.com/Le-niao/Yunzai-Bot.git)
 2.   塔罗牌占卜功能, [MinatoAquaCrews/nonebot_plugin_tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot.git)
-3.   机器人词库, [Neko002](https://mirai.mamoe.net/topic/1829/强大的二次元聊天机器人词库2w-词条-不定期更新)
+3.   聊天词库, [Neko002](https://mirai.mamoe.net/topic/1829/强大的二次元聊天机器人词库2w-词条-不定期更新)，[Kyomotoi/AnimeThesaurus](https://github.com/Kyomotoi/AnimeThesaurus.git)
 4.   喵喵插件, [yoimiya-kokomi/miao-plugin](https://github.com/yoimiya-kokomi/miao-plugin.git)
 5.   白纸插件, [HeadmasterTan/zhi-plugin](https://github.com/HeadmasterTan/zhi-plugin.git)
-7.   计算抽卡期望源码, [MSIsunny/GenshinWishCalculator-py](https://github.com/MSIsunny/GenshinWishCalculator-py.git)
-8.   角色参考面板功能, [howe0116/howe-plugin](https://github.com/howe0116/howe-plugin.git)
-9.   网易云音乐解析工具, [Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi.git)
+6.   计算抽卡期望源码, [MSIsunny/GenshinWishCalculator-py](https://github.com/MSIsunny/GenshinWishCalculator-py.git)
+7.   角色参考面板功能, [howe0116/howe-plugin](https://github.com/howe0116/howe-plugin.git)
+8.   网易云音乐解析工具, [Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi.git)
 
 ## 其他
 
