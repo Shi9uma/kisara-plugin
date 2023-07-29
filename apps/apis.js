@@ -322,6 +322,8 @@ export class shareMusic extends plugin {
                 }
             ]
         })
+        
+        this.prefix = `[+] ${this.name}`
     }
 
     async shareMusic(e) {
@@ -335,7 +337,7 @@ export class shareMusic extends plugin {
             let result = (await response.json()).result;
             let songList = result?.songs?.length ? result.songs : [];
             if (!songList[0]) {
-                await this.e.sendMsg(`没有在网易云曲库中找到相应歌曲`);
+                await this.e.reply(`${this.prefix}\n没有在网易云曲库中找到相应歌曲`);
                 return true;
             }
             let songIndex = 0;

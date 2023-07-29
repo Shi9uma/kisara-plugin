@@ -32,8 +32,7 @@
 
 -   本插件还引入了 `shelljs, axios` 等依赖, 您在启动插件后, 会接收到相应缺少插件的依赖报错。此时您可以回到 `./Yunzai-bot` 的根目录下, 使用 `npm install {缺失的依赖名称}`, 这里我推荐您使用 [cnpm](https://zhuanlan.zhihu.com/p/120159632)（安装后可以直接将 npm 修改成 cnpm 即可, 其他不变）, 访问速度更快。
 
-## features
-
+## todos
 
 - [ ] 菜单 main.ahelp
   - [ ] 重写菜单输出逻辑, 不同的功能也有自定义的 ahelp 信息, 使用 `main.ahelp.yaml`
@@ -130,7 +129,7 @@ services:
 
 ## 致谢
 
-本插件创建之初是作为个人纯魔改自用, 在开发过程中不断参考了各位为这个社区做贡献的大佬们的仓库而深受启发, 感谢各位为开源社区做出贡献。
+本插件创建之初是作为个人纯魔改自用, 在开发过程中不断参考了各位为这个社区做贡献的大佬们的仓库而深受启发, 感谢各位志同道合的开发者为开源社区做出贡献。
 
 1.   本家机器人框架, Yunzai-Bot, [Le-niao/Yunzai-Bot](https://github.com/Le-niao/Yunzai-Bot.git)
 2.   塔罗牌占卜功能, [MinatoAquaCrews/nonebot_plugin_tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot.git)
@@ -140,6 +139,7 @@ services:
 6.   计算抽卡期望源码, [MSIsunny/GenshinWishCalculator-py](https://github.com/MSIsunny/GenshinWishCalculator-py.git)
 7.   角色参考面板功能, [howe0116/howe-plugin](https://github.com/howe0116/howe-plugin.git)
 8.   网易云音乐解析工具, [Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi.git)
+9.   nonebot 插件参考目录, [商店](https://nonebot.dev/store)
 
 ## 其他
 
