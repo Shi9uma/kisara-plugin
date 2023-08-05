@@ -2,6 +2,7 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
 import https from 'https'
+import { URL } from 'url'
 import moment from 'moment'
 
 import { basename, dirname } from "node:path"
@@ -16,7 +17,7 @@ class tools {
         this.userConfigDir = `./plugins/${this.pluginName}/config`
         this.dataDir = `./plugins/${this.pluginName}/data`
 
-        this.prefix = `[-] ${this.pluginName}.utils.tools`
+        this.prefix = `[-] ${this.pluginName}.utils.tools =>`
     }
 
     /**
@@ -114,6 +115,27 @@ class tools {
      */
     getFileStat(fileName) {
         return fs.statSync(fileName)
+    }
+
+    /**
+     * 返回指定目录下文件数量
+     * @param {string} dirPath 目标目录绝对路径
+     * @param {string} fileType 筛选指定后缀的文件, 例如 `file.png` 则输入 'png'
+     * @returns 返回具体数量; 若目标文件夹不存在则会创建, 并返回 0
+     */
+    getDirFilesCount(dirPath, fileType = '') {
+        if (!this.isDirValid(dirPath)) {
+            logger.warn(this.prefix, `directory path: ${dirPath} not valid`)
+            return 0
+        } else {
+            if (fileType != '') {
+                let fileTypeList = fs.readdirSync(dirPath).filter(file => file.endsWith(`.${fileType}`))
+                return fileTypeList.length
+            } else {
+                let fileList = fs.readdirSync(dirPath)
+                return fileList.length
+            }
+        }
     }
 
     /**
@@ -296,9 +318,18 @@ class tools {
      * @param {*} imgName 要保存成的图像名字, 无后缀
      * @param {*} saveDirPath 图像保存文件夹路径
      * @param {string} imgType 图像保存的类型(后缀名)
+     * @param {*} headers 传入 { 'Referer': 'xxx', ...}
+     * @param {*} method GET or POST
      */
-    saveUrlImg(imgUrl, imgName, saveDirPath, imgType = 'png') {
-        https.get(imgUrl, (res) => {
+    saveUrlImg(imgUrl, imgName, saveDirPath, imgType = 'png', headers = {}, method = 'GET') {
+        let urlObject = new URL(imgUrl)
+        let httpsOptions = {
+            hostname: urlObject.hostname,
+            path: urlObject.pathname,
+            headers: headers,
+            method: method
+        }
+        https.request(httpsOptions, (res) => {
             let imgData = ''
             res.setEncoding('binary')
             res.on('data', (chunk) => {
@@ -311,7 +342,7 @@ class tools {
                     else logger.info(`${this.prefix} 图片 ${imgUrl} 成功保存到 ${saveImgPath}`)
                 })
             })
-        })
+        }).end()
     }
 
     /**

@@ -1,4 +1,5 @@
 import { segment } from 'icqq'
+import { URL } from 'url'
 
 import lodash from 'lodash'
 import fetch from "node-fetch"
@@ -182,7 +183,7 @@ export class saucenao extends plugin {
                     `${this.prefix}\n` +
                     `识图用法: \n` +
                     `1. 输入 '识图' + 图片\n` +
-                    `2. 直接引用含有图片的消息, 并输入 '识图' \n` + 
+                    `2. 直接引用含有图片的消息, 并输入 '识图' \n` +
                     `3. 输入'识图数字', 可以指定相似度阈值, 默认 70`
                 ]
                 await this.e.reply(msg)
@@ -249,59 +250,118 @@ export class saucenao extends plugin {
     }
 }
 
-// 随机图片
-export class randomImg extends plugin {
+// 随机 pixiv 图片
+export class randomPixivImg extends plugin {
     constructor() {
         super(
             {
                 name: '随机图片',
-                dsc: '利用公开接口返回随机壁纸',
+                dsc: '随机 pixiv 图片',
                 event: 'message',
                 priority: 5000,
                 rule: [
                     {
-                        reg: '^#?(来张壁纸|随机壁纸|壁纸)$',
-                        fnc: 'randomImg'
+                        reg: '^#(来张壁纸|随机壁纸|壁纸|pixiv|p站|P站)$',
+                        fnc: 'randomPixivImg'
                     }
                 ]
             }
         )
 
-        this.prefix = `[+] ${this.name}`
+        this.pluginName = tools.getPluginName()
+        this.randomPixivImgDirPath = `./plugins/${this.pluginName}/data/randomPixivImg`
+        this.prefix = `[+] ${this.dsc}`
+        this.imgType = 'png'
+
     }
 
-    async randomImg() {
+    async randomPixivImg() {
+
         let checkRedisResult = await tools.checkRedis(this.e, 'g', cd, { getKey: true, setRedis: false })
         if (checkRedisResult[0]) {
             await this.e.reply(`${this.prefix}\ncd 剩余 ${parseInt(await tools.ttlRedis(checkRedisResult[1]) / 60)} 分钟`, true)
             return
         }
 
-        let apiUrl
-        switch (lodash.random(1, 3)) {
-            case 1:
-                apiUrl = 'https://api.ghser.com/random/pe.php'
-                break
-            case 2:
-                apiUrl = 'https://api.ghser.com/random/pc.php'
-                break
-            default:
-                apiUrl = 'https://cloud.qqshabi.cn/api/images/api.php'
-                break
+        if (!tools.isDirValid(this.randomPixivImgDirPath)) {
+            tools.makeDir(this.randomPixivImgDirPath)
         }
-        let response = await fetch(apiUrl).catch((error) => { if (error) logger.warn(error) })
 
-        tools.wait(2)
-        if (!response) return
+        await this.e.reply(`${this.prefix}\n已收到请求, 正在连接树状图设计者, 请勿重复尝试...`, true, { recallMsg: 30 })
 
-        let msg = [
-            `\n${this.prefix}\n`,
-            segment.image(response.url)
-        ]
+        let url = 'https://api.lolicon.app/setu/v2',
+            msg = [
+                `${this.prefix}\n`
+            ],
+            headers = {
+                'Content-Type': 'application/json'
+            },
+            io = axios.create({
+                baseURL: url,
+                headers: headers
+            }),
+            expireTime = 20 // second
 
-        await this.e.reply(msg, false, { at: true })
-        await tools.checkRedis(this.e, 'g', cd)
+        let data = {
+            'r18': '0'
+        }
 
+        let response = await io.post('', data = data)
+
+        if (response.status != 200) {   // status != 200, output debug info
+            msg += [
+                `response status with ${response.status} \n` +
+                `contact with the manager plz..`
+            ]
+        } else {
+            data = response?.data?.data[0] ? response?.data?.data[0] : false
+            if (!data) {    // void response data
+                msg += [
+                    `void response data\n` +
+                    `contact with the manager plz..`
+                ]
+            } else {
+
+                let forwardMsg = [], forwardMsgArr = []
+
+                forwardMsg = [
+                    `pid: ${data?.pid ? data.pid : ''}\n` +
+                    `uid: ${data?.uid ? data.uid : ''}\n` +
+                    `title: ${data?.title ? data.title : ''}\n` +
+                    `author: ${data?.author ? data.author : ''}\n` +
+                    `imgUrl: ${data?.urls?.original ? data.urls.original : ''}`
+                ]
+
+                forwardMsgArr.push(forwardMsg)
+
+                if (!data.r18) {    // be avoid of r18
+                    let imgCount = tools.getDirFilesCount(this.randomPixivImgDirPath, this.imgType) + 1
+                    let imgName = `${imgCount.toString().padStart(5, '0')}.${data?.pid ? data.pid : 'pid错误'}`
+                    let headers = { 'Referer': 'www.pixiv.net' }
+                    let endTime = Date.now() + expireTime * 1000
+                    tools.saveUrlImg(data.urls.original, imgName, this.randomPixivImgDirPath, 'png', headers = headers)
+
+                    let imgPath = `${this.randomPixivImgDirPath}/${imgName}.${this.imgType}`
+                    while ((!tools.isFileValid(imgPath)) && (Date.now() < endTime)) {
+                        await tools.wait(2)
+                    }
+
+                    if (tools.isFileValid(imgPath)) {
+                        forwardMsgArr.push(segment.image(`file://${imgPath}`))
+                    }
+                }
+
+                let forwardMsgArrHeader = `${this.prefix}\n从树状图设计者处获取资源成功`
+                let forwardMsgArrTail = `感谢由 ${url} 提供接口`
+
+                await this.e.reply(tools.makeForwardMsg(forwardMsgArrHeader, forwardMsgArr, forwardMsgArrTail, this.e, global.Bot))
+                await this.e.reply('随机 pixiv 图片结果已发送完毕, 如果没有消息记录, 则表示内容被风控', true, { recallMsg: 60 })
+                // await tools.checkRedis(this.e, 'g', cd)
+                return
+            }
+        }
+
+        await this.e.reply(msg, true)
         return
     }
 
@@ -322,7 +382,7 @@ export class shareMusic extends plugin {
                 }
             ]
         })
-        
+
         this.prefix = `[+] ${this.name}`
     }
 
@@ -352,51 +412,5 @@ export class shareMusic extends plugin {
             if (error) logger.warn(error)
         }
         return
-    }
-}
-
-// 账号风险值查询
-export class riskValue extends plugin {
-    constructor() {
-        super({
-            name: '账号风险值查询',
-            dsc: '用于查询 QQ 账号的风险值',
-            event: 'message',
-            priority: 5000,
-            rule: [
-                {
-                    reg: "^#?(查询风险值|查风险|风险|封号概率|查询封号|封号|查封号)$",
-                    fnc: 'riskValue'
-                }
-            ]
-        })
-    }
-
-    async riskValue() {
-        let searchURL = "http://tfapi.top/API/qqqz.php?type=json&qq=paramsSearch"  // 网易云
-        try {
-            let paramsSearch = this.e?.source?.user_id ? this.e.source.user_id : this.e.sender.user_id
-            let url = searchURL.replace("paramsSearch", paramsSearch);
-            logger.info(url)
-            let response = (await fetch(url)), msg, result = (await response.json());
-            if (result.code != 200) {
-                msg = [
-                    `Api 出错, 请重试\n`,
-                    `状态码 ${result.code}`
-                ]
-                await this.e.reply(msg)
-                return
-            }
-            msg = [
-                `[+] 查询账号权值\n`,
-                `QQ 号 ${paramsSearch} 的账号权值为 ${result?.qz}\n`,
-                `tips: QQ 账号权值越高，tx 越给面子，相对较低时建议谨慎使用 QQ`
-            ]
-            await this.e.reply(msg, true)
-        }
-        catch (error) {
-            if (error) logger.warn(error)
-        }
-        return true; //返回true 阻挡消息不再往下
     }
 }

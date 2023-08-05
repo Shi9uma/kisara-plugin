@@ -74,9 +74,9 @@
   - [ ] [番剧识别功能](https://github.com/yeyang52/yenai-plugin/blob/master/apps/picSearch.js)
   - [ ] 延时识图
   - [ ] ~~搜本子~~
-- [ ] 随机壁纸
+- [x] 随机壁纸
   - [x] 基本功能
-  - [ ] 添加 pixiv 支持
+  - [x] 添加 pixiv 支持
 - [x] roll 骰子
   - [x] 基本功能
   - [x] 指定 roll 的数量
@@ -140,6 +140,7 @@ services:
 7.   角色参考面板功能, [howe0116/howe-plugin](https://github.com/howe0116/howe-plugin.git)
 8.   网易云音乐解析工具, [Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi.git)
 9.   nonebot 插件参考目录, [商店](https://nonebot.dev/store)
+10.  pixiv 图片接口, [Lolicon API](https://api.lolicon.app/)
 
 ## 其他
 

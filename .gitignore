@@ -3,6 +3,7 @@ dontgit
 
 config
 data/todayNews
+data/randomPixivImg
 data/chatLibrary/temp
 
 *test.js

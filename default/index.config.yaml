@@ -3,9 +3,8 @@ apps:
   apis:
     - tiangou: true
     - saucenao: true
-    - randomImg: true
+    - randomPixivImg: true
     - shareMusic: true
-    - riskValue: true
 
   cmd:
     - cmd: true
