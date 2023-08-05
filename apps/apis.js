@@ -352,11 +352,11 @@ export class randomPixivImg extends plugin {
                 }
 
                 let forwardMsgArrHeader = `${this.prefix}\n从树状图设计者处获取资源成功`
-                let forwardMsgArrTail = `感谢由 ${url} 提供接口`
+                let forwardMsgArrTail = `若没有图片, 则表示图片被风控`
 
                 await this.e.reply(tools.makeForwardMsg(forwardMsgArrHeader, forwardMsgArr, forwardMsgArrTail, this.e, global.Bot))
                 await this.e.reply('随机 pixiv 图片结果已发送完毕, 如果没有消息记录, 则表示内容被风控', true, { recallMsg: 60 })
-                // await tools.checkRedis(this.e, 'g', cd)
+                await tools.checkRedis(this.e, 'g', cd)
                 return
             }
         }
