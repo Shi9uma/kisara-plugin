@@ -2,7 +2,7 @@
 
 > 因为使用了木更作为 chat 对象的自称, 导致变得越来越喜欢木更了, 所以决定将插件名称更名为 **kisara-plugin**, **当然本插件还是不限定文件夹名称, 您可以继续 diy 插件的名字**
 >
-> 根据各种插件学习而魔改, 如果您有其他建议欢迎提交 issue, 能点个 star 就是最大的鼓励了
+> 根据各种插件学习而魔改, 如果您有其他建议欢迎提交 issue, 能点个 star 就是对我最大的鼓励
 >
 > **本插件仅限内部交流与小范围使用, 可随意学习、参考以及移植, 请勿将本插件用于以盈利为目的的场景**
 >
@@ -18,7 +18,7 @@
 
 可以在 `apps` 文件夹中打开 `.js` 后缀文件查看批注。
 
-初次运行后会自行创建一个 `./config` 文件夹, 并将 `index.config.yaml` 自动复制过去。
+初次运行后会**自动**创建一个 `./config` 文件夹, 并将 `index.config.yaml` 自动复制过去。
 
 功能开关在 `config/index.config.yaml` 文件中。
 
@@ -30,7 +30,7 @@
 
 -   获取本插件的指令：`git clone https://github.com/shi9uma/kisara-plugin.git ./Yunzai-bot/plugins/{期望的插件名}`, 请您自行修改后面的路径以保证插件能被正常加载。
 
--   本插件还引入了 `shelljs, axios` 等依赖, 您在启动插件后, 会接收到相应缺少插件的依赖报错。此时您可以回到 `./Yunzai-bot` 的根目录下, 使用 `npm install {缺失的依赖名称}`, 这里我推荐您使用 [cnpm](https://zhuanlan.zhihu.com/p/120159632)（安装后可以直接将 npm 修改成 cnpm 即可, 其他不变）, 访问速度更快。
+-   本插件还引入了 `axios` 等依赖, 您在启动插件后, 会接收到相应缺少插件的依赖报错。此时您可以回到 `./Yunzai-bot` 的根目录下, 使用 `npm install {缺失的依赖名称}`, 这里我推荐您使用 [cnpm](https://zhuanlan.zhihu.com/p/120159632)（安装后可以直接将 npm 修改成 cnpm 即可, 其他不变）, 访问速度更快。
 
 ## todos
 
@@ -74,6 +74,8 @@
   - [ ] [番剧识别功能](https://github.com/yeyang52/yenai-plugin/blob/master/apps/picSearch.js)
   - [ ] 延时识图
   - [ ] ~~搜本子~~
+- [x] 蔚蓝档案支持
+  - [x] 攻略获取
 - [x] 随机壁纸
   - [x] 基本功能
   - [x] 添加 pixiv 支持
@@ -132,15 +134,15 @@ services:
 本插件创建之初是作为个人纯魔改自用, 在开发过程中不断参考了各位为这个社区做贡献的大佬们的仓库而深受启发, 感谢各位志同道合的开发者为开源社区做出贡献。
 
 1.   本家机器人框架, Yunzai-Bot, [Le-niao/Yunzai-Bot](https://github.com/Le-niao/Yunzai-Bot.git)
-2.   塔罗牌占卜功能, [MinatoAquaCrews/nonebot_plugin_tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot.git)
+2.   塔罗牌占卜牌库, [MinatoAquaCrews/nonebot_plugin_tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot.git)
 3.   聊天词库, [Neko002](https://mirai.mamoe.net/topic/1829/强大的二次元聊天机器人词库2w-词条-不定期更新)，[Kyomotoi/AnimeThesaurus](https://github.com/Kyomotoi/AnimeThesaurus.git)
 4.   喵喵插件, [yoimiya-kokomi/miao-plugin](https://github.com/yoimiya-kokomi/miao-plugin.git)
-5.   白纸插件, [HeadmasterTan/zhi-plugin](https://github.com/HeadmasterTan/zhi-plugin.git)
 6.   计算抽卡期望源码, [MSIsunny/GenshinWishCalculator-py](https://github.com/MSIsunny/GenshinWishCalculator-py.git)
 7.   角色参考面板功能, [howe0116/howe-plugin](https://github.com/howe0116/howe-plugin.git)
 8.   网易云音乐解析工具, [Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi.git)
 9.   nonebot 插件参考目录, [商店](https://nonebot.dev/store)
 10.  pixiv 图片接口, [Lolicon API](https://api.lolicon.app/)
+11. 蔚蓝档案攻略获取接口, [BA bot攻略数据公开计划](https://doc.arona.diyigemt.com/api/)
 
 ## 其他
 

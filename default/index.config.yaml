@@ -5,6 +5,7 @@ apps:
     - saucenao: true
     - randomPixivImg: true
     - shareMusic: true
+    - blueArchive: true
 
   cmd:
     - cmd: true

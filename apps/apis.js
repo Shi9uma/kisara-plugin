@@ -1,7 +1,7 @@
 import { segment } from 'icqq'
 import { URL } from 'url'
 
-import lodash from 'lodash'
+import path from 'path'
 import fetch from "node-fetch"
 import axios from 'axios'
 
@@ -410,6 +410,111 @@ export class shareMusic extends plugin {
         }
         catch (error) {
             if (error) logger.warn(error)
+        }
+        return
+    }
+}
+
+// blue-archive 攻略
+export class blueArchive extends plugin {
+    constructor() {
+        super({
+            name: 'blueArchive',
+            dsc: '蔚藍檔案攻略',
+            event: 'message',
+            priority: 5000,
+            rule: [
+                {
+                    reg: "^#(ba|ba攻略)(.*)$",
+                    fnc: 'blueArchive'
+                }
+            ]
+        })
+
+        this.pluginName = tools.getPluginName()
+        this.localResourceBaseDir = `./plugins/${this.pluginName}/data/blue-archive`
+        this.prefix = `[+] ${this.dsc}`
+        this.imgType = 'png'
+
+        this.axiosCd = 3    // seconds
+    }
+
+    async getResource(dataJson) {
+
+        let isExpired = false
+
+        let imgUrl = 'https://arona.cdn.diyigemt.com/image' + dataJson.data[0].path
+        let hash = dataJson.data[0].hash
+
+        let urlObject = new URL(imgUrl)
+        let localResourcePath = tools.decode(path.join(this.localResourceBaseDir, urlObject.pathname))
+        if (tools.isFileValid(localResourcePath)) {     // 检查文件哈希, 减少网络 io
+            let localHash = (await tools.exec('md5sum', [localResourcePath]))[0].split(' ')[0]
+            if (localHash != hash) {
+                logger.warn(this.prefix, `文件 ${localResourcePath} hash 校验失败, 正在重新获取...`)
+                tools.exec('rm', ['-f', localResourcePath])
+                isExpired = true
+            }
+        }
+
+        if (isExpired || !tools.isFileValid(localResourcePath)) {
+            let imgName = tools.decode(path.basename(localResourcePath, path.extname(localResourcePath)))
+            let saveDirPath = path.dirname(localResourcePath)
+            tools.saveUrlImg(imgUrl, imgName, saveDirPath, this.imgType)
+            await tools.wait(this.axiosCd)
+        }
+
+        return localResourcePath
+    }
+
+    async blueArchive() {
+
+        let baseSearchUrl = 'https://arona.diyigemt.com/api/v1/image?name=argument'
+        let argument = this.e.msg.replace(/#(ba攻略|ba)/g, '').replace(' ', '')
+        let searchUrl = baseSearchUrl.replace('argument', argument)
+
+        let msg = [
+            `${this.prefix}\n`
+        ]
+        let headers = {
+            'Content-Type': 'application/json'
+        }
+        let io = axios.create({
+            baseURL: searchUrl,
+            headers: headers
+        })
+        let response = await io.get('')
+
+        if (response.status != 200) {
+            msg += [
+                `response status with ${response.status} \n` +
+                `contact with the manager plz..`
+            ]
+        } else {
+            let dataJson = response.data
+            if (dataJson.status == 200) {
+                logger.info(dataJson.data)
+                let localResourcePath = await this.getResource(dataJson)
+                msg.push(segment.image(`file://${localResourcePath}`))
+            } else {
+                msg += [
+                    `当前攻略检索词 ${argument} 存在多个模糊匹配如下:\n`
+                ]
+
+                let tmpStrings = ''
+                dataJson.data.forEach((item, idx) => {
+                    msg += [
+                        `${idx + 1}. ${item.name}\n`
+                    ]
+                    tmpStrings = item.name
+                })
+
+                msg += [
+                    `请重新输入正确的检索内容\n` +
+                    `例如: #ba ${tmpStrings}`
+                ]
+            }
+            await this.e.reply(msg, true)
         }
         return
     }

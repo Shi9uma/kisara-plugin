@@ -2,9 +2,11 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
 import https from 'https'
-import { URL } from 'url'
 import moment from 'moment'
+import path from 'path'
+import child_process from 'child_process'
 
+import { URL } from 'url'
 import { basename, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -144,6 +146,14 @@ class tools {
      */
     makeDir(dirPath) {
         fs.mkdir(dirPath, (err) => { if (err) logger.warn(this.prefix, err) })
+    }
+
+    /**
+     * 递归地创建文件夹
+     * @param {*} dirPath 文件夹路径
+     */
+    makeFullDir(dirPath) {
+        fs.mkdirSync(dirPath, { recursive: true })
     }
 
     /**
@@ -336,6 +346,9 @@ class tools {
                 imgData += chunk
             })
             let saveImgPath = `${saveDirPath}/${imgName}.${imgType}`
+            if (!this.isDirValid(saveDirPath)) {
+                this.makeFullDir(saveDirPath)
+            }
             res.on('end', () => {
                 fs.writeFile(saveImgPath, imgData, 'binary', (err) => {
                     if (err) logger.warn(`${this.prefix} 图片 ${imgUrl} 获取失败`)
@@ -687,6 +700,57 @@ class tools {
         }
         return false
     }
+
+    /**
+	 * 使用控制台执行命令
+     * 
+     * 使用方法:
+     * ```javascript
+     * let execResult   // 返回的执行结果
+     * let cmd = 'ls', args = ['-al', 'path/to/dir']    // 要执行的命令以及参数
+     * tools.exec(cmd, args)
+     *     .then((res) => { execResult = res })
+     *     .catch((stderr) => { execResult = stderr })
+     * tools.wait(1)    // 为了顺利执行命令, 建议进行等待
+     * logger.info(execResult)
+     * ```
+	 * @param {*} cmd 要执行的命令
+	 * @param {*} args 命令的可选参数, 列表形式
+	 * @param {*} showCmd 是否打印所执行的命令
+	 * @returns 
+	 */
+	exec(cmd, args, showCmd = false) {
+        if (showCmd) {
+            logger.info(this.prefix, `所执行命令: ${[cmd, ...args].join(' ')}`)
+        }
+		return new Promise((resolve, reject) => {
+			let execResult = child_process.spawn(cmd, args)
+			let stdout = '', stderr = '', res = []
+
+			execResult.stdout.on('data', (data) => {
+				stdout += data.toString()
+			})
+
+
+			execResult.stderr.on('data', (data) => {
+				stderr += data.toString()
+			})
+
+
+			execResult.on('close', (code) => {
+				res = [stdout, stderr, code]
+				if (code !== 0) {
+					reject(stderr)
+				} else {
+					resolve(res)
+				}
+			})
+
+			execResult.on('error', (error) => {
+				reject(error)
+			})
+		})
+	}
 
 }
 
