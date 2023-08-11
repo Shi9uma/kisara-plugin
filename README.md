@@ -119,6 +119,28 @@ services:
 
 ```
 
+>   关于出现 **塔罗牌资源获取失败** 的提示。
+
+需要手动获取[相关塔罗牌资源](https://pan.baidu.com/s/1A0bkTv_UT17bsDmCxQDmfw?pwd=wjfa), 并将其解压后重命名为 `tarotCards`, 放置到 `插件目录/data/` 下
+
+准备完成后 `插件目录` 相关目录拓扑结构应该如下: 
+
+```bash
+├── apps
+├── config
+├── data
+│   ├── ....
+│   ├── tarotCards
+│   │   ├── tarot.json
+│   │   └── ....
+│   └── ....
+├── default
+├── index.js
+├── LICENSE
+├── README.md
+└── utils
+```
+
 ## 札记
 
 -   插件的命名逻辑：`schedule.todayNews.yaml`：这是一个 `todayNews` 功能的配置文件, `schedule` 称为 app, `todayNews` 称为 func

@@ -46,8 +46,8 @@ export class tarot extends plugin {
     getTarotData(type) {
         let filePath = `${this.tarotCardsDirPath}/tarot.json`,
             tarotData = tools.readJsonFile(filePath),   // 读取总数据
-            all_cards = tarotData.cards,    // 读取所有卡片信息
-            all_formations = tarotData.formations,   // 读取牌阵
+            allCards = tarotData.cards,    // 读取所有卡片信息
+            allFormations = tarotData.formations,   // 读取牌阵
             card = {
                 name_cn: '',
                 name_en: '',
@@ -61,20 +61,20 @@ export class tarot extends plugin {
 
         if (type == 'full') {
             // 牌阵数据
-            let formation_name = lodash.sample(lodash.keys(all_formations)),
+            let formation_name = lodash.sample(lodash.keys(allFormations)),
                 formation = {
                     name: formation_name,
-                    cards_num: all_formations[formation_name].cards_num,
-                    is_cut: all_formations[formation_name].is_cut,
-                    representations: lodash.sample(all_formations[formation_name].representations)
+                    cards_num: allFormations[formation_name].cards_num,
+                    is_cut: allFormations[formation_name].is_cut,
+                    representations: lodash.sample(allFormations[formation_name].representations)
                 },
 
                 // 抽取牌数据
-                cards_info_list = lodash.sampleSize(all_cards, formation.cards_num)
+                cards_info_list = lodash.sampleSize(allCards, formation.cards_num)
 
             return { formation, cards_info_list, card }
         } else if (type == 'single') {
-            return lodash.sample(all_cards)
+            return lodash.sample(allCards)
         } else {
             return logger.warn('错误的塔罗牌占卜类型传入')
         }
@@ -142,7 +142,9 @@ export class tarot extends plugin {
         }
 
         if (!tools.isDirValid(this.tarotCardsDirPath)) {
-            
+            tools.makeDir(this.tarotCardsDirPath)
+            await this.e.reply(`${this.prefix}\n本地塔罗牌资源获取失败, 请阅读仓库中的 readme, 手动获取塔罗牌资源`)
+            return
         }
 
         let configCase = tools.applyCaseConfig({ triggerFullTarot: '', triggerRate: '' }, this.e.group_id, 'tarot', 'tarot')
