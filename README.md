@@ -135,10 +135,10 @@ services:
 │   │   └── ....
 │   └── ....
 ├── default
+├── utils
 ├── index.js
 ├── LICENSE
-├── README.md
-└── utils
+└── README.md
 ```
 
 ## 札记
@@ -155,16 +155,20 @@ services:
 
 本插件创建之初是作为个人纯魔改自用, 在开发过程中不断参考了各位为这个社区做贡献的大佬们的仓库而深受启发, 感谢各位志同道合的开发者为开源社区做出贡献。
 
-1.   本家机器人框架, Yunzai-Bot, [Le-niao/Yunzai-Bot](https://github.com/Le-niao/Yunzai-Bot.git)
-2.   塔罗牌占卜牌库, [MinatoAquaCrews/nonebot_plugin_tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot.git)
-3.   聊天词库, [Neko002](https://mirai.mamoe.net/topic/1829/强大的二次元聊天机器人词库2w-词条-不定期更新)，[Kyomotoi/AnimeThesaurus](https://github.com/Kyomotoi/AnimeThesaurus.git)
-4.   喵喵插件, [yoimiya-kokomi/miao-plugin](https://github.com/yoimiya-kokomi/miao-plugin.git)
-6.   计算抽卡期望源码, [MSIsunny/GenshinWishCalculator-py](https://github.com/MSIsunny/GenshinWishCalculator-py.git)
-7.   角色参考面板功能, [howe0116/howe-plugin](https://github.com/howe0116/howe-plugin.git)
-8.   网易云音乐解析工具, [Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi.git)
-9.   nonebot 插件参考目录, [商店](https://nonebot.dev/store)
-10.  pixiv 图片接口, [Lolicon API](https://api.lolicon.app/)
-11. 蔚蓝档案攻略获取接口, [BA bot攻略数据公开计划](https://doc.arona.diyigemt.com/api/)
+- 本家机器人框架, Yunzai-Bot, [Le-niao/Yunzai-Bot](https://github.com/Le-niao/Yunzai-Bot.git)
+- 塔罗牌占卜牌库
+  - [MinatoAquaCrews/nonebot_plugin_tarot](https://github.com/MinatoAquaCrews/nonebot_plugin_tarot.git)
+  - 蔚蓝档案塔罗牌, [画师 shi0n](https://twitter.com/shi0n_krbn/status/1480400034550390785)
+- 聊天词库
+  - [Neko002](https://mirai.mamoe.net/topic/1829/强大的二次元聊天机器人词库2w-词条-不定期更新)
+  - [Kyomotoi/AnimeThesaurus](https://github.com/Kyomotoi/AnimeThesaurus.git)
+- 喵喵插件, [yoimiya-kokomi/miao-plugin](https://github.com/yoimiya-kokomi/miao-plugin.git)
+- 计算抽卡期望, [MSIsunny/GenshinWishCalculator-py](https://github.com/MSIsunny/GenshinWishCalculator-py.git)
+- 角色参考面板功能, [howe0116/howe-plugin](https://github.com/howe0116/howe-plugin.git)
+- 网易云音乐解析工具, [Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi.git)
+- nonebot 插件参考目录, [商店](https://nonebot.dev/store)
+- pixiv 图片接口, [Lolicon API](https://api.lolicon.app/)
+- 蔚蓝档案攻略获取接口, [BA bot攻略数据公开计划](https://doc.arona.diyigemt.com/api/)
 
 ## 其他
 
