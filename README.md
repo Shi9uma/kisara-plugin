@@ -92,7 +92,7 @@
 
 ## 可能遇到的问题
 
->   关于与 `插件目录/data/apitoken.json` 文件相关错误的情况。
+>   关于与 **插件目录/data/apitoken.json** 文件相关错误的情况。
 
 需要自行申请 apikey, 请按照相关提示修改该文件相关 key, 对应的您也可以自行增改 api 文件
 
@@ -121,7 +121,7 @@ services:
 
 >   关于出现 **塔罗牌资源获取失败** 的提示。
 
-需要手动获取[相关塔罗牌资源](https://pan.baidu.com/s/1A0bkTv_UT17bsDmCxQDmfw?pwd=wjfa), 并将其解压后重命名为 `tarotCards`, 放置到 `插件目录/data/` 下
+需要手动获取[相关塔罗牌资源](https://pan.baidu.com/s/1KvBbN3FCeY4STq8_yAlOFg?pwd=h76o), 并将其解压后重命名为 `tarotCards`, 放置到 `插件目录/data/` 下
 
 准备完成后 `插件目录` 相关目录拓扑结构应该如下: 
 

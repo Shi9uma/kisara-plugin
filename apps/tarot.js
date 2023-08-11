@@ -99,6 +99,10 @@ export class tarot extends plugin {
 
             card = cards_info_list[index]
             card.meaning = roll ? ['正位', card.meaning.up] : ['逆位', card.meaning.down]
+
+            if (card.pic.length > 1) {
+                card.pic = lodash.sample(card.pic)
+            }
             card.pic = `${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`
 
             imgBuffer = sharp(card.pic)
@@ -123,13 +127,16 @@ export class tarot extends plugin {
             `回应是：${roll ? card.meaning.up : card.meaning.down}`
         ]
 
+        if (card.pic.length > 1) {
+            card.pic = lodash.sample(card.pic)
+        }
+
         let tarotImgPath = `${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`
         let imgBuffer = sharp(tarotImgPath)
         imgBuffer = roll ? await imgBuffer.toBuffer() : await imgBuffer.rotate(180).toBuffer()
         msg.push(segment.image(imgBuffer))
 
         await this.e.reply(msg, true)
-        // await this.e.reply(segment.image(`file://${this.tarotCardsDirPath}/${card.type}/${card.pic}.${this.imgType}`))
         return
     }
 
