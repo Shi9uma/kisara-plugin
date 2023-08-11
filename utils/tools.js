@@ -3,7 +3,6 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 import https from 'https'
 import moment from 'moment'
-import path from 'path'
 import child_process from 'child_process'
 
 import { URL } from 'url'
@@ -702,7 +701,7 @@ class tools {
     }
 
     /**
-	 * 使用控制台执行命令
+     * 使用控制台执行命令
      * 
      * 使用方法:
      * ```javascript
@@ -714,43 +713,43 @@ class tools {
      * tools.wait(1)    // 为了顺利执行命令, 建议进行等待
      * logger.info(execResult)
      * ```
-	 * @param {*} cmd 要执行的命令
-	 * @param {*} args 命令的可选参数, 列表形式
-	 * @param {*} showCmd 是否打印所执行的命令
-	 * @returns 
-	 */
-	exec(cmd, args, showCmd = false) {
+     * @param {*} cmd 要执行的命令
+     * @param {*} args 命令的可选参数, 列表形式
+     * @param {*} showCmd 是否打印所执行的命令
+     * @returns 
+     */
+    exec(cmd, args, showCmd = false) {
         if (showCmd) {
             logger.info(this.prefix, `所执行命令: ${[cmd, ...args].join(' ')}`)
         }
-		return new Promise((resolve, reject) => {
-			let execResult = child_process.spawn(cmd, args)
-			let stdout = '', stderr = '', res = []
+        return new Promise((resolve, reject) => {
+            let execResult = child_process.spawn(cmd, args)
+            let stdout = '', stderr = '', res = []
 
-			execResult.stdout.on('data', (data) => {
-				stdout += data.toString()
-			})
-
-
-			execResult.stderr.on('data', (data) => {
-				stderr += data.toString()
-			})
+            execResult.stdout.on('data', (data) => {
+                stdout += data.toString()
+            })
 
 
-			execResult.on('close', (code) => {
-				res = [stdout, stderr, code]
-				if (code !== 0) {
-					reject(stderr)
-				} else {
-					resolve(res)
-				}
-			})
+            execResult.stderr.on('data', (data) => {
+                stderr += data.toString()
+            })
 
-			execResult.on('error', (error) => {
-				reject(error)
-			})
-		})
-	}
+
+            execResult.on('close', (code) => {
+                res = [stdout, stderr, code]
+                if (code !== 0) {
+                    reject(stderr)
+                } else {
+                    resolve(res)
+                }
+            })
+
+            execResult.on('error', (error) => {
+                reject(error)
+            })
+        })
+    }
 
 }
 

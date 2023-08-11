@@ -141,6 +141,10 @@ export class tarot extends plugin {
             return
         }
 
+        if (!tools.isDirValid(this.tarotCardsDirPath)) {
+            
+        }
+
         let configCase = tools.applyCaseConfig({ triggerFullTarot: '', triggerRate: '' }, this.e.group_id, 'tarot', 'tarot')
 
         if ((configCase.triggerFullTarot) && (this.e.isMaster || lodash.random(1, 100) <= configCase.triggerRate)) {

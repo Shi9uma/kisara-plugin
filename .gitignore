@@ -6,6 +6,7 @@ data/todayNews
 data/randomPixivImg
 data/chatLibrary/temp
 data/blue-archive
+data/tarotCards
 
 *test.js
 *customize.js
@@ -13,3 +14,7 @@ data/blue-archive
 data/apitoken.json
 
 package.json
+
+*.zip
+*.tar
+*.tar.gz
