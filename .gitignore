@@ -1,21 +1,20 @@
-node_modules
-dontgit
 
+# 文件夹
+dontgit
 config
 data/todayNews
 data/randomPixivImg
-data/chatLibrary/temp
 data/blue-archive
 data/tarotCards
-
-*test.js
-*customize.js
-
 data/apitoken.json
 
-package.json
-
+# 后缀名通配
 *.zip
 *.tar
 *.tar.gz
 *.jar
+
+# 指定文件
+package.json
+*test.js
+*customize.js

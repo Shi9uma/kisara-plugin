@@ -476,46 +476,59 @@ export class blueArchive extends plugin {
         let msg = [
             `${this.prefix}\n`
         ]
-        let headers = {
-            'Content-Type': 'application/json'
-        }
-        let io = axios.create({
-            baseURL: searchUrl,
-            headers: headers
-        })
-        let response = await io.get('')
 
-        if (response.status != 200) {
-            msg += [
-                `response status with ${response.status} \n` +
-                `contact with the manager plz..`
-            ]
-        } else {
-            let dataJson = response.data
-            if (dataJson.status == 200) {
-                logger.info(dataJson.data)
-                let localResourcePath = await this.getResource(dataJson)
-                msg.push(segment.image(`file://${localResourcePath}`))
-            } else {
-                msg += [
-                    `当前攻略检索词 ${argument} 存在多个模糊匹配如下:\n`
-                ]
+        logger.info(argument)
 
-                let tmpStrings = ''
-                dataJson.data.forEach((item, idx) => {
-                    msg += [
-                        `${idx + 1}. ${item.name}\n`
-                    ]
-                    tmpStrings = item.name
-                })
-
-                msg += [
-                    `请重新输入正确的检索内容\n` +
-                    `例如: #ba ${tmpStrings}`
-                ]
+        if (argument != '') {
+            let headers = {
+                'Content-Type': 'application/json'
             }
-            await this.e.reply(msg, true)
+            let io = axios.create({
+                baseURL: searchUrl,
+                headers: headers
+            })
+            let response = await io.get('')
+
+            if (response.status != 200) {
+                msg += [
+                    `response status with ${response.status} \n` +
+                    `contact with the manager plz..`
+                ]
+            } else {
+                let dataJson = response.data
+                logger.info(dataJson)
+                if (dataJson.status == 200) {
+                    logger.info(dataJson.data)
+                    let localResourcePath = await this.getResource(dataJson)
+                    msg.push(segment.image(`file://${localResourcePath}`))
+                } else {
+                    msg += [
+                        `当前攻略检索词 ${argument} 存在多个模糊匹配如下:\n`
+                    ]
+
+                    let tmpStrings = ''
+                    dataJson.data.forEach((item, idx) => {
+                        msg += [
+                            `${idx + 1}. ${item.name}\n`
+                        ]
+                        tmpStrings = item.name
+                    })
+
+                    msg += [
+                        `请重新输入正确的检索内容\n` +
+                        `例如: #ba ${tmpStrings}`
+                    ]
+                }
+            }
+        } else {
+            msg += [
+                `蔚藍檔案攻略使用方法：\n` + 
+                `#ba 查询内容\n` + 
+                `例如: #ba mika`
+            ]
         }
+
+        await this.e.reply(msg, true)
         return
     }
 }
