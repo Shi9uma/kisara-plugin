@@ -386,31 +386,50 @@ export class shareMusic extends plugin {
         this.prefix = `[+] ${this.name}`
     }
 
-    async shareMusic(e) {
+    async shareMusic() {
         let searchURL = "http://127.0.0.1:7895/search?keywords=paramsSearch"  // 网易云
-        let msg = this.e.msg.replace(/#?(点歌|来首|听歌|点首|bgm|BGM)/g, "");
-        try {
-            msg = encodeURI(msg);
-            let url = searchURL.replace("paramsSearch", msg);
-            logger.info(url)
-            let response = await fetch(url);
-            let result = (await response.json()).result;
-            let songList = result?.songs?.length ? result.songs : [];
-            if (!songList[0]) {
-                await this.e.reply(`${this.prefix}\n没有在网易云曲库中找到相应歌曲`);
-                return true;
+        let argument = this.e.msg.replace(/#?(点歌|来首|听歌|点首|bgm|BGM)/g, "")
+        let msg = [
+            `${this.prefix}\n`
+        ]
+
+        if (argument == '') {
+            msg += [
+                '使用方法: 点歌 歌名\n'
+            ]
+            await this.e.reply(msg, true, { recallMsg: true })
+        } else {
+            try {
+                argument = encodeURI(argument);
+                let url = searchURL.replace("paramsSearch", argument);
+                logger.info(url)
+                let response = await fetch(url);
+                let result = (await response.json()).result;
+                let songList = result?.songs?.length ? result.songs : [];
+                if (!songList[0]) {
+                    msg += [
+                        '没有在网易云曲库中找到相应歌曲'
+                    ]
+                    await this.e.reply(msg, true, { recallMsg: true })
+                    return
+                } else {
+                    let songIndex = 0;
+                    if (this.e.isPrivate) {
+                        await this.e.friend.shareMusic("163", songList[songIndex].id);
+                    }
+                    else if (this.e.isGroup) {
+                        await this.e.group.shareMusic("163", songList[songIndex].id);
+                    }
+                }
             }
-            let songIndex = 0;
-            if (this.e.isPrivate) {
-                await this.e.friend.shareMusic("163", songList[songIndex].id);
+            catch (error) {
+                if (error) {
+                    logger.warn(error)
+                }
             }
-            else if (this.e.isGroup) {
-                await this.e.group.shareMusic("163", songList[songIndex].id);
-            }
+            return
         }
-        catch (error) {
-            if (error) logger.warn(error)
-        }
+
         return
     }
 }
@@ -477,8 +496,6 @@ export class blueArchive extends plugin {
             `${this.prefix}\n`
         ]
 
-        logger.info(argument)
-
         if (argument != '') {
             let headers = {
                 'Content-Type': 'application/json'
@@ -522,8 +539,8 @@ export class blueArchive extends plugin {
             }
         } else {
             msg += [
-                `蔚藍檔案攻略使用方法：\n` + 
-                `#ba 查询内容\n` + 
+                `蔚藍檔案攻略使用方法：\n` +
+                `#ba 查询内容\n` +
                 `例如: #ba mika`
             ]
         }

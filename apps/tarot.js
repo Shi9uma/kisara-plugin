@@ -3,8 +3,12 @@ import plugin from '../../../lib/plugins/plugin.js'
 import tools from '../utils/tools.js'
 import lodash from 'lodash'
 import sharp from 'sharp'
+import shuffleSeed from 'shuffle-seed'
+import moment from 'moment'
 
 const pluginName = tools.getPluginName()
+const tarotSeedRefreshCd = 12   // 塔罗牌刷新 cd, 单位为小时
+const hourInMillis = tarotSeedRefreshCd * 60 * 60 * 1000
 
 // tarot
 export class tarot extends plugin {
@@ -43,7 +47,7 @@ export class tarot extends plugin {
      * @param {*} type full or single
      * @returns full for [formation, cards_info_list, card], single for [card]
      */
-    getTarotData(type) {
+    getTarotData(type, seed = 0) {
         let filePath = `${this.tarotCardsDirPath}/tarot.json`,
             tarotData = tools.readJsonFile(filePath),   // 读取总数据
             allCards = tarotData.cards,    // 读取所有卡片信息
@@ -74,7 +78,11 @@ export class tarot extends plugin {
 
             return { formation, cards_info_list, card }
         } else if (type == 'single') {
-            return lodash.sample(allCards)
+            let cardsList = []
+            for (let item of tools.checkObjectKeys(allCards)) {
+                cardsList.push(item[1])
+            }
+            return shuffleSeed.shuffle(cardsList, seed)[0]
         } else {
             return logger.warn('错误的塔罗牌占卜类型传入')
         }
@@ -87,7 +95,7 @@ export class tarot extends plugin {
         let formation = fullTarotData.formation,
             cards_info_list = fullTarotData.cards_info_list,
             card = fullTarotData.card
-            
+
         await this.e.reply(`${this.prefix}\n启用「${formation.name}」, 抽取 「${formation.cards_num}」张牌, 洗牌中...`)
         for (let index = 0; index < formation.cards_num; index++) {
             if (formation.is_cut && (index == formation.cards_num - 1))
@@ -120,7 +128,17 @@ export class tarot extends plugin {
     }
 
     async singleTarot() {
-        let card = this.getTarotData('single'), msg, roll = lodash.random(0, 1)
+
+        function calSeed(seed) {
+            let currentTimeStamp = moment().valueOf()
+            let res = Math.floor(currentTimeStamp / hourInMillis) % (seed % 3600000)
+            return res
+        }
+
+        let seed = calSeed(this.e.sender.user_id),
+            card = this.getTarotData('single', seed),
+            msg,
+            roll = shuffleSeed.shuffle([0, 1], seed)[0]
         msg = [
             `${this.prefix}\n`,
             `「${roll ? '正位' : '逆位'}」${card.name_cn}\n`,
