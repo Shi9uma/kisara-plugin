@@ -131,7 +131,7 @@ export class tarot extends plugin {
 
         function calSeed(seed) {
             let currentTimeStamp = moment().valueOf()
-            let res = Math.floor(currentTimeStamp / hourInMillis) % (seed % 3600000)
+            let res = seed % Math.floor(currentTimeStamp / hourInMillis)
             return res
         }
 
