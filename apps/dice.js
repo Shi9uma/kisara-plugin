@@ -12,7 +12,7 @@ export class dice extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#?(roll|r|骰子|dice|色子)(.*)$',
+                    reg: '^#(roll|r|骰子|dice|色子)(.*)$',
                     fnc: 'roll'
                 },
                 {
@@ -31,7 +31,7 @@ export class dice extends plugin {
     }
 
     async roll() {
-        let raw_message = this.e.raw_message.replace(/#?(roll|r|骰子|dice|色子)/g, ''),
+        let raw_message = this.e.raw_message.replace(/#(roll|r|骰子|dice|色子)/g, ''),
             rangeList = raw_message.trim().split(' ').map(Number).filter(Number.isInteger),
             argCount = rangeList[0] == 0 ? 0 : rangeList.length,
             msg = `${this.prefix}\n`
