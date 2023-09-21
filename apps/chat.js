@@ -39,6 +39,7 @@ export class chat extends plugin {
 
     dontAnswer(keyDict, msg) {
         if (msg == '') return true  // 空消息不回复
+        if (this.e.source?.user_id ? (this.e.source.user_id != Bot.uin) : false) return true   // 非回复本人不回复
         if (keyDict.ngWords.includes(msg)) return true  // ngWords 不回复
         if (keyDict.banList.includes(this.e.sender.user_id.toString())) return true // ban 账号不回复
         return (

@@ -24,7 +24,7 @@ export class tarot extends plugin {
                     fnc: 'tarot'
                 },
                 {
-                    reg: '^#?刷新占卜$',
+                    reg: '^#?(刷新占卜|洗牌)$',
                     fnc: 'refreshTarot',
                     permission: 'Master'
                 }
