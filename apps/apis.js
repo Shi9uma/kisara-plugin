@@ -167,7 +167,7 @@ export class saucenao extends plugin {
     }
 
     // 主要逻辑
-    async saucenaoCheckType(e) {
+    async saucenaoCheckType() {
         try {
             // 防止滥用
             if (!(this.e.isGroup || this.e.isMaster)) {
@@ -175,8 +175,15 @@ export class saucenao extends plugin {
                 return
             }
 
-            let similarityRate = Number(this.e.msg.match(/\d+/)?.[0])
-            similarityRate = (similarityRate && (0 < similarityRate && similarityRate < 100)) ? similarityRate : this.defaultSimilarityRate
+            let pattern = /^#?(识图|搜图|出处|来源)(\d+)?$/
+            let similarityRate = this.defaultSimilarityRate
+
+            if (pattern.test(this.e.msg)) {
+                similarityRate = Number(this.e.msg.match(/\d+/)?.[0])
+                similarityRate = (similarityRate && (0 < similarityRate && similarityRate < 100)) ? similarityRate : this.defaultSimilarityRate
+            } else {
+                return
+            }
 
             if (!(this.e.img || this.e.source)) {   // 在更新了第三种查询方式后, 该控制语句应修改
                 let msg = [
