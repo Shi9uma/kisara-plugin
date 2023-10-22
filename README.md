@@ -1,8 +1,18 @@
 # kisara-plugin
 
-> 因为使用了木更作为 chat 对象的自称, 导致变得越来越喜欢木更了, 所以决定将插件名称更名为 **kisara-plugin**, **当然本插件还是不限定文件夹名称, 您可以继续 diy 插件的名字**
->
-> 根据各种插件学习而魔改, 如果您有其他建议欢迎提交 issue, 能点个 star 就是对我最大的鼓励
+---
+
+**2023 年 10 月 23 日, 碎碎念更新**
+
+**由于上游框架遇到种种不可抗力, 加上目前课业繁忙, 无法进行后续有效地测试和开发, 故项目暂停更新并等待后续新的 oicq 框架适配**
+
+**另外, 对 kisara-plugin 的期望不会仅仅局限于 oicq 框架, 会尝试着在以后变成 kisara-bot 等符合 onebot 标准的框架对接到其他应用里**
+
+**感谢各位为 oicq bot 做出了贡献的大佬们, 相信今后江湖有缘再见**
+
+---
+
+> 因为使用了木更作为 chat 对象的自称, 导致变得越来越喜欢木更了, 所以决定将插件名称更名为 **kisara-plugin**, **当然本插件不限定文件夹名称, 您可以自行 diy 插件的文件夹名字**
 >
 > **本插件仅限内部交流与小范围使用, 可随意学习、参考以及移植, 请勿将本插件用于以盈利为目的的场景**
 >
@@ -14,14 +24,6 @@
   - [Github 本家](https://github.com/Le-niao/Yunzai-Bot), 目前处于禁用状态
 
 
-## 目前功能
-
-可以在 `apps` 文件夹中打开 `.js` 后缀文件查看批注。
-
-初次运行后会**自动**创建一个 `./config` 文件夹, 并将 `index.config.yaml` 自动复制过去。
-
-功能开关在 `config/index.config.yaml` 文件中。
-
 ## 安装方法
 
 -   将插件整个放在 `Yunzai-bot/plugins/` 下, 默认插件名称为 `kisara`, 您可以随意修改该插件的名称, 暂时没测试过中文路径能否正常运行, 请尽可能使用英文路径。
@@ -31,6 +33,8 @@
 -   获取本插件的指令：`git clone https://github.com/shi9uma/kisara-plugin.git ./Yunzai-bot/plugins/{期望的插件名}`, 请您自行修改后面的路径以保证插件能被正常加载。
 
 -   本插件还引入了 `axios` 等依赖, 您在启动插件后, 会接收到相应缺少插件的依赖报错。此时您可以回到 `./Yunzai-bot` 的根目录下, 使用 `npm install {缺失的依赖名称}`, 这里我推荐您使用 [cnpm](https://zhuanlan.zhihu.com/p/120159632)（安装后可以直接将 npm 修改成 cnpm 即可, 其他不变）, 访问速度更快。
+
+-   初次运行后会**自动**创建一个 `./config` 文件夹, 并将 `index.config.yaml` 复制过去, 功能开关在 `config/index.config.yaml` 文件中。
 
 ## todos
 
@@ -169,7 +173,3 @@ services:
 - nonebot 插件参考目录, [商店](https://nonebot.dev/store)
 - pixiv 图片接口, [Lolicon API](https://api.lolicon.app/)
 - 蔚蓝档案攻略获取接口, [BA bot攻略数据公开计划](https://doc.arona.diyigemt.com/api/)
-
-## 其他
-
-后续会选择采用 onebot 标准, 依托 [go-cqhttp](https://github.com/Mrs4s/go-cqhttp.git) 搭配 golang, python 实现由 kisara-plugin 到 kisara-bot 的转变
