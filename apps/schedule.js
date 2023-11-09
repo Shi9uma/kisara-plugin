@@ -5,9 +5,6 @@ import fetch from "node-fetch"
 import tools from '../utils/tools.js'
 import plugin from '../../../lib/plugins/plugin.js'
 import moment from 'moment'
-import userAgent from 'user-agents'
-import axios from 'axios'
-import jsdom from 'jsdom'
 
 const pluginName = tools.getPluginName()
 

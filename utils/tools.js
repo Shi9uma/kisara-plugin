@@ -366,7 +366,7 @@ class tools {
      * @param {*} Bot 传入 global.Bot
      * @returns 
      */
-    makeForwardMsg(title, forwardMsgArr, end, e, Bot) {
+    makeForwardMsg(title, forwardMsgArr, end = null, e, Bot) {
         let nickname = Bot.nickname,
             userInfo = {
                 user_id: Bot.uin,
@@ -384,10 +384,12 @@ class tools {
             })
         }
 
-        forwardMsg.push({
-            ...userInfo,
-            message: end
-        })
+        if (end != null) {
+            forwardMsg.push({
+                ...userInfo,
+                message: end
+            })
+        }
 
         forwardMsg = e.isGroup ? e.group.makeForwardMsg(forwardMsg) : e.friend.makeForwardMsg(forwardMsg)
 
@@ -640,7 +642,7 @@ class tools {
      * @param {*} Bot 传入 Bot
      * @returns 
      */
-    async notify(type, msg, target, from, Bot) {
+    async notify(type = 'Friend', msg, target, from, Bot) {
         if (!Bot) {
             return logger.warn(`${this.prefix} 请先传入 global.Bot`)
         }
