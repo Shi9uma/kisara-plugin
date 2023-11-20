@@ -24,7 +24,11 @@ export class tarot extends plugin {
                     fnc: 'tarot'
                 },
                 {
-                    reg: '^#?(刷新占卜|洗牌)$',
+                    reg: '^(刷新占卜|洗牌|refresh)$',
+                    fnc: 'selfRefreshTarot'
+                },
+                {
+                    reg: '^#(刷新占卜|洗牌|refresh)$',
                     fnc: 'refreshTarot',
                     permission: 'Master'
                 }
@@ -182,6 +186,32 @@ export class tarot extends plugin {
             this.singleTarot()
             return
         }
+    }
+
+    async selfRefreshTarot() {
+
+        if (!(await this.isPasseren())) {
+            await this.e.reply(`${this.prefix}\n每日只有一次愚弄命运之神的机会哦, 明天再来吧`, true)
+            return
+        }
+
+        this.e.logFnc = this.e.logFnc.replace('[refreshTarot]', '[tarot]')
+        let deleteKey = tools.genRedisKey(this.e, 'global')
+        let msg = `${this.prefix}\n`
+
+        if ((await tools.isRedisSet(deleteKey) == null)) {
+            msg += `对象 ${this.e.user_id} 还没有占卜过噢`
+        } else {
+            let deleteResult = await tools.delRedisKey(deleteKey)
+            if (deleteResult) {
+                msg += `已经为 ${this.e.user_id} 重新洗牌`
+            } else {
+                msg += `为 ${this.e.user_id} 重新洗牌失败, 请查看日志`
+            }
+        }
+
+        await this.e.reply(msg, false, { recallMsg: 90 })
+        return
     }
 
     async refreshTarot() {
