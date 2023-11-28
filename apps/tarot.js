@@ -195,7 +195,7 @@ export class tarot extends plugin {
             return
         }
 
-        this.e.logFnc = this.e.logFnc.replace('[refreshTarot]', '[tarot]')
+        this.e.logFnc = this.e.logFnc.replace('[selfRefreshTarot]', '[tarot]')
         let deleteKey = tools.genRedisKey(this.e, 'global')
         let msg = `${this.prefix}\n`
 
