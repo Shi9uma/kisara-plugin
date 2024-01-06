@@ -1,18 +1,14 @@
 # kisara-plugin
 
----
-
-> 因为使用了木更作为 chat 对象的自称, 导致变得越来越喜欢木更了, 所以决定将插件名称更名为 **kisara-plugin**, **当然本插件不限定文件夹名称, 您可以自行 diy 插件的文件夹名字**
+> 因为使用了**木更**作为 chat 对象的自称, 导致变得越来越喜欢木更了, 所以决定将插件名称更名为 **kisara-plugin**, **当然本插件不限定文件夹名称, 您可以自行 diy 插件的文件夹名字**
 >
 > **本插件仅限内部交流与小范围使用, 可随意学习、参考以及移植, 请勿将本插件用于以盈利为目的的场景**
 >
 > **本插件的图片与其他素材均来自于网络, 仅供交流学习使用, 如有侵权请联系, 会立即删除**
 
 本插件依附于上游框架 Yunzai Bot, 您可以从下方获取到这个框架
-  - [Gitee 目前还在维护的版本(推荐)](https://gitee.com/yoimiya-kokomi/Yunzai-Bot.git)
-  - [Github 上其他 fork 版本](https://github.com/yoimiya-kokomi/Miao-Yunzai.git)
-  - [Github 本家](https://github.com/Le-niao/Yunzai-Bot), 目前处于禁用状态
-
+  - [Github 上其他 fork 并积极维护版本(推荐)](https://github.com/yoimiya-kokomi/Miao-Yunzai.git)
+  - [Github 本家](https://github.com/Le-niao/Yunzai-Bot), 已被 ban
 
 ## 安装方法
 
@@ -26,7 +22,7 @@
 
 -   初次运行后会**自动**创建一个 `./config` 文件夹, 并将 `index.config.yaml` 复制过去, 功能开关在 `config/index.config.yaml` 文件中。
 
-## todos
+## todo
 
 - [ ] 菜单 main.ahelp
   - [ ] 重写菜单输出逻辑, 不同的功能也有自定义的 ahelp 信息, 使用 `main.ahelp.yaml`
@@ -139,15 +135,11 @@ services:
 
 -   插件的命名逻辑：`schedule.todayNews.yaml`：这是一个 `todayNews` 功能的配置文件, `schedule` 称为 app, `todayNews` 称为 func
 
--   关于启用 `chatgpt` 功能, 需要自备账号与 api, 相关链接如下
-    - [准备好个人的 OpenAI API Key](https://platform.openai.com/account/api-keys)
-    - [查看个人 api 使用量](https://platform.openai.com/account/usage)
-    - 将个人的 `api key` 填入到 `./data/apitoken.json` 文件中, 注意格式
-
+-   对 kisara-plugin 的期望不会仅仅局限于 oicq 框架, 会尝试着在以后变成 kisara-bot 等按照 onebot 标准的框架对接到其他应用里
 
 ## 致谢
 
-本插件创建之初是作为个人纯魔改自用, 在开发过程中不断参考了各位为这个社区做贡献的大佬们的仓库而深受启发, 感谢各位志同道合的开发者为开源社区做出贡献。
+本插件创建之初是作为个人纯魔改自用, 在开发过程中不断参考了各位为这个社区做贡献的大佬们的仓库而深受启发, 感谢志同道合的开发者们
 
 - 本家机器人框架, Yunzai-Bot, [Le-niao/Yunzai-Bot](https://github.com/Le-niao/Yunzai-Bot.git)
 - 塔罗牌占卜牌库
