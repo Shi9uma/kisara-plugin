@@ -7,6 +7,7 @@ import plugin from '../../../lib/plugins/plugin.js'
 import moment from 'moment'
 
 const pluginName = tools.getPluginName()
+const apis = JSON.parse(tools.readFile(`./plugins/${pluginName}/data/apitoken.json`))
 
 // 今日简报
 export class todayNews extends plugin {
@@ -38,7 +39,7 @@ export class todayNews extends plugin {
         this.imgType = 'png'
         this.newsImgDir = `./plugins/${pluginName}/data/todayNews`
         this.configYaml = tools.readYamlFile('schedule', 'todayNews')
-        this.datatime = new moment().format('yyyy-MM-DD')
+        this.datetime = new moment().format('yyyy-MM-DD')
         this.prefix = `[+] ${this.dsc}`
 
         this.task = {
@@ -51,16 +52,16 @@ export class todayNews extends plugin {
     }
 
     isValidTime() {
-        let datatime = new moment(new Date()).format('yyyy-MM-DD HH')
+        let datetime = new moment(new Date()).format('yyyy-MM-DD HH')
         let flagTime = moment(new Date()).format('yyyy-MM-DD')
-        if (!moment(datatime).isBetween(`${flagTime} 01`, `${flagTime} 08`)) return true
+        if (!moment(datetime).isBetween(`${flagTime} 01`, `${flagTime} 08`)) return true
         else return false
     }
 
-    checkTodayNewsImg(datatime) {
+    checkTodayNewsImg(datetime) {
         if (!tools.isDirValid(this.newsImgDir))    // 一般只有第一次使用会创建
             tools.makeDir(this.newsImgDir)
-        let imgFilePath = `${this.newsImgDir}/${datatime}.${this.imgType}`
+        let imgFilePath = `${this.newsImgDir}/${datetime}.${this.imgType}`
         return (tools.isFileValid(imgFilePath)) && (tools.getFileStat(imgFilePath).size != 0)
     }
 
@@ -77,14 +78,14 @@ export class todayNews extends plugin {
                 return
             }
         }
-        let datatime = this.datatime
-        if (!this.checkTodayNewsImg(datatime)) {
-            this.e.reply(`${this.prefix}\n尚未获取日期为 ${datatime} 的简报`)
+        let datetime = this.datetime
+        if (!this.checkTodayNewsImg(datetime)) {
+            this.e.reply(`${this.prefix}\n尚未获取日期为 ${datetime} 的简报`)
             return
         } else {
-            let deleteNewsPath = `${this.newsImgDir}/${datatime}.${this.imgType}`
+            let deleteNewsPath = `${this.newsImgDir}/${datetime}.${this.imgType}`
             tools.deleteFile(deleteNewsPath)
-            this.e.reply(`${this.prefix}\n已删除日期为 ${datatime} 的简报`)
+            this.e.reply(`${this.prefix}\n已删除日期为 ${datetime} 的简报`)
             return
         }
     }
@@ -113,40 +114,52 @@ export class todayNews extends plugin {
     }
 
     async getTodayNews() {
-        // let url = 'http://bjb.yunwj.top/php/tp/lj.php'
-        let url = 'http://dwz.2xb.cn/zaob'
-        let response = await fetch(url).catch((error) => { if (error) logger.warn(this.prefix, error) })
+        // let url = 'http://bjb.yunwj.top/php/tp/lj.php'   // 早报 api 1.0
+        // let url = 'http://dwz.2xb.cn/zaob'  // 早报 api 2.0
+        let url = 'https://v2.alapi.cn/api/zaobao'  // 早报 api 3.0
+        let response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                token: apis.news,
+                format: 'json',
+            }),
+        }).catch((error) => {
+            if (error) logger.warn(this.prefix, error);
+        });
 
         if (response.status != 200) {
             await this.e.reply(`${this.prefix}\n获取简报失败, 状态码 ${response.status}`)
             return
         }
 
-        let datatime = new moment().format('yyyy-MM-DD')
-        let res = await response.json()
-        let newsImgUrl = res.imageUrl
-        let newsImgName = res.datatime
+        let datetime = new moment().format('yyyy-MM-DD')
+        let res = (await response.json()).data
+        let newsImgUrl = res.image
+        let newsImgName = res.date
         tools.saveUrlImg(newsImgUrl, newsImgName, this.newsImgDir, this.imgType)
 
-        if (datatime != res.datatime) {
+        if (datetime != res.date) {
             let masterList = tools.readGlobalYamlFile('other').masterQQ
             for (let master of masterList)
-                await tools.notify('Friend', `${this.prefix}\n当前日期：${datatime}\n简报日期：${res.datatime}\n简报内容出现延误, 请查看日志`, Number(master), 'system', Bot)
+                await tools.notify('Friend', `${this.prefix}\n当前日期：${datetime}\n简报日期：${res.date}\n简报内容出现延误, 请查看日志`, Number(master), 'system', Bot)
         }
 
         return
     }
 
     async sendTodayNews() {
-        let datatime = this.datatime,
+        let datetime = this.datetime,
             msg = [
                 `${this.prefix}\n` +
-                `日期：${this.datatime}\n`
+                `日期：${this.datetime}\n`
             ],
             tempMsg = [].concat(msg)
         await this.checkKeepTime()
 
-        if (!this.checkTodayNewsImg(datatime)) {
+        if (!this.checkTodayNewsImg(datetime)) {
             this.getTodayNews()
 
             if (!this.isValidTime()) {
@@ -159,18 +172,18 @@ export class todayNews extends plugin {
             await tools.wait(10)
         }
 
-        if (!this.checkTodayNewsImg(datatime)) return
-        msg.push(segment.image(`file://${this.newsImgDir}/${datatime}.${this.imgType}`))
+        if (!this.checkTodayNewsImg(datetime)) return
+        msg.push(segment.image(`file://${this.newsImgDir}/${datetime}.${this.imgType}`))
         await this.e.reply(msg)
         return
     }
 
     async scheduleSendTodayNews() {
 
-        let datatime = new moment().format('yyyy-MM-DD')
+        let datetime = new moment().format('yyyy-MM-DD')
         await this.checkKeepTime()
 
-        if (!this.checkTodayNewsImg(datatime)) {
+        if (!this.checkTodayNewsImg(datetime)) {
 
             if (this.e) {
                 await this.e.reply(`${this.prefix}\n获取今日简报中...`)
@@ -178,19 +191,19 @@ export class todayNews extends plugin {
 
             this.getTodayNews()
             await tools.wait(10)
-            
-            if (!this.checkTodayNewsImg(datatime)) {
+
+            if (!this.checkTodayNewsImg(datetime)) {
                 let masterList = tools.readGlobalYamlFile('other').masterQQ
                 for (let master of masterList)
-                    await tools.notify('Friend', `[+] ${this.task.name}\n日期：${datatime}\n获取今日简报失败, 请手动重新获取`, Number(master), 'system', Bot)
+                    await tools.notify('Friend', `[+] ${this.task.name}\n日期：${datetime}\n获取今日简报失败, 请手动重新获取`, Number(master), 'system', Bot)
                 return
             }
         }
 
-        let newsImgPath = `${this.newsImgDir}/${datatime}.${this.imgType}`,
+        let newsImgPath = `${this.newsImgDir}/${datetime}.${this.imgType}`,
             msg = [
                 `[+] ${this.task.name}\n` +
-                `日期：${datatime}\n`,
+                `日期：${datetime}\n`,
                 segment.image(`file://${newsImgPath}`)
             ]
 

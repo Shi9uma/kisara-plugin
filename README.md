@@ -89,7 +89,8 @@
 `apitoken.json` 文件内容示例如下：
 ```json
 {
-    "saucenao": "需要到 https://saucenao.com/ 自行申请"
+    "saucenao": "需要到 https://saucenao.com/ 自行申请",
+    "news": "需要到 https://alapi.cn/api/view/93 申请个人 token"
 }
 ```
 
@@ -155,3 +156,4 @@ services:
 - nonebot 插件参考目录, [商店](https://nonebot.dev/store)
 - pixiv 图片接口, [Lolicon API](https://api.lolicon.app/)
 - 蔚蓝档案攻略获取接口, [BA bot攻略数据公开计划](https://doc.arona.diyigemt.com/api/)
+- 每日简报获取接口, [alapi.cn](https://alapi.cn/api/view/93)
